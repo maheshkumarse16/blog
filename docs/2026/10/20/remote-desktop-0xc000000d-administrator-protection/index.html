@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Remote Desktop fails with 0xC000000D when Administrator protection is on | MaheshKumarSE</title>
+<meta name="description" content="Standard users can no longer RDP into Windows 11 devices that have Administrator protection enabled. Here is who is affected, why it is spreading, and what to do until Microsoft fixes it.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/remote-desktop-0xc000000d-administrator-protection/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Remote Desktop fails with 0xC000000D when Administrator protection is on">
+<meta property="og:description" content="Standard users can no longer RDP into Windows 11 devices that have Administrator protection enabled. Here is who is affected, why it is spreading, and what to do until Microsoft fixes it.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/remote-desktop-0xc000000d-administrator-protection/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Remote Desktop fails with 0xC000000D when Administrator protection is on", "description": "Standard users can no longer RDP into Windows 11 devices that have Administrator protection enabled. Here is who is affected, why it is spreading, and what to do until Microsoft fixes it.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/remote-desktop-0xc000000d-administrator-protection/", "keywords": "Windows 11, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-workaround">Workaround</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>Remote Desktop fails with 0xC000000D when Administrator protection is on</h1><p class="dek">Standard users can no longer RDP into Windows 11 devices that have Administrator protection enabled. Here is who is affected, why it is spreading, and what to do until Microsoft fixes it.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>4 min read</span></div>
+</header>
+<div class="prose"><p>This one is going to land on a lot of service desks over the next few weeks, so it is worth getting ahead of it.</p>
+<h2>The symptom</h2>
+<p>A user without admin rights tries to connect to a Windows 11 device over Remote Desktop and the connection fails with error <code>0xC000000D</code>. The message says the token that was passed to the function is invalid.</p>
+<p>Admins can still connect. Standard users cannot.</p>
+<h2>What is affected</h2>
+<ul>
+<li><strong>Windows versions.</strong> Windows 11 24H2, 25H2, 26H1 and 26H2.</li>
+<li><strong>Updates.</strong> It started with <code>KB5124010</code>, the September 2026 optional preview update, and carries on in everything after it, including the October security update <code>KB5127648</code>.</li>
+<li><strong>Devices.</strong> Remote Desktop hosts that have Administrator protection turned on. Microsoft says it happens however the feature was enabled.</li>
+</ul>
+<p>In practice that means jump boxes, shared engineering machines, lab devices and any desktop that people connect into rather than sit in front of.</p>
+<h2>Why more people are hitting it now</h2>
+<p>Administrator protection keeps signed in admins at standard user rights and asks for Windows Hello before anything that needs elevation, such as installing an app or changing the registry. It started rolling out in October 2025.</p>
+<p>The reason this is suddenly widespread is the security baselines. Administrator protection is turned on in the Windows 11 24H2, 25H2 and 26H2 baselines from the Microsoft Security Compliance Toolkit. If your organisation applies those baselines and has not set the policy differently, it became active with the October update. A lot of teams will not realise they turned it on.</p>
+<h2>Is there a fix?</h2>
+<p>Not yet. Microsoft says it is working on it and has not given a date. Until then, the only option it offers is to switch Administrator protection off on the affected devices.</p>
+<h2>What to do until Microsoft ships a fix</h2>
+<p>Switching off a security feature across the whole estate to fix Remote Desktop on a handful of machines is the wrong trade. Here is how I would handle it.</p>
+<h3>1. Find the devices that actually need it</h3>
+<p>Work out which devices standard users genuinely RDP into. That is usually a short list. Put them in a dedicated Entra ID group, something like <code>Devices RDP Hosts AdminProtection Exception</code>.</p>
+<h3>2. Create a targeted policy in Intune</h3>
+<p>In the Intune admin center, create a new Settings catalog profile for Windows 10 and later.</p>
+<p><span class="path">Devices &gt; Configuration &gt; Create &gt; New policy &gt; Windows 10 and later &gt; Settings catalog</span></p>
+<p>Search the settings picker for <strong>Local Policies Security Options</strong> and find <strong>User Account Control Type Of Admin Approval Mode</strong>. It has two options.</p>
+<ul>
+<li>Admin Approval Mode is running in legacy mode</li>
+<li>Admin Approval Mode is running with Administrator protection</li>
+</ul>
+<p>Set it to the legacy mode option and assign the profile to your exception group only. The change needs a restart before it takes effect.</p>
+<p>If you set this through Group Policy instead, the same setting sits under the security options in the local policies. Reset it on the affected hosts only.</p>
+<h3>3. Watch for conflicts</h3>
+<p>If your baseline or another profile also sets this value, the device will report a conflict and you may not get the result you expect. Check where the baseline is assigned and exclude the exception group from it, or adjust the baseline for that group.</p>
+<h3>4. Record the exception and set a reminder</h3>
+<p>Write down which devices are in the group and why. When Microsoft releases the fix, take the devices out of the group so Administrator protection comes back on. Exceptions like this have a habit of becoming permanent if nobody owns them.</p>
+<h3>5. Tell the service desk</h3>
+<p>Give them the error code, the short list of affected hosts and the expected fix. It saves a lot of time on calls that would otherwise go round in circles checking network rules and RDP permissions.</p>
+<h2>How to check if a device is affected</h2>
+<p>On the remote host, check the build. If it is 24H2, 25H2, 26H1 or 26H2 and has <code>KB5124010</code> or later installed, and a standard user gets <code>0xC000000D</code>, you are looking at this issue. If an admin account connects fine to the same device, that pretty much confirms it.</p>
+<p>I will update this post once Microsoft releases the fix.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://bleepingcomputer.com/news/security/microsoft-recent-windows-updates-may-trigger-remote-desktop-failures">BleepingComputer on recent Windows updates causing Remote Desktop failures</a></li>
+<li><a href="https://windowsreport.com/?p=1512407">Windows Report on the KB5127648 known issues</a></li>
+<li><a href="https://cloudinfra.net/configure-uac-user-account-control-using-intune/">Cloudinfra on configuring UAC settings with Intune</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/intune-device-page-android-esim-updates/"><span>Older</span>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/" style="text-align:right"><span>Newer</span>Windows 11 October 2026 update: builds, fixes and what to patch first</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/intune-device-page-android-esim-updates/"><time datetime="2026-10-20">20 October 2026</time>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></li><li><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><time datetime="2026-10-20">20 October 2026</time>How to roll out apps and policies in rings with Intune deployments</a></li><li><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><time datetime="2026-10-20">20 October 2026</time>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></li><li><a href="/2026/10/20/configmgr-2609-upgrade-checklist/"><time datetime="2026-10-20">20 October 2026</time>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

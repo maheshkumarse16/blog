@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to roll out apps and policies in rings with Intune deployments | MaheshKumarSE</title>
+<meta name="description" content="Intune can now release a Win32 app or a policy to one group at a time on a schedule. A step by step guide to deployment plans, plus the limits you need to know before you rely on it.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/intune-deployments-phased-rollout-rings/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="How to roll out apps and policies in rings with Intune deployments">
+<meta property="og:description" content="Intune can now release a Win32 app or a policy to one group at a time on a schedule. A step by step guide to deployment plans, plus the limits you need to know before you rely on it.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/intune-deployments-phased-rollout-rings/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How to roll out apps and policies in rings with Intune deployments", "description": "Intune can now release a Win32 app or a policy to one group at a time on a schedule. A step by step guide to deployment plans, plus the limits you need to know before you rely on it.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/intune-deployments-phased-rollout-rings/", "keywords": "Intune, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>How to roll out apps and policies in rings with Intune deployments</h1><p class="dek">Intune can now release a Win32 app or a policy to one group at a time on a schedule. A step by step guide to deployment plans, plus the limits you need to know before you rely on it.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>If you have ever pushed a bad policy to every laptop at once, you will like this one. Intune now has <strong>Deployments</strong>, a public preview feature that releases a single app or policy through a series of rings, one group at a time, on a schedule you set.</p>
+<p>Until now most of us did this by hand. Assign to a pilot group, wait, add the next group, wait again. Deployments automates that.</p>
+<figure>
+<img src="/images/2026/10/intune-deployment-rings.svg" alt="Diagram of an Intune deployment moving through four rings over four days" width="760" height="300">
+<figcaption>A deployment adds each ring's group to the payload's assignments in turn. Moving on is based on time, not on install success.</figcaption>
+</figure>
+
+<h2>What you can deploy</h2>
+<ul>
+<li><strong>Win32 apps</strong> and <strong>Enterprise App Catalog apps</strong></li>
+<li><strong>Settings catalog</strong> policies</li>
+<li><strong>Endpoint security</strong> policies</li>
+</ul>
+<p>It only works for Windows 10 and later, one payload per deployment, and the app or policy must already exist in Intune.</p>
+<h2>Where to find it</h2>
+<p><span class="path">Devices &gt; Manage devices &gt; Deployments</span></p>
+<p>There are two parts. A <strong>deployment plan</strong> is a reusable template of rings. A <strong>deployment</strong> applies a plan, or a one off set of rings, to a specific app or policy.</p>
+<h2>Step 1. Create a deployment plan</h2>
+<ol>
+<li>Go to <strong>Deployments &gt; Deployment plans</strong> and select <strong>Create plan</strong>.</li>
+<li>Give it a clear name, such as <code>Standard 4 ring rollout</code>.</li>
+<li>Choose the platform, then select <strong>Add rings</strong>.</li>
+<li>Add your rings. A common pattern is IT test, pilot, early adopters and everyone else.</li>
+<li>Assign one Entra ID group to each ring. Every ring needs at least one group.</li>
+<li>Set the wait time between rings. The minimum is one hour. For most changes I would use one day, and longer for anything touching sign in, VPN or security agents.</li>
+<li>Add any exclusion groups. These apply to every ring.</li>
+<li>Add assignment filters and scope tags if you use them, then review and create.</li>
+</ol>
+<p>Changes you make to a plan later only affect new deployments, not ones already running.</p>
+<h2>Step 2. Create a deployment</h2>
+<ol>
+<li>Go to <strong>Deployments</strong> and select <strong>Create</strong>.</li>
+<li>Name it after the change, for example <code>Chrome 141 rollout</code> or <code>BitLocker policy v3</code>.</li>
+<li>Choose the payload type, select <strong>Add payload</strong> and pick the app or policy.</li>
+<li>On the schedule page, choose <strong>Load deployment plans</strong> and pick your plan. You can also build rings just for this deployment.</li>
+<li>Set the start date and time, review, and create.</li>
+</ol>
+<h2>Step 3. Watch it and step in if needed</h2>
+<p>Open the deployment to see which rings have been activated. From there you can <strong>pause</strong>, <strong>resume</strong> or <strong>cancel</strong>.</p>
+<p>You can also track it in the audit logs.</p>
+<p><span class="path">Tenant administration &gt; Audit logs</span></p>
+<p>Filter on the Deployment category with actor type System. A finished deployment shows as Completed.</p>
+<h2>Things that will catch you out</h2>
+<p>This is a preview, and some of the behaviour is not what you might expect.</p>
+<ul>
+<li><strong>Rings advance on time, not on success.</strong> Intune does not check whether the first ring installed cleanly before moving to the next. You still need to watch the results and pause if something looks wrong.</li>
+<li><strong>Pausing does not roll back.</strong> Pause and cancel stop future rings from starting. Groups already added by earlier rings stay assigned. To undo, remove those assignments from the app or policy yourself.</li>
+<li><strong>Required only.</strong> Apps can only be deployed as Required. Available and Uninstall are not supported.</li>
+<li><strong>Policy types are limited</strong> to Settings catalog and Endpoint security.</li>
+<li><strong>You cannot edit a running deployment.</strong> After creation you can only change the name and description. To change rings or timing, cancel and create a new one.</li>
+<li><strong>One deployment per payload.</strong> The same app or policy cannot be in two scheduled or active deployments.</li>
+<li><strong>All users and All devices</strong> must sit in the last ring on their own. When that ring activates it replaces earlier Required include assignments. Exclusions stay.</li>
+<li><strong>Group collisions pause the deployment.</strong> If a ring's group is already assigned to the payload directly, the deployment stops with an error until you sort it out. A deleted group does the same.</li>
+<li><strong>Direct edits win.</strong> If someone changes the payload assignments by hand, that takes priority over the deployment.</li>
+<li><strong>Enterprise App Catalog automatic update</strong> is not supported, although supersedence is.</li>
+</ul>
+<h2>Permissions</h2>
+<p>The admin running deployments needs these Intune role permissions.</p>
+<ul>
+<li><strong>Deployment plan</strong> with Create and Read</li>
+<li><strong>Mobile apps</strong> with Read and Assign, for app deployments</li>
+<li><strong>Device configurations</strong> with Read and Assign, for policy deployments</li>
+</ul>
+<p>If you use Multi Admin Approval, a deployment waiting for approval will not show in the list until it is approved.</p>
+<h2>Is it ready for production?</h2>
+<p>For apps and low risk policies, yes, I would start using it now. It is still better than doing rings by hand, as long as someone is watching each ring. For security baselines and anything that could stop people signing in, I would wait until it can check success before moving on, or keep the gaps between rings long.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://cloudinfra.net/?p=22264">Cloudinfra guide to Intune deployments and deployment plans</a></li>
+<li><a href="https://petri.com/?p=780379">Petri on Intune phased deployments and Android changes</a></li>
+<li><a href="https://windowsreport.com/?p=1511069">Windows Report on what Microsoft added to Intune in September 2026</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><span>Older</span>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a><a href="/2026/10/20/intune-device-page-android-esim-updates/" style="text-align:right"><span>Newer</span>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/intune-device-page-android-esim-updates/"><time datetime="2026-10-20">20 October 2026</time>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></li><li><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><time datetime="2026-10-20">20 October 2026</time>How to roll out apps and policies in rings with Intune deployments</a></li><li><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><time datetime="2026-10-20">20 October 2026</time>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></li><li><a href="/2026/10/20/configmgr-2609-upgrade-checklist/"><time datetime="2026-10-20">20 October 2026</time>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

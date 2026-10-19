@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="760" height="300" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect width="760" height="300" fill="#ffffff"/>
+  <text x="32" y="40" font-size="17" font-weight="700" fill="#151b26">Example deployment plan with four rings</text>
+  <text x="32" y="62" font-size="13" fill="#5a6476">Each ring adds one Entra ID group to the app or policy assignment</text>
+  <line x1="60" y1="210" x2="720" y2="210" stroke="#c9d1de" stroke-width="2"/>
+  <g font-size="12" fill="#5a6476" text-anchor="middle">
+    <text x="110" y="236">Day 1, 09:00</text>
+    <text x="275" y="236">Day 2</text>
+    <text x="440" y="236">Day 3</text>
+    <text x="605" y="236">Day 4</text>
+  </g>
+  <g>
+    <rect x="50" y="100" width="120" height="70" rx="8" fill="#e7ecfb" stroke="#2446c7"/>
+    <text x="110" y="128" font-size="14" font-weight="700" fill="#2446c7" text-anchor="middle">Ring 1</text>
+    <text x="110" y="150" font-size="12" fill="#151b26" text-anchor="middle">IT test devices</text>
+    <circle cx="110" cy="210" r="7" fill="#2446c7"/>
+  </g>
+  <g>
+    <rect x="215" y="100" width="120" height="70" rx="8" fill="#e7ecfb" stroke="#2446c7"/>
+    <text x="275" y="128" font-size="14" font-weight="700" fill="#2446c7" text-anchor="middle">Ring 2</text>
+    <text x="275" y="150" font-size="12" fill="#151b26" text-anchor="middle">Pilot users</text>
+    <circle cx="275" cy="210" r="7" fill="#2446c7"/>
+  </g>
+  <g>
+    <rect x="380" y="100" width="120" height="70" rx="8" fill="#e7ecfb" stroke="#2446c7"/>
+    <text x="440" y="128" font-size="14" font-weight="700" fill="#2446c7" text-anchor="middle">Ring 3</text>
+    <text x="440" y="150" font-size="12" fill="#151b26" text-anchor="middle">Early adopters</text>
+    <circle cx="440" cy="210" r="7" fill="#2446c7"/>
+  </g>
+  <g>
+    <rect x="545" y="100" width="120" height="70" rx="8" fill="#e3f4ea" stroke="#1d7a4a"/>
+    <text x="605" y="128" font-size="14" font-weight="700" fill="#1d7a4a" text-anchor="middle">Ring 4</text>
+    <text x="605" y="150" font-size="12" fill="#151b26" text-anchor="middle">Everyone else</text>
+    <circle cx="605" cy="210" r="7" fill="#1d7a4a"/>
+  </g>
+  <g stroke="#9aa4b6" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <path d="M172 135 L211 135"/>
+    <path d="M337 135 L376 135"/>
+    <path d="M502 135 L541 135"/>
+  </g>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9aa4b6"/></marker></defs>
+  <text x="32" y="276" font-size="12.5" fill="#9a4f08">You can pause, resume or cancel at any point. Pausing stops later rings but does not remove groups already added.</text>
+</svg>

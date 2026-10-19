@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows 11 October 2026 update: builds, fixes and what to patch first | MaheshKumarSE</title>
+<meta name="description" content="KB5127648 is a big one. A record number of CVEs, an exploited zero day, real fixes for AVD and VPN users, and the last update for 24H2 Home and Pro.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/windows-11-october-2026-update-kb5127648/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Windows 11 October 2026 update: builds, fixes and what to patch first">
+<meta property="og:description" content="KB5127648 is a big one. A record number of CVEs, an exploited zero day, real fixes for AVD and VPN users, and the last update for 24H2 Home and Pro.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/windows-11-october-2026-update-kb5127648/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Windows 11 October 2026 update: builds, fixes and what to patch first", "description": "KB5127648 is a big one. A record number of CVEs, an exploited zero day, real fixes for AVD and VPN users, and the last update for 24H2 Home and Pro.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/windows-11-october-2026-update-kb5127648/", "keywords": "Windows 11, Vulnerability Management"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a></div><h1>Windows 11 October 2026 update: builds, fixes and what to patch first</h1><p class="dek">KB5127648 is a big one. A record number of CVEs, an exploited zero day, real fixes for AVD and VPN users, and the last update for 24H2 Home and Pro.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>4 min read</span></div>
+</header>
+<div class="prose"><p>Microsoft released the October cumulative updates for Windows 11 on 13 October 2026. If you manage a Windows fleet, this is one to move through your rings quickly.</p>
+<h2>Which update and build you should see</h2>
+<table>
+<thead>
+<tr>
+<th>Windows 11 version</th>
+<th>Update</th>
+<th>Build after install</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>26H2</td>
+<td><code>KB5127648</code></td>
+<td>26300.9711</td>
+</tr>
+<tr>
+<td>25H2</td>
+<td><code>KB5127648</code></td>
+<td>26200.9711</td>
+</tr>
+<tr>
+<td>24H2</td>
+<td><code>KB5127648</code></td>
+<td>26100.9711</td>
+</tr>
+<tr>
+<td>26H1</td>
+<td><code>KB5127646</code></td>
+<td>28000.3231</td>
+</tr>
+<tr>
+<td>23H2</td>
+<td><code>KB5126653</code></td>
+<td>22621.7652</td>
+</tr>
+</tbody>
+</table>
+<p>If you report on compliance in Intune or ConfigMgr, the build number is the quickest way to confirm a device has it. Anything on 25H2 below 26200.9711 has not taken the October update yet.</p>
+<h2>Why you should not sit on this one</h2>
+<p>This release covers more than 1,400 CVEs, which is the largest Patch Tuesday Microsoft has shipped. Around 70 are rated Critical, and most of those are remote code execution.</p>
+<p>One of them, <code>CVE-2026-96951</code>, is a Windows Shell security feature bypass that was already being exploited before the patch came out. It is in the CISA Known Exploited Vulnerabilities catalog. Two other vulnerabilities were publicly disclosed before the fix.</p>
+<p>In my experience the usual approach of letting a quality update sit in pilot for a week or two is fine for most months. With an exploited zero day in the mix, I would shorten that window this time.</p>
+<h2>What it fixes</h2>
+<p>The update also clears several problems that have been around for a while.</p>
+<ul>
+<li><strong>Explorer on multi user hosts.</strong> Explorer could fail to start or crash after sign in on Azure Virtual Desktop and other FSLogix setups, leaving users with a black screen. This is fixed, so any workaround you put in place for it can come out after testing.</li>
+<li><strong>Always On VPN.</strong> Connection problems with Always On VPN are resolved.</li>
+<li><strong>AC3 audio.</strong> Playback of AC3 audio failed in some apps. Fixed.</li>
+<li><strong>Windows Hello fingerprint.</strong> Fingerprint sign in could fail after a cold boot. Fixed.</li>
+<li><strong>File History.</strong> Backups and restores to an external drive or network location could fail. Fixed.</li>
+</ul>
+<p>The update also continues the rollout of the new Secure Boot certificates, with Windows Update using updated targeting data to decide which devices are ready.</p>
+<h2>Known issues still open</h2>
+<p>Two problems are still listed against <code>KB5127648</code>.</p>
+<ol>
+<li>Remote Desktop connections can fail for standard users when the target device has Administrator protection turned on. I have written this one up separately with what to do until Microsoft ships a fix.</li>
+<li>Some USB Audio Class 1.0 devices may not start, may play no sound, or may show Code 10 in Device Manager. Microsoft says it only affects that device class and is asking business customers who need a quick workaround to contact Support for Business.</li>
+</ol>
+<h2>Lifecycle dates to note</h2>
+<ul>
+<li><strong>24H2 Home and Pro</strong> reached end of updates with this release. October 2026 was their last update.</li>
+<li><strong>24H2 Enterprise and Education</strong> continue to get updates until 12 October 2027.</li>
+<li><strong>23H2 Enterprise and Education</strong> get their final update on 10 November 2026.</li>
+</ul>
+<p>If you still have 23H2 devices in the estate, now is the time to target a feature update at them. After November they stop getting security fixes.</p>
+<h2>What I would do this week</h2>
+<ul>
+<li>Approve <code>KB5127648</code> for your pilot ring now and shorten the gap before broad deployment.</li>
+<li>Build a quick report of devices below build 26200.9711 on 25H2 and 26100.9711 on 24H2.</li>
+<li>If you run AVD with FSLogix, test this update on a host pool first, since it fixes the Explorer black screen.</li>
+<li>Warn your service desk about the Remote Desktop error <code>0xC000000D</code> and the USB audio Code 10 issue.</li>
+<li>List every remaining 23H2 device and get them upgraded before 10 November.</li>
+</ul>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://windowsreport.com/windows-11-kb5126653-kb5127648-kb5127646-october-2026-patch-tuesday-released/">Windows Report on the October 2026 Patch Tuesday updates</a></li>
+<li><a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-october-2026-patch-tuesday-fixes-1-411-flaws-3-zero-days/">BleepingComputer on the October 2026 Patch Tuesday CVEs and zero days</a></li>
+<li><a href="https://www.it-connect.tech/windows-11-kb5127648-what-you-need-to-know-about-the-october-2026-update/">IT Connect on what KB5127648 fixes and the lifecycle dates</a></li>
+<li><a href="https://www.neoteo.com/en/microsoft-adds-a-remote-desktop-issue-to-its-october-windows-11-update">Neoteo on the build numbers and known issues</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><span>Older</span>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/intune-device-page-android-esim-updates/"><time datetime="2026-10-20">20 October 2026</time>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></li><li><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><time datetime="2026-10-20">20 October 2026</time>How to roll out apps and policies in rings with Intune deployments</a></li><li><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><time datetime="2026-10-20">20 October 2026</time>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></li><li><a href="/2026/10/20/configmgr-2609-upgrade-checklist/"><time datetime="2026-10-20">20 October 2026</time>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

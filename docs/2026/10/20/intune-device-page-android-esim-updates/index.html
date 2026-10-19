@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen | MaheshKumarSE</title>
+<meta name="description" content="A round up of the smaller Intune changes from the September service release that make day to day device support easier, especially for Android Enterprise.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/intune-device-page-android-esim-updates/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen">
+<meta property="og:description" content="A round up of the smaller Intune changes from the September service release that make day to day device support easier, especially for Android Enterprise.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/intune-device-page-android-esim-updates/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Intune's new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen", "description": "A round up of the smaller Intune changes from the September service release that make day to day device support easier, especially for Android Enterprise.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/intune-device-page-android-esim-updates/", "keywords": "Intune, Android"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/android/">Android</a></div><h1>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</h1><p class="dek">A round up of the smaller Intune changes from the September service release that make day to day device support easier, especially for Android Enterprise.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>3 min read</span></div>
+</header>
+<div class="prose"><p>Phased deployments got most of the attention in the latest Intune release, but a few smaller changes will make a bigger difference to people who support devices every day.</p>
+<h2>The redesigned device page</h2>
+<p>The default device view in the Intune admin center has been rebuilt. Device details, recent activity, reports, troubleshooting tools and the remote actions now sit together on one page.</p>
+<p>Before, checking a single device meant jumping between hardware, compliance, configuration and app blades. Now most of what a second line engineer needs on a call is in one place, and you can run remote actions such as sync or restart from the same screen.</p>
+<p>If your support guides include screenshots of the old device blade, they will need updating.</p>
+<h2>Bulk eSIM management for Android Enterprise</h2>
+<p>Admins can now manage eSIMs on up to 100 corporate owned Android Enterprise devices at a time. For anyone running a fleet of company phones, that is a big time saver compared with doing it one device at a time.</p>
+<p>There is also a change in how eSIMs are treated when you delete a device record. Intune now keeps the eSIM by default instead of removing it along with the record. That is the safer default, because deleting a stale record should not cut off someone's mobile data plan. If your offboarding process relied on the old behaviour to remove the eSIM, update it to remove the eSIM as a separate step.</p>
+<h2>Teams calls on Managed Home Screen</h2>
+<p>Frontline workers using devices locked to Managed Home Screen can now answer urgent Microsoft Teams calls before they authenticate. Security controls for protected apps still apply after the call.</p>
+<p>This is useful for shared devices in warehouses, stores and hospitals, where a missed call because someone had to sign in first is a real problem.</p>
+<h2>More features in government clouds</h2>
+<p>Enterprise App Management, Microsoft Cloud PKI and Remote Help are now available in more government cloud environments, including GCC. Enterprise App Management is also now available to Department of Defense customers.</p>
+<h2>A licensing note</h2>
+<p>From 1 July 2026, Endpoint Privilege Management and Enterprise App Management are included in Microsoft 365 E5. If you are on E5 and still paying separately for these, or for the Intune Suite mainly to get them, check your next renewal carefully.</p>
+<h2>What I would do this week</h2>
+<ul>
+<li>Open a few devices in the new view and update your support guides and screenshots.</li>
+<li>Review your Android offboarding steps now that eSIMs are kept when a device record is deleted.</li>
+<li>If you run shared Android devices, test Teams call handling on Managed Home Screen with your frontline team.</li>
+<li>Check whether your E5 licences now cover EPM and Enterprise App Management.</li>
+</ul>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://windowsreport.com/?p=1511069">Windows Report on what Microsoft added to Intune in September 2026</a></li>
+<li><a href="https://petri.com/?p=780379">Petri on Intune phased deployments and Android changes</a></li>
+<li><a href="https://www.it-connect.tech/intune-vulnerability-management-and-app-updates-june-2026s-new-features/">IT Connect on the June 2026 Intune features and the E5 licensing change</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><span>Older</span>How to roll out apps and policies in rings with Intune deployments</a><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/" style="text-align:right"><span>Newer</span>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/intune-device-page-android-esim-updates/"><time datetime="2026-10-20">20 October 2026</time>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></li><li><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><time datetime="2026-10-20">20 October 2026</time>How to roll out apps and policies in rings with Intune deployments</a></li><li><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><time datetime="2026-10-20">20 October 2026</time>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></li><li><a href="/2026/10/20/configmgr-2609-upgrade-checklist/"><time datetime="2026-10-20">20 October 2026</time>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

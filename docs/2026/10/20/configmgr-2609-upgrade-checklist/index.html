@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ConfigMgr 2609 is here: what changed and how to upgrade safely | MaheshKumarSE</title>
+<meta name="description" content="2609 is the first ConfigMgr release under the new once a year cadence. It drops some old platforms, fixes a comanagement problem and needs a bit of preparation before you click install.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/configmgr-2609-upgrade-checklist/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="ConfigMgr 2609 is here: what changed and how to upgrade safely">
+<meta property="og:description" content="2609 is the first ConfigMgr release under the new once a year cadence. It drops some old platforms, fixes a comanagement problem and needs a bit of preparation before you click install.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/configmgr-2609-upgrade-checklist/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ConfigMgr 2609 is here: what changed and how to upgrade safely", "description": "2609 is the first ConfigMgr release under the new once a year cadence. It drops some old platforms, fixes a comanagement problem and needs a bit of preparation before you click install.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/configmgr-2609-upgrade-checklist/", "keywords": "ConfigMgr, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/configmgr/">ConfigMgr</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>ConfigMgr 2609 is here: what changed and how to upgrade safely</h1><p class="dek">2609 is the first ConfigMgr release under the new once a year cadence. It drops some old platforms, fixes a comanagement problem and needs a bit of preparation before you click install.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>4 min read</span></div>
+</header>
+<div class="prose"><p>Configuration Manager 2609 is out, and it marks a real change in how the product ships. Here is what is different and the checks I would run before upgrading.</p>
+<h2>One release a year from now on</h2>
+<p>ConfigMgr used to get two current branch releases a year. Starting with 2609, it moves to one. The next planned release is 2709 in September 2027. Between now and then, expect only hotfix rollups and critical security fixes.</p>
+<p>Each release still gets 18 months of support, so 2609 is supported until around March 2028.</p>
+<p>Microsoft has been open about the direction. ConfigMgr stays focused on managing on premises devices with an emphasis on security and stability, and new features go into Intune. If you have been waiting for a new ConfigMgr feature, it is probably not coming.</p>
+<h2>What changed in 2609</h2>
+<h3>Support removed</h3>
+<ul>
+<li><strong>Windows Server 2012 and 2012 R2</strong> are no longer supported for site systems.</li>
+<li><strong>SQL Server 2016</strong> is no longer supported. You need SQL Server 2017 CU2 or later. A site running an unsupported SQL version will not upgrade until SQL is moved forward.</li>
+</ul>
+<h3>Fixes worth knowing about</h3>
+<ul>
+<li><strong>Comanagement and Defender settings.</strong> On devices managed by both ConfigMgr and Intune, ConfigMgr could override the cloud block level and timeout values set in Intune. That is fixed. If you have seen Defender settings flip back on comanaged devices, this is likely why.</li>
+<li><strong>SQLCLR.</strong> ConfigMgr no longer uses the SQL <code>TRUSTWORTHY</code> database property for its SQLCLR assemblies and relies on Microsoft signed assemblies instead. A good security improvement.</li>
+<li><strong>Console disk space.</strong> The console could show 0 bytes free after certain restarts. Fixed.</li>
+<li>Earlier hotfixes are rolled into this release.</li>
+</ul>
+<h3>Windows 11 26H2</h3>
+<p>Both 2603 and 2609 support deploying Windows 11 26H2.</p>
+<h2>Before you upgrade</h2>
+<p>Run through this list first. It takes an hour and saves a long evening.</p>
+<ol>
+<li><strong>Check your current version.</strong> You must be on 2503 or later to install 2609 as an in console update.</li>
+<li><strong>Check SQL.</strong> Confirm the site database is on SQL Server 2017 CU2 or later.</li>
+<li><strong>Check site server operating systems.</strong> No site system roles on Server 2012 or 2012 R2.</li>
+<li><strong>Take a backup.</strong> Make sure the Backup Site Server maintenance task has run successfully and you know where the backup is.</li>
+<li><strong>Save customisations.</strong> If you or a third party product changed any ConfigMgr configuration files, copy them somewhere safe. The upgrade can overwrite them.</li>
+<li><strong>Pause anything that writes heavily to the database.</strong> Large deployments and software update syncs can wait until the upgrade is done.</li>
+<li><strong>Upgrade a test hierarchy first</strong> if you have one.</li>
+</ol>
+<h2>Running the upgrade</h2>
+<p>In the console, go to the updates node.</p>
+<p><span class="path">Administration &gt; Overview &gt; Updates and Servicing</span></p>
+<ol>
+<li>Wait for 2609 to show as <strong>Ready to install</strong>. If it is stuck downloading, check <code>dmpdownloader.log</code> on the site server.</li>
+<li>Right click the update and choose <strong>Run prerequisite check</strong>. Do not skip this.</li>
+<li>Watch <code>C:\ConfigMgrPrereq.log</code> on the site server and the status under <strong>Monitoring &gt; Overview &gt; Updates and Servicing Status</strong>.</li>
+<li>Fix every error. Read every warning too, because warnings are often what bites you later.</li>
+<li>When the check passes, right click again and choose <strong>Install Update Pack</strong>.</li>
+<li>Follow progress in <code>CMUpdate.log</code> in the Logs folder of your ConfigMgr install directory.</li>
+<li>After the site updates, open the console again. It will prompt you to update the console itself.</li>
+</ol>
+<h2>After the upgrade</h2>
+<ul>
+<li>Confirm the site version in <strong>Administration &gt; Site Configuration &gt; Sites</strong>.</li>
+<li>Update the client package and plan a client upgrade. Automatic client upgrade is the easiest route if you already use it.</li>
+<li>Check that comanaged devices keep the Defender cloud protection values you set in Intune.</li>
+<li>Recreate any configuration file customisations you saved earlier.</li>
+</ul>
+<h2>What I would do this week</h2>
+<ul>
+<li>Check SQL and server OS versions on every site system.</li>
+<li>Read Microsoft's 2609 release notes for anything specific to your setup.</li>
+<li>Book the upgrade in a change window and upgrade a test site first.</li>
+<li>Start planning which ConfigMgr workloads you can move to Intune, since that is where new features will land.</li>
+</ul>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://techcommunity.microsoft.com/blog/configurationmanagerblog/announcing-the-annual-release-cadence-for-microsoft-configuration-manager/4464794">Microsoft Tech Community on the annual release cadence for Configuration Manager</a></li>
+<li><a href="https://windowsreport.com/?p=1511156">Windows Report on Windows 11 26H2 support in ConfigMgr 2603 and 2609</a></li>
+<li><a href="https://www.prajwaldesai.com/?p=341736">Prajwal Desai on the Configuration Manager 2609 upgrade</a></li>
+<li><a href="https://learn.microsoft.com/en-au/mem/configmgr/core/servers/manage/current-branch-versions-supported">Microsoft Learn on supported Configuration Manager current branch versions</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><i></i><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/" style="text-align:right"><span>Newer</span>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/intune-device-page-android-esim-updates/"><time datetime="2026-10-20">20 October 2026</time>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a></li><li><a href="/2026/10/20/intune-deployments-phased-rollout-rings/"><time datetime="2026-10-20">20 October 2026</time>How to roll out apps and policies in rings with Intune deployments</a></li><li><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><time datetime="2026-10-20">20 October 2026</time>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a></li><li><a href="/2026/10/20/configmgr-2609-upgrade-checklist/"><time datetime="2026-10-20">20 October 2026</time>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
