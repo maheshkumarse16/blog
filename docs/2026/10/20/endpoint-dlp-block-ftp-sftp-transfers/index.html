@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to audit and block FTP and SFTP uploads with Endpoint DLP | MaheshKumarSE</title>
+<meta name="description" content="Endpoint DLP can now see and stop sensitive files leaving Windows devices over FTP and SFTP. This covers device readiness, the policy settings, evidence collection, testing in Activity explorer and moving from audit to block.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/endpoint-dlp-block-ftp-sftp-transfers/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="How to audit and block FTP and SFTP uploads with Endpoint DLP">
+<meta property="og:description" content="Endpoint DLP can now see and stop sensitive files leaving Windows devices over FTP and SFTP. This covers device readiness, the policy settings, evidence collection, testing in Activity explorer and moving from audit to block.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/endpoint-dlp-block-ftp-sftp-transfers/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How to audit and block FTP and SFTP uploads with Endpoint DLP", "description": "Endpoint DLP can now see and stop sensitive files leaving Windows devices over FTP and SFTP. This covers device readiness, the policy settings, evidence collection, testing in Activity explorer and moving from audit to block.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/endpoint-dlp-block-ftp-sftp-transfers/", "keywords": "Purview, Windows 11, Defender"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/purview/">Purview</a><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/defender/">Defender</a></div><h1>How to audit and block FTP and SFTP uploads with Endpoint DLP</h1><p class="dek">Endpoint DLP can now see and stop sensitive files leaving Windows devices over FTP and SFTP. This covers device readiness, the policy settings, evidence collection, testing in Activity explorer and moving from audit to block.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>FTP and SFTP have always been the hole in an Endpoint DLP design. You could block USB, printing, browser uploads and network shares, and a user with WinSCP open could still push a spreadsheet of customer data to any server they liked. That gap is now closed. Endpoint DLP support for FTP and SFTP transfers on managed Windows devices is generally available, with the roadmap item marked as rolling out on 5 October 2026 and the Learn how to page published on 16 October 2026.</p>
+<p>It is not on by default. Existing policies do nothing about FTP until you tick the new activity in a rule. Below is how I would put it in, starting in audit and only blocking once the data in Activity explorer says it is safe.</p>
+<h2>Before you start</h2>
+<p><strong>Licensing.</strong> Endpoint DLP licensing has not changed for this feature. Check the Purview service description for the plan you hold, the Learn pages for the feature do not name a separate SKU.</p>
+<p><strong>Roles.</strong> To create and deploy the policy you need to be in one of the Compliance administrator, Compliance data administrator, Information Protection, Information Protection Admin or Security administrator role groups. To read Activity explorer you need Information Protection Admin, Analyst or Investigator, or the Compliance Administrator, Security Administrator or Security Reader role groups. Device onboarding settings only honour Entra roles, so use Security admin or Compliance admin there.</p>
+<p><strong>Devices.</strong> Windows 10 22H2 or Windows 11 21H2 through 24H2 on x64, or Windows 11 on ARM64. Devices must be Entra joined, hybrid joined or registered and onboarded to Purview. If they are already in Defender for Endpoint and device monitoring is on in Purview, they are onboarded.</p>
+<p><strong>Antimalware client.</strong> Version 4.18.2110 or later, with real time protection and behaviour monitoring on. Versions older than N minus 2 are not supported. <code>MpDlpService.exe</code> must be allowed through any firewall, third party antivirus or application control you run.</p>
+<p><strong>A test server.</strong> You need an FTP or SFTP server you control, and a test file containing data that matches a sensitive information type, such as a few dummy credit card numbers.</p>
+<h2>Confirm the devices are ready</h2>
+<ol>
+<li>In the Purview portal open device onboarding.
+<span class="path">Settings &gt; Device onboarding &gt; Devices</span></li>
+<li>Select a pilot device and read <strong>Configuration status</strong> and <strong>Policy sync status</strong> in the details pane. Both should say <strong>Updated</strong>. <strong>Not updated</strong> means the device has settings it has not applied yet. <strong>Not available</strong> means the OS is too old, it was only just onboarded, or no Endpoint DLP policy exists yet.</li>
+<li>On the device itself, confirm the antimalware client version in PowerShell.</li>
+</ol>
+<pre><code class="language-powershell">Get-MpComputerStatus | Select-Object AMProductVersion, RealTimeProtectionEnabled, BehaviorMonitorEnabled
+</code></pre>
+<p>A good result shows a version of 4.18.2110 or higher and <code>True</code> for both protection values. If behaviour monitoring is off, Endpoint DLP will not enforce anything.</p>
+<ol start="4">
+<li>For a fleet view, run this in advanced hunting in the Defender portal.</li>
+</ol>
+<pre><code class="language-kql">DeviceInfo
+| where DlpInfo != &quot;&quot;
+| project Timestamp, DeviceName, DlpInfo
+</code></pre>
+<p>Devices that return rows are reporting DLP state. A pilot device missing from the output has a problem to fix before you go any further.</p>
+<h2>Turn on evidence collection (optional)</h2>
+<p>FTP and SFTP transfers support full file evidence, which is useful when the business asks to see what was actually sent.</p>
+<ol start="5">
+<li>Open the endpoint DLP settings.
+<span class="path">Settings &gt; Data Loss Prevention &gt; Endpoint DLP settings</span></li>
+<li>Expand <strong>Setup evidence collection for file activities on devices</strong> and set the toggle to <strong>On</strong>.</li>
+<li>Set <strong>Set evidence cache on device</strong> to <strong>7</strong>, <strong>30</strong> or <strong>60</strong> days. This is how long the device holds a copy if it cannot upload straight away.</li>
+<li>Under <strong>Select a storage type</strong> choose <strong>Microsoft managed store</strong>, or choose <strong>Customer managed store</strong>, select <strong>+ Add storage</strong> and enter a name and a URL in the form <code>https://storageAccountName.blob.core.windows.net/containerName</code>. A customer storage account must allow public network access from all networks, because private endpoints and IP restrictions are not supported.</li>
+</ol>
+<p>Evidence is capped at 500 MB per file and is not collected for files on network shares.</p>
+<h2>Create the policy in audit mode</h2>
+<ol start="9">
+<li>Start a new policy.
+<span class="path">Data loss prevention &gt; Policies &gt; Create policy</span></li>
+<li>Choose the <strong>Custom</strong> category and the <strong>Custom policy</strong> template, give it a clear name such as <code>Endpoint FTP SFTP audit</code>, and select <strong>Next</strong> until you reach the locations page.</li>
+<li>On <strong>Locations</strong> select <strong>Devices</strong> only. Select <strong>Edit</strong> next to it and scope to your pilot users or device group. Leave every other location off so the rule stays easy to read.</li>
+<li>On the policy settings page choose <strong>Create or customize advanced DLP rules</strong> and select <strong>Create rule</strong>.</li>
+<li>Under <strong>Conditions</strong> add <strong>Content contains</strong> and pick the sensitive information types or sensitivity labels you want to protect. For the test, a single type such as <strong>Credit Card Number</strong> is enough.</li>
+<li>Under <strong>Actions</strong> select <strong>Add an action</strong> and choose <strong>Audit or restrict activities on devices</strong>.</li>
+<li>In <strong>File activities for all apps</strong> choose <strong>Apply restrictions to specific activity</strong>, tick <strong>FTP and SFTP transfers</strong> and set it to <strong>Audit only</strong>.</li>
+<li>If you collect evidence, also tick <strong>Collect original file as evidence for all selected file activities on Endpoint</strong>.</li>
+<li>Leave user notifications off for now, save the rule, then on the policy mode page choose to turn the policy on and select <strong>Submit</strong>. The policy appears in the policy list, and the devices pick it up on their next policy sync.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ol start="18">
+<li>On a pilot device, check that <strong>Policy sync status</strong> for the device shows <strong>Updated</strong> again on the device onboarding page. Allow up to two hours for the status to refresh.</li>
+<li>Upload the test file to your FTP or SFTP server with the client your users actually use. The transfer succeeds, since the rule only audits.</li>
+<li>Open Activity explorer directly at <code>https://purview.microsoft.com/informationprotection/dataclassification/activityexplorer</code>. Set the <strong>Activity</strong> filter to <strong>File transfer by FTP/SFTP</strong>. You should see an event with the user, the device, the file name, the policy that matched and the action, which will be audit. If you turned on evidence, the event links to the stored file.</li>
+</ol>
+<p>Activity explorer holds 30 days of data, so run the pilot in audit for at least two weeks and look at who is genuinely using FTP. Expect developers, finance teams sending files to banks, and a few line of business apps you did not know about.</p>
+<h2>Move to block</h2>
+<ol start="21">
+<li>Edit the rule and change <strong>FTP and SFTP transfers</strong> from <strong>Audit only</strong> to <strong>Block with override</strong> for the pilot. This lets a user continue with a business justification, which gives you a record of legitimate use without stopping work.</li>
+<li>Under <strong>User notifications</strong> turn on policy tips so blocked users see a Windows notification explaining why the transfer was stopped.</li>
+<li>Repeat the test upload. The client should fail the transfer and a DLP notification should appear on the device. In Activity explorer the event now shows the restrictive action.</li>
+<li>Once you have reviewed overrides for a few weeks, change the action to <strong>Block</strong> for groups that have no business reason to use FTP, and widen the scope in stages.</li>
+</ol>
+<p>If you prefer to stay in audit, you can leave the setting there indefinitely and use the data for alerting.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No FTP events in Activity explorer</td>
+<td>Policy not synced, or the rule does not tick FTP and SFTP transfers</td>
+<td>Check <strong>Policy sync status</strong> for the device and open the rule to confirm the activity is selected</td>
+</tr>
+<tr>
+<td>Device shows <strong>Not available</strong></td>
+<td>Old OS, new onboarding or no Endpoint DLP policy</td>
+<td>Wait for onboarding to finish and confirm a device scoped policy exists</td>
+</tr>
+<tr>
+<td>Device shows <strong>Not updated</strong> for hours</td>
+<td>Device offline or policy failed to apply</td>
+<td>Bring it online, wait two hours, then run the Defender client analyzer and raise a case with Microsoft</td>
+</tr>
+<tr>
+<td>Nothing enforces at all</td>
+<td>Behaviour monitoring or real time protection off</td>
+<td>Turn both on in your antivirus policy and confirm with <code>Get-MpComputerStatus</code></td>
+</tr>
+<tr>
+<td>Transfer allowed even though set to block</td>
+<td>Content did not match the condition</td>
+<td>Check the file really matches the sensitive information type and confidence level you chose</td>
+</tr>
+<tr>
+<td>Evidence missing for some events</td>
+<td>File on a network share, over 500 MB, or a less restrictive rule matched</td>
+<td>Expected behaviour, evidence is only kept by the most restrictive rule that collects it</td>
+</tr>
+<tr>
+<td><code>MpDlpService.exe</code> blocked</td>
+<td>Application control or third party antivirus</td>
+<td>Add an allow rule for the service</td>
+</tr>
+</tbody>
+</table>
+<p>One thing people get wrong is testing with a file that only just matches a sensitive information type. A single fake card number often falls below the confidence level the rule asks for, so the test passes silently and someone decides the feature does not work. Put a handful of realistic test values in the file and the event shows up first time.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/purview/endpoint-dlp-ftp-sftp-short">Protect FTP and SFTP transfers with Endpoint DLP</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/whats-new">What's new in Microsoft Purview</a></li>
+<li><a href="https://mc.merill.net/message/MC1404319">Message Center MC1404319 on Endpoint DLP support for FTP and SFTP</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/device-onboarding-overview">Get started with device onboarding in Purview</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/dlp-create-deploy-policy">Create and deploy a DLP policy</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/dlp-copy-matched-items-get-started">Collect files that match DLP policies from devices</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/data-classification-activity-explorer">Get started with Activity explorer</a></li>
+<li><a href="https://learn.microsoft.com/en-us/purview/dlp-edlp-tshoot-sync">Troubleshoot Endpoint DLP policy sync</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/endpoint-dlp-archive-classification-change/"><span>Older</span>Endpoint DLP will report zip and rar files as one item from late October</a><a href="/2026/10/20/intune-deployments-phased-rollout-rings/" style="text-align:right"><span>Newer</span>How to roll out apps and policies in rings with Intune deployments</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to onboard Linux desktops to Defender for Endpoint now the preview is open | MaheshKumarSE</title>
+<meta name="description" content="A full walk through for putting Ubuntu, Fedora and other Linux workstations into Defender for Endpoint during the public preview, from the onboarding package to a tested EDR alert.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/onboard-linux-desktops-defender-for-endpoint/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="How to onboard Linux desktops to Defender for Endpoint now the preview is open">
+<meta property="og:description" content="A full walk through for putting Ubuntu, Fedora and other Linux workstations into Defender for Endpoint during the public preview, from the onboarding package to a tested EDR alert.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/onboard-linux-desktops-defender-for-endpoint/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How to onboard Linux desktops to Defender for Endpoint now the preview is open", "description": "A full walk through for putting Ubuntu, Fedora and other Linux workstations into Defender for Endpoint during the public preview, from the onboarding package to a tested EDR alert.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/onboard-linux-desktops-defender-for-endpoint/", "keywords": "Defender, Vulnerability Management"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/defender/">Defender</a><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a></div><h1>How to onboard Linux desktops to Defender for Endpoint now the preview is open</h1><p class="dek">A full walk through for putting Ubuntu, Fedora and other Linux workstations into Defender for Endpoint during the public preview, from the onboarding package to a tested EDR alert.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>7 min read</span></div>
+</header>
+<div class="prose"><p>Microsoft has opened a public preview of Defender for Endpoint on Linux desktops. The announcement went out on the Defender blog on 14 October 2026 and the Learn prerequisites page now carries the preview text. For most of us this closes an awkward gap. Developers have been running Ubuntu or Fedora laptops for years, and the honest answer to "is that box covered" was usually no.</p>
+<p>The good news is that nothing about the agent is new. It is the same <code>mdatp</code> package and the same onboarding script you already use on Linux servers. Defender decides whether a device is a workstation from signals on the box, and the deployment methods are identical. This post takes you from nothing to a desktop that shows in device inventory, passes a connectivity test and raises a test EDR alert.</p>
+<h2>Before you start</h2>
+<p><strong>Licence.</strong> Linux desktops need Microsoft Defender for Endpoint Plan 2, which is also included in Microsoft 365 E5 and Microsoft 365 E7. Defender for Servers and Defender for Business servers cover servers only, so do not count those licences for laptops. Plan 1 is not listed for Linux desktops.</p>
+<p><strong>Permissions.</strong> You need root or sudo on the workstation and a Defender for Endpoint role that lets you download onboarding packages in the Defender portal.</p>
+<p><strong>Supported distributions.</strong> Every distribution supported on servers is supported on desktops, and support follows the distribution and kernel, not the desktop environment. GNOME, KDE and the rest make no difference. For x64 the list includes Ubuntu LTS 20.04, 22.04, 24.04 and 26.04 (older LTS releases are still listed too), Debian 9 to 13, RHEL 7.2 and later through 10, Fedora 33 to 44, openSUSE Leap 15.6 and 16, Rocky, Alma, Oracle Linux and SLES. Anything not on the published list is unsupported, and a home grown spin of a supported distribution may work but support can ask you to reproduce on stock.</p>
+<p><strong>Minimum system.</strong> Kernel 3.10.0 build 327 or later, 1 CPU core, 1 GB RAM, 2 GB of free disk and <code>systemd</code>. Device isolation needs <code>iptables</code> and <code>ip6tables</code> (or the <code>nft</code> variants) installed.</p>
+<p><strong>Network.</strong> Only static or transparent proxies work. PAC files, WPAD and authenticated proxies are not supported, and TLS inspection of the Defender endpoints breaks the agent. If your web proxy inspects traffic, get the bypass for the Defender domains in place first.</p>
+<p><strong>Other security tools.</strong> Running Defender next to another product that uses Fanotify in blocking mode is unsupported and can hang the machine. Developer laptops often carry a second agent, so check before you install.</p>
+<h2>Get the onboarding package</h2>
+<ol>
+<li>Sign in to the Defender portal at security.microsoft.com and open the onboarding page.
+<span class="path">System &gt; Settings &gt; Endpoints &gt; Device management &gt; Onboarding</span></li>
+<li>In the first drop down, <strong>Select operating system to start onboarding process</strong>, choose <strong>Linux Server</strong>. There is no separate desktop entry. The same package onboards workstations.</li>
+<li>In the <strong>Deployment method</strong> drop down choose <strong>Local Script</strong>.</li>
+<li>Select <strong>Download onboarding package</strong>. The browser saves <code>WindowsDefenderATPOnboardingPackage.zip</code>.</li>
+<li>Copy the zip to the workstation and extract it.</li>
+</ol>
+<pre><code class="language-bash">unzip WindowsDefenderATPOnboardingPackage.zip
+ls
+# MicrosoftDefenderATPOnboardingLinuxServer.py
+</code></pre>
+<p>Do not edit or repackage that Python file. Microsoft treats a modified package as unsupported.</p>
+<h2>Install and onboard with the installer script</h2>
+<p>The installer script is the quickest route for a handful of machines and the easiest to wrap in Ansible, Chef or Puppet later.</p>
+<ol start="6">
+<li>Download <code>mde_installer.sh</code> from the <code>microsoft/mdatp-xplat</code> repository on GitHub (the path is <code>linux/installation/mde_installer.sh</code>) and make it executable.</li>
+</ol>
+<pre><code class="language-bash">chmod +x mde_installer.sh
+</code></pre>
+<ol start="7">
+<li>Run a prerequisite check on its own first. This reports problems such as an unsupported distribution or missing packages without changing anything.</li>
+</ol>
+<pre><code class="language-bash">sudo ./mde_installer.sh --pre-req
+</code></pre>
+<ol start="8">
+<li>Install from the production channel and onboard in one go.</li>
+</ol>
+<pre><code class="language-bash">sudo ./mde_installer.sh --install --onboard ./MicrosoftDefenderATPOnboardingLinuxServer.py --channel prod --pre-req
+</code></pre>
+<p>Useful switches if you need them are <code>--passive-mode</code> to start with antivirus in passive mode, <code>--tag GROUP &lt;value&gt;</code> to tag the device, <code>--http-proxy</code> or <code>--https-proxy</code> for a static proxy, and <code>--log-path</code> to write the script output somewhere you can collect it.</p>
+<p>If you would rather use the package manager by hand, add the Microsoft repository for your distribution, install the <code>mdatp</code> package with <code>apt</code> or <code>dnf</code>, then run <code>sudo python3 MicrosoftDefenderATPOnboardingLinuxServer.py</code>. If you install but skip onboarding, the product stays unlicensed and the health check returns false.</p>
+<h2>Check the agent locally</h2>
+<ol start="9">
+<li>Confirm the device has picked up your organisation ID.</li>
+</ol>
+<pre><code class="language-bash">mdatp health --field org_id
+</code></pre>
+<p>A good result prints the organisation ID of the tenant. A blank result means onboarding did not run.</p>
+<ol start="10">
+<li>Check overall health and real time protection.</li>
+</ol>
+<pre><code class="language-bash">mdatp health --field healthy
+mdatp health --field real_time_protection_enabled
+mdatp health --field definitions_status
+</code></pre>
+<p>Expect <code>true</code> for the first two. On a brand new install <code>healthy</code> can stay false until the first definitions download completes, so give it a few minutes before you chase it. If real time protection is off, turn it on with <code>mdatp config real-time-protection --value enabled</code>.</p>
+<ol start="11">
+<li>Test the cloud connections.</li>
+</ol>
+<pre><code class="language-bash">mdatp connectivity test
+</code></pre>
+<p>Every line should end with <code>[OK]</code>. A failure against the <code>winatp-gw</code> or <code>events.data.microsoft.com</code> addresses almost always means a proxy or TLS inspection problem.</p>
+<h2>Verify it worked</h2>
+<ol start="12">
+<li>Trigger an antivirus detection with the EICAR test file and confirm it was caught.</li>
+</ol>
+<pre><code class="language-bash">curl -o /tmp/eicar.com.txt https://secure.eicar.org/eicar.com.txt
+mdatp threat list
+</code></pre>
+<p>The threat list should show the EICAR file as quarantined.</p>
+<ol start="13">
+<li>Run the EDR test. Download the script from <code>https://aka.ms/MDE-Linux-EDR-DIY</code>, then run it.</li>
+</ol>
+<pre><code class="language-bash">chmod +x mde_linux_edr_diy.sh
+./mde_linux_edr_diy.sh
+</code></pre>
+<p>An alert for the test should appear in the Defender portal after a few minutes.</p>
+<ol start="14">
+<li>Find the device in the portal.
+<span class="path">Assets &gt; Devices</span>
+Search for the host name. A new device usually appears within 5 to 20 minutes. Open it and check the device type. If Defender could not find enough desktop signals it classifies the machine as a server, and Microsoft says that is by design. Note which machines land as servers before you build device groups or reports on device type.</li>
+</ol>
+<p>If you want a quick list across the estate, this advanced hunting query shows Linux devices and how Defender has classified them.</p>
+<pre><code class="language-kql">DeviceInfo
+| where Timestamp &gt; ago(1d)
+| where OSPlatform == &quot;Linux&quot;
+| summarize arg_max(Timestamp, DeviceType, OSDistribution, OSVersion) by DeviceName
+| order by DeviceType asc
+</code></pre>
+<p>A good result lists each laptop with <code>Workstation</code>. Rows with <code>Server</code> are the ones to look at.</p>
+<h2>Turn on debug logging when something fails</h2>
+<ol start="15">
+<li>Raise the log level, reproduce the problem, then collect a diagnostic bundle.</li>
+</ol>
+<pre><code class="language-bash">mdatp log level set --level debug
+sudo mdatp diagnostic create --path /tmp
+mdatp log level set --level info
+</code></pre>
+<p>The first command answers <code>Log level configured successfully</code> and the second prints the path of a zip file. Always set the level back to info afterwards because debug logging grows fast on a busy desktop. The install log lives at <code>/var/log/microsoft/mdatp/install.log</code>.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>org_id</code> is blank</td>
+<td>Onboarding script never ran or failed</td>
+<td>Run <code>sudo python3 MicrosoftDefenderATPOnboardingLinuxServer.py</code> and check the install log</td>
+</tr>
+<tr>
+<td><code>healthy</code> is false straight after install</td>
+<td>Definitions not downloaded yet</td>
+<td>Wait a few minutes and check <code>definitions_status</code></td>
+</tr>
+<tr>
+<td>Connectivity test fails with curl error 35 or 60</td>
+<td>TLS inspection on the proxy</td>
+<td>Run <code>curl -v https://winatp-gw-weu.microsoft.com</code> and check the issuer is Microsoft, then exempt the Defender domains and restart <code>mdatp</code></td>
+</tr>
+<tr>
+<td>Connectivity test fails through a PAC or authenticated proxy</td>
+<td>Unsupported proxy type</td>
+<td>Use a static proxy with <code>mdatp config proxy set --value http://address:port</code></td>
+</tr>
+<tr>
+<td>Desktop freezes or file access stalls</td>
+<td>Another Fanotify based security agent</td>
+<td>Check the <code>conflicting_applications</code> field in <code>mdatp health</code> and put Defender antivirus in passive mode</td>
+</tr>
+<tr>
+<td>Laptop shows as Server in inventory</td>
+<td>Not enough workstation signals</td>
+<td>Expected behaviour in the preview, group these machines by tag instead of device type</td>
+</tr>
+<tr>
+<td>Isolation does nothing</td>
+<td><code>iptables</code> or <code>ip6tables</code> missing</td>
+<td>Install the packages and retry the isolation</td>
+</tr>
+<tr>
+<td>Agent broken after a distro release upgrade</td>
+<td>Major OS upgrade with the agent in place</td>
+<td>Uninstall <code>mdatp</code>, upgrade the OS, then reinstall and onboard</td>
+</tr>
+</tbody>
+</table>
+<p>The part that trips people up on developer laptops is not the agent, it is the proxy. Corporate laptops that run Linux often sit on a PAC file that works fine for browsers, and Defender quietly refuses it. Sort out a static proxy setting for these machines before you roll the script out, and the rest of the deployment is the same dull process you already run on servers.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://techcommunity.microsoft.com/blog/microsoftdefenderatpblog/secure-linux-desktops-with-microsoft-defender/4560822">Defender blog post on securing Linux desktops</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/mde-linux-prerequisites">Prerequisites for Defender for Endpoint on Linux</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/linux-installer-script">Deploy Defender for Endpoint on Linux with the installer script</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/linux-install-manually">Deploy Defender for Endpoint on Linux manually</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/linux-support-connectivity">Troubleshoot cloud connectivity on Linux</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/linux-resources">Resources for Defender for Endpoint on Linux</a></li>
+<li><a href="https://petri.com/?p=780702">Petri coverage of Linux desktop support</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><span>Older</span>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/" style="text-align:right"><span>Newer</span>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

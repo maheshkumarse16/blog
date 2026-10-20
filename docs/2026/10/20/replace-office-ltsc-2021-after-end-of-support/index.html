@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps | MaheshKumarSE</title>
+<meta name="description" content="Office LTSC 2021 and Office 2021 stopped getting security updates on 13 October 2026. This guide covers finding the remaining installs, removing LTSC 2021 with the Office Deployment Tool, installing Microsoft 365 Apps and checking the result.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/replace-office-ltsc-2021-after-end-of-support/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps">
+<meta property="og:description" content="Office LTSC 2021 and Office 2021 stopped getting security updates on 13 October 2026. This guide covers finding the remaining installs, removing LTSC 2021 with the Office Deployment Tool, installing Microsoft 365 Apps and checking the result.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/replace-office-ltsc-2021-after-end-of-support/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps", "description": "Office LTSC 2021 and Office 2021 stopped getting security updates on 13 October 2026. This guide covers finding the remaining installs, removing LTSC 2021 with the Office Deployment Tool, installing Microsoft 365 Apps and checking the result.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/replace-office-ltsc-2021-after-end-of-support/", "keywords": "Microsoft 365, ConfigMgr, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a><a class="tag" href="/topics/configmgr/">ConfigMgr</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</h1><p class="dek">Office LTSC 2021 and Office 2021 stopped getting security updates on 13 October 2026. This guide covers finding the remaining installs, removing LTSC 2021 with the Office Deployment Tool, installing Microsoft 365 Apps and checking the result.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>7 min read</span></div>
+</header>
+<div class="prose"><p>Support for Office LTSC 2021, Visio LTSC 2021 and Project LTSC 2021 ended on 13 October 2026, and so did support for the retail Office 2021 suites. Microsoft confirmed it in Message Center post MC1509797 on 15 October. There is no extension and no extended security update programme. The apps keep running, but there will be no more security fixes, bug fixes or technical support.</p>
+<p>The last builds those products received came out on the same day. Office LTSC 2021 volume licensed stops at Version 2108 build 14334.20974, and Office 2021 retail stops at Version 2608 build 20326.20232. Every Office CVE published from November onwards will apply to those machines and stay unpatched.</p>
+<p>Microsoft offers two ways forward. Microsoft 365 Apps is the default for anything that connects to the internet. Office LTSC 2024, supported until October 2029, is meant for regulated, process control and fully disconnected machines. This guide covers the Microsoft 365 Apps route on Windows.</p>
+<h2>Before you start</h2>
+<p><strong>Licences.</strong> Users need a plan that includes Microsoft 365 Apps. For enterprises that is Microsoft 365 E3, Office 365 E3 or Microsoft 365 Apps for enterprise. Under 300 users, Business Premium, Business Standard or Apps for business. Visio and Project need their own subscriptions, such as Visio Plan 2 or Project Plan 3 or 5.</p>
+<p><strong>Permissions.</strong> Local administrator on the target devices, or a deployment tool such as Configuration Manager or Intune that runs as system.</p>
+<p><strong>Tools.</strong> The Office Deployment Tool (<code>setup.exe</code>) from the Microsoft Download Center, a share or package to hold it, and the Office ADMX templates (Download Center ID 49030) if you manage settings with Group Policy.</p>
+<p><strong>Disk and network.</strong> At least 4 GB free on the system drive. Delivery Optimization is supported on Windows 10 and 11 and saves a lot of WAN traffic when you upgrade a whole site at once.</p>
+<p><strong>Copilot.</strong> If these users will get Copilot later, put them on Monthly Enterprise Channel or Current Channel. Copilot needs one of those two channels.</p>
+<h2>Find what is left</h2>
+<ol>
+<li>If you run Configuration Manager, open the Office 365 Client Management dashboard and build a dynamic collection of devices grouped by Office version. Anything reporting Version 2108 on the PerpetualVL2021 channel is LTSC 2021.</li>
+<li>On a single machine, open Word and go to <strong>File &gt; Account</strong>. The product name under <strong>Product Information</strong> tells you which suite and year is installed.</li>
+<li>Note which machines also have Visio LTSC 2021 or Project LTSC 2021. They share the same end of support date, so remove them in the same pass and plan their replacement licences at the same time.</li>
+<li>Split the list. Machines that are genuinely offline or regulated go to Office LTSC 2024. Everything else goes to Microsoft 365 Apps.</li>
+</ol>
+<h2>Prepare the removal package</h2>
+<p>LTSC 2021 is a Click to Run product, so the <code>RemoveMSI</code> element does not touch it. That element only handles MSI installs of 2007, 2010, 2013 and 2016. Microsoft's guidance is to uninstall the previous version before installing Microsoft 365 Apps, and for Click to Run products the tool for that is the <code>Remove</code> element.</p>
+<ol start="5">
+<li>Create <code>remove-ltsc2021.xml</code> next to <code>setup.exe</code>. List each product ID you found in the inventory.</li>
+</ol>
+<pre><code class="language-xml">&lt;Configuration&gt;
+  &lt;Remove All=&quot;FALSE&quot;&gt;
+    &lt;Product ID=&quot;ProPlus2021Volume&quot; /&gt;
+    &lt;Product ID=&quot;VisioPro2021Volume&quot; /&gt;
+    &lt;Product ID=&quot;ProjectPro2021Volume&quot; /&gt;
+  &lt;/Remove&gt;
+  &lt;Display Level=&quot;None&quot; AcceptEULA=&quot;TRUE&quot; /&gt;
+  &lt;Property Name=&quot;FORCEAPPSHUTDOWN&quot; Value=&quot;TRUE&quot; /&gt;
+&lt;/Configuration&gt;
+</code></pre>
+<p>Leaving out the <code>Language</code> element removes every installed language for each product. Use <code>Standard2021Volume</code>, <code>VisioStd2021Volume</code> or <code>ProjectStd2021Volume</code> if that is what the device has. <code>FORCEAPPSHUTDOWN</code> closes any Office app that blocks the removal, and users will lose unsaved work, so schedule this outside working hours or leave it out and accept some failures to retry.</p>
+<h2>Prepare the install package</h2>
+<ol start="6">
+<li>Create <code>install-m365apps.xml</code> in the same folder.</li>
+</ol>
+<pre><code class="language-xml">&lt;Configuration&gt;
+  &lt;Add OfficeClientEdition=&quot;64&quot; Channel=&quot;MonthlyEnterprise&quot;&gt;
+    &lt;Product ID=&quot;O365ProPlusRetail&quot;&gt;
+      &lt;Language ID=&quot;en-us&quot; /&gt;
+    &lt;/Product&gt;
+  &lt;/Add&gt;
+  &lt;RemoveMSI /&gt;
+  &lt;Display Level=&quot;None&quot; AcceptEULA=&quot;TRUE&quot; /&gt;
+&lt;/Configuration&gt;
+</code></pre>
+<p>Change the language to match your users. Keep <code>RemoveMSI</code> in, because it cleans up any Office 2016 MSI leftovers that sometimes sit on the same machines. If some devices run 32 bit Office today and you want them on 64 bit, add <code>MigrateArch="TRUE"</code> to the <code>Add</code> element. For Remote Desktop session hosts, add <code>&lt;Property Name="SharedComputerLicensing" Value="1" /&gt;</code>.</p>
+<ol start="7">
+<li>Download the source files once to your share so devices do not each pull from the internet.</li>
+</ol>
+<pre><code class="language-cmd">setup.exe /download install-m365apps.xml
+</code></pre>
+<p>If you plan to install from the share, add <code>SourcePath="\\server\share"</code> to the <code>Add</code> element before you run the download.</p>
+<h2>Run the upgrade</h2>
+<ol start="8">
+<li>On a pilot device, from an administrator command prompt in the tool folder, run the removal.</li>
+</ol>
+<pre><code class="language-cmd">setup.exe /configure remove-ltsc2021.xml
+</code></pre>
+<p>The command returns when the removal is complete. Check <strong>Apps &gt; Installed apps</strong> in Windows Settings and confirm the LTSC 2021 entries are gone.</p>
+<ol start="9">
+<li>Run the install.</li>
+</ol>
+<pre><code class="language-cmd">setup.exe /configure install-m365apps.xml
+</code></pre>
+<ol start="10">
+<li>
+<p>Sign in to Word with the user's work account. Microsoft 365 Apps activates against the user's licence. The first launch can show the <strong>Your Privacy Matters</strong> dialog, and the user must accept it to finish setup.</p>
+</li>
+<li>
+<p>Once the pilot works, wrap both commands into a single deployment. A small batch file that runs the two <code>setup.exe</code> lines in order works as the install command for a Configuration Manager application or an Intune Win32 app.</p>
+</li>
+<li>
+<p>If Configuration Manager was managing Office updates for these devices, disable the <strong>Management of Microsoft 365 Apps for enterprise</strong> policy for the upgraded collection and confirm the <code>OfficeC2RCom</code> component is no longer registered on the clients. Otherwise Configuration Manager and the new update channel will compete.</p>
+</li>
+</ol>
+<h2>Verify it worked</h2>
+<ol start="13">
+<li>Open Word and go to <strong>File &gt; Account</strong>. You should see Microsoft 365 Apps for enterprise under <strong>Product Information</strong>, the signed in user, and Monthly Enterprise Channel next to the version.</li>
+<li>Compare the build with the current Monthly Enterprise build. In October 2026 the security update builds are 20430.20180 for Version 2609, 20326.20232 for 2608 and 20228.20276 for 2607.</li>
+<li>Next to <strong>Update Options</strong> confirm <strong>Updates are automatically downloaded and installed</strong> is shown.</li>
+<li>Rerun your inventory query from step 1. The device should drop off the LTSC 2021 list.</li>
+</ol>
+<h2>Clean up the stubborn ones</h2>
+<ol start="17">
+<li>If the removal fails or leaves broken entries, use the scrub scenario in the Microsoft Support and Recovery Assistant command line tool.</li>
+</ol>
+<pre><code class="language-cmd">SaRAcmd.exe -S OfficeScrubScenario -AcceptEula -OfficeVersion All
+</code></pre>
+<p>Replace <code>All</code> with a specific version if you only want to remove one release. Restart the device and run the install package again.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visio or Project 2021 still installed after the upgrade</td>
+<td>Product IDs missing from the removal file</td>
+<td>Add their product IDs to the removal file and run it again</td>
+</tr>
+<tr>
+<td>Removal reports success but LTSC still listed</td>
+<td>An Office app was open and blocked removal</td>
+<td>Add <code>FORCEAPPSHUTDOWN</code> or schedule the job when users are signed out</td>
+</tr>
+<tr>
+<td>Office installs but will not activate</td>
+<td>User has no Microsoft 365 Apps licence</td>
+<td>Assign the licence and have the user sign in again</td>
+</tr>
+<tr>
+<td>Office cannot activate after install</td>
+<td>Wrong product ID in the install file</td>
+<td>Check the <code>Product ID</code> value, the wrong ID prevents activation</td>
+</tr>
+<tr>
+<td>Device lands on Current Channel</td>
+<td>Channel attribute missing</td>
+<td>Set <code>Channel="MonthlyEnterprise"</code> in the <code>Add</code> element or set <strong>Update Channel</strong> by policy</td>
+</tr>
+<tr>
+<td>Updates fight with Configuration Manager</td>
+<td>Office 365 client management still on</td>
+<td>Disable the <strong>Management of Microsoft 365 Apps for enterprise</strong> client setting</td>
+</tr>
+<tr>
+<td>Bandwidth spikes on a site</td>
+<td>Every device downloading from the CDN</td>
+<td>Install from a local share and turn on Delivery Optimization</td>
+</tr>
+<tr>
+<td>Users still prompted for privacy settings</td>
+<td>First run dialog</td>
+<td>Expected, the user accepts once</td>
+</tr>
+</tbody>
+</table>
+<p>The machines that hold this up are rarely the desktops. It is the one PC on a lab bench or a production line that runs a macro nobody has tested on a newer build, and someone will ask for an exception. Give those a date for moving to Office LTSC 2024 instead of leaving them on an unsupported product, because LTSC 2024 keeps them fixed in place and still patched until 2029.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://mc.merill.net/message/MC1509797">Message Center MC1509797 on the end of support for Office LTSC 2021</a></li>
+<li><a href="https://learn.microsoft.com/lifecycle/products/office-ltsc-2021">Office LTSC 2021 lifecycle</a></li>
+<li><a href="https://support.microsoft.com/en-us/office/system-requirements/end-of-support-for-office-2021">End of support for Office 2021</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/end-of-support/plan-upgrade-older-versions-office">Plan your upgrade from older versions of Office</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/deploy/office-deployment-tool-configuration-options">Office Deployment Tool configuration options</a></li>
+<li><a href="https://learn.microsoft.com/en-us/office365/troubleshoot/installation/product-ids-supported-office-deployment-click-to-run">Product IDs supported by the Office Deployment Tool</a></li>
+<li><a href="https://learn.microsoft.com/en-us/officeupdates/microsoft365-apps-security-updates">Release notes for Microsoft 365 Apps security updates</a></li>
+<li><a href="https://learn.microsoft.com/en-us/office/ltsc/2024/deploy">Deploy Office LTSC 2024</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><span>Older</span>Remote Desktop fails with 0xC000000D when Administrator protection is on</a><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/" style="text-align:right"><span>Newer</span>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

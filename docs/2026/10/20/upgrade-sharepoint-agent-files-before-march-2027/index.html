@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to find and upgrade SharePoint .agent files before they stop working in March 2027 | MaheshKumarSE</title>
+<meta name="description" content="SharePoint and OneDrive agents saved as .agent files stop responding after March 2027. This guide covers the inventory with the agent registry and the Agent Insights report, choosing a path for each agent, and doing the upgrade.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="How to find and upgrade SharePoint .agent files before they stop working in March 2027">
+<meta property="og:description" content="SharePoint and OneDrive agents saved as .agent files stop responding after March 2027. This guide covers the inventory with the agent registry and the Agent Insights report, choosing a path for each agent, and doing the upgrade.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How to find and upgrade SharePoint .agent files before they stop working in March 2027", "description": "SharePoint and OneDrive agents saved as .agent files stop responding after March 2027. This guide covers the inventory with the agent registry and the Agent Insights report, choosing a path for each agent, and doing the upgrade.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/", "keywords": "Copilot, Microsoft 365"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/copilot/">Copilot</a><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a></div><h1>How to find and upgrade SharePoint .agent files before they stop working in March 2027</h1><p class="dek">SharePoint and OneDrive agents saved as .agent files stop responding after March 2027. This guide covers the inventory with the agent registry and the Agent Insights report, choosing a path for each agent, and doing the upgrade.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>Message Center post MC1511052, published on 16 October 2026, sets the end date for the SharePoint agents most organisations created over the last two years. From mid November 2026, new agents built from SharePoint or OneDrive are created with Microsoft Copilot Agent Builder and no longer saved as .agent files. Existing .agent files keep working until the end of March 2027, after which they stop responding everywhere, in Teams chats, in the Copilot app and in SharePoint itself.</p>
+<p>Microsoft will not upgrade agents for you. Someone has to find each file, decide what it should become and move it. If your users built dozens of these, that takes longer than five months sounds. This is the process I would follow.</p>
+<h2>Before you start</h2>
+<p><strong>Roles.</strong> You need SharePoint administrator to run the Agent Insights report, and AI Administrator (or Global Administrator in an emergency) to work in the agent registry in the Microsoft 365 admin center. The person upgrading a given agent needs edit permission on the .agent file, the ability to share agents, and page edit rights if the agent will go onto a page with the Agent Chat web part.</p>
+<p><strong>Licences.</strong> Users need a Microsoft Copilot licence to use Copilot in SharePoint, including skills. The SharePoint Agents pay as you go meter only applies to .agent files. Upgraded agents follow the Copilot app licensing model, and use by unlicensed people is billed under Copilot app pay as you go. If you rely on pay as you go today, confirm that billing is set up for the Copilot app before you upgrade anything.</p>
+<p><strong>Tools.</strong> The SharePoint Online Management Shell, connected to your admin URL.</p>
+<pre><code class="language-powershell">Connect-SPOService -Url https://&lt;tenant&gt;-admin.sharepoint.com
+</code></pre>
+<p><strong>Sharing.</strong> Make sure the people who own agents are allowed to share agents. Upgraded agents use Agent Builder sharing, not SharePoint permissions, and SharePoint groups cannot be used as a sharing target.</p>
+<h2>What stops working after March 2027</h2>
+<p>It helps to know exactly what breaks so you can prioritise. After the cut off, .agent files added to Teams chats or channels stop responding, and so do .agent files used in the Copilot app. Opening a .agent file in SharePoint or OneDrive shows an upgrade required message. The agents icon disappears from SharePoint navigation, the Agent Link web part and immersive viewer stop working, and the site main agent setting is removed because Copilot becomes the only main agent on a site.</p>
+<h2>Step 1. Build the inventory</h2>
+<ol>
+<li>Open the agent registry in the Microsoft 365 admin center.
+<span class="path">Agents &gt; All agents &gt; Registry</span></li>
+<li>Select the <strong>Channel</strong> filter and choose <strong>SharePoint</strong>. The list now shows SharePoint agents, and the tiles at the top still show the tenant totals. Select <strong>Export</strong> and choose <strong>Filtered agents</strong> to save the list as a file.</li>
+<li>Open the SharePoint admin center and create an Agent Insights report.
+<span class="path">Reports &gt; Agent Insights &gt; Create a report</span>
+Enter a name, set <strong>Report duration</strong> to <strong>28 days</strong> and select <strong>Create and run</strong>. Watch the <strong>Status</strong> column until the report completes. In a large tenant it can take up to 48 hours.</li>
+<li>If you prefer PowerShell, or want more than the top 100 rows the portal shows, start and download the report from the shell.</li>
+</ol>
+<pre><code class="language-powershell">Start-SPOCopilotAgentInsightsReport -ReportPeriodInDays 28
+Get-SPOCopilotAgentInsightsReport
+</code></pre>
+<p>The second command lists your reports and their IDs. Once the 28 day report shows as complete, download the full data.</p>
+<pre><code class="language-powershell">Get-SPOCopilotAgentInsightsReport -ReportId &lt;id&gt; -Action Download
+Get-SPOCopilotAgentInsightsReport -ReportId &lt;id&gt; -Content TopSites
+</code></pre>
+<p>The default content, <code>CopilotAgentsOnSites</code>, lists every agent on every site, up to a million rows in the download. <code>TopSites</code> gives the 100 sites with the most agents, which is where to start talking to site owners. If you copy the cmdlets from the Learn page, retype the dash before <code>ReportId</code>, because the page shows it as a typographic dash that PowerShell will not accept.</p>
+<ol start="5">
+<li>If you do not have SharePoint Advanced Management, the report needs audit data collection first.</li>
+</ol>
+<pre><code class="language-powershell">Start-SPOAuditDataCollectionForActivityInsights
+Get-SPOAuditDataCollectionStatusForActivityInsights
+</code></pre>
+<p>Wait until the status reads <code>InProgress</code>, roughly 24 hours, before you create the report.</p>
+<ol start="6">
+<li>Save the legacy usage numbers now. Usage history does not move to the upgraded agent, so the only record of how busy each agent was is what you capture before the change.</li>
+</ol>
+<h2>Step 2. Choose a path for each agent</h2>
+<figure>
+<img src="/images/2026/10/sharepoint-agent-upgrade-paths.svg" alt="Decision flow from an existing .agent file to one of four paths, Copilot in SharePoint, convert to a skill, upgrade to a Microsoft 365 agent, or republish a Copilot Studio agent" width="760" height="300">
+<figcaption>Pick the path from what the agent does today, not from who built it.</figcaption>
+</figure>
+
+<ol start="7">
+<li>Rank the inventory. Start with agents that have high usage, broad audiences, custom instructions, pay as you go use, Teams distribution or a prominent place on a site home page.</li>
+<li>Send each owner or site owner the list of their agents and ask them to choose one of the four paths in the diagram. The site owner, creator or agent owner makes the call.</li>
+</ol>
+<h2>Step 3. Carry out the upgrade</h2>
+<p><strong>Simple question and answer agents.</strong> These are agents that only answer questions about the site.</p>
+<ol start="9">
+<li>On the site, open the site settings and the AI section.
+<span class="path">Settings &gt; Site AI</span>
+Set <strong>Main agent</strong> to Copilot. Test a few questions in the side pane, then delete the .agent file.</li>
+</ol>
+<p><strong>Agents that run a repeatable task.</strong> These suit a skill, as long as everyone using them has a Copilot licence and nobody needs them in Teams or the Copilot app.</p>
+<ol start="10">
+<li>Open Copilot in SharePoint on the site and prompt the <code>convert-agent-file-to-skill</code> skill with the .agent file. Choose a site skill or a personal skill when asked. The original .agent file is moved to the skill location as a backup. Add a Button web part to the page if users need a visible way to start it.</li>
+</ol>
+<p><strong>Agents with custom instructions, or used in Teams.</strong> These become Microsoft 365 agents.</p>
+<ol start="11">
+<li>Open the .agent file for editing. An upgrade banner appears at the top.</li>
+<li>Select <strong>Upgrade to Microsoft 365 agent</strong> and confirm in the dialog. The agent opens in Agent Builder. From now on all edits happen there and the old file can no longer be edited.</li>
+<li>Share the upgraded agent. If the original was shared with the whole organisation, that carries over. Otherwise the upgraded agent is private until you share it, so share it again with the right people now.</li>
+<li>If the agent should sit on a page, add the Agent Chat web part, and only then use <strong>Move file to Recycle bin</strong> on the old file. The Agent Chat web part is listed by Microsoft as coming soon, so check it is available to you before you delete anything.</li>
+<li>In every Teams chat or channel that used the old agent, remove it and post the sharing link for the new one. Upgraded agents are not carried across automatically.</li>
+</ol>
+<p><strong>Copilot Studio agents published to SharePoint.</strong> These do not need rebuilding.</p>
+<ol start="16">
+<li>Publish the agent to the Microsoft Copilot app and Teams channel in Copilot Studio, then place it on pages with the Agent Chat web part.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ol start="17">
+<li>Return to the agent registry with the <strong>SharePoint</strong> channel filter and export again. Compare it with the first export and mark off each agent you have dealt with. Whatever is left with no decision is your outstanding list, and that list is what you report on each month until March 2027.</li>
+<li>Ask a user who is not the owner to open the upgraded agent and ask a question about site content. Access to the agent does not grant access to the underlying files, so if they get thin answers, check they can open the source content.</li>
+<li>Rerun the Agent Insights report after a week. You can only rerun a report 24 hours after the last one, and a new report replaces the old one for the same duration, so download the previous one first.</li>
+</ol>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No upgrade banner on the .agent file</td>
+<td>The rollout has not reached the tenant yet</td>
+<td>The upgrade option arrives from mid November 2026, wait and retry</td>
+</tr>
+<tr>
+<td>Upgraded agent not visible to colleagues</td>
+<td>Agent became private on upgrade</td>
+<td>Share it in Agent Builder, SharePoint groups are not supported as a target</td>
+</tr>
+<tr>
+<td>Agent answers but misses content</td>
+<td>User lacks access to the source files</td>
+<td>Grant access to the content, agent access does not include it</td>
+</tr>
+<tr>
+<td>Agent gone from a Teams channel</td>
+<td>Teams keeps the old .agent reference</td>
+<td>Remove the old agent and post the new sharing link</td>
+</tr>
+<tr>
+<td>Agent Insights cmdlet fails with a parameter error</td>
+<td>Dash copied from the web page</td>
+<td>Retype the hyphen before <code>ReportId</code></td>
+</tr>
+<tr>
+<td>Report status stays in progress</td>
+<td>Large tenant</td>
+<td>Allow up to 48 hours</td>
+</tr>
+<tr>
+<td>Upgraded agent cannot be set as the main agent</td>
+<td>By design</td>
+<td>Only Copilot can be the main agent on a site after the change</td>
+</tr>
+<tr>
+<td>Blocking an agent in the admin center has no effect in SharePoint</td>
+<td>Blocking applies to Copilot Chat only today</td>
+<td>Use restricted access control or restricted content discovery on the site</td>
+</tr>
+</tbody>
+</table>
+<p>The gotcha that bites is usage history. People upgrade the busy agents first, the dashboards reset to zero, and three months later nobody can show which agents were worth keeping. Download the reports before anyone clicks the upgrade button.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://mc.merill.net/message/MC1511052">Message Center MC1511052 on upcoming changes to agents in SharePoint and OneDrive</a></li>
+<li><a href="https://learn.microsoft.com/en-us/sharepoint/upgrade-sharepoint-agents">Upgrade SharePoint agents</a></li>
+<li><a href="https://learn.microsoft.com/sharepoint/manage-access-agents-in-sharepoint">Manage access to agents in SharePoint</a></li>
+<li><a href="https://learn.microsoft.com/sharepoint/insights-on-sharepoint-agents">Insights on SharePoint agents</a></li>
+<li><a href="https://learn.microsoft.com/en-us/sharepoint/monitor-agent-usage">Monitor agent usage in SharePoint</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-registry">Agent registry in the Microsoft 365 admin center</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><span>Older</span>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/" style="text-align:right"><span>Newer</span>Windows 11 October 2026 update: builds, fixes and what to patch first</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there | MaheshKumarSE</title>
+<meta name="description" content="The 13 October 2026 Office security release fixes 132 CVEs, including eight in Outlook. This lists the exact build for every channel and LTSC version, and shows how to push a device to it and confirm it.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/microsoft-365-apps-october-2026-security-builds/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there">
+<meta property="og:description" content="The 13 October 2026 Office security release fixes 132 CVEs, including eight in Outlook. This lists the exact build for every channel and LTSC version, and shows how to push a device to it and confirm it.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/microsoft-365-apps-october-2026-security-builds/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there", "description": "The 13 October 2026 Office security release fixes 132 CVEs, including eight in Outlook. This lists the exact build for every channel and LTSC version, and shows how to push a device to it and confirm it.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/microsoft-365-apps-october-2026-security-builds/", "keywords": "Microsoft 365, Vulnerability Management"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a></div><h1>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</h1><p class="dek">The 13 October 2026 Office security release fixes 132 CVEs, including eight in Outlook. This lists the exact build for every channel and LTSC version, and shows how to push a device to it and confirm it.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>6 min read</span></div>
+</header>
+<div class="prose"><p>The October Office security release shipped on 13 October 2026 alongside the Windows updates. By my count from the Learn security updates page it covers 132 CVEs. Excel takes the biggest share with 51, then the shared Office components with 36, Access and Word with 13 each, Outlook with 8, PowerPoint with 7, Visio with 3 and OneNote with 1.</p>
+<p>The Outlook items are the ones I would chase first. All eight are remote code execution bugs, and community analysis of the advisories lists the Preview Pane as an attack vector for at least two of them, <code>CVE-2026-70242</code> and <code>CVE-2026-70291</code>. None was public or exploited at release. Also bear in mind the Windows side of Patch Tuesday fixed an actively exploited Mark of the Web bypass, <code>CVE-2026-96951</code>, which press reports say stops Office Protected View and macro blocking from kicking in on files from the internet. Patching Office without Windows leaves that door open.</p>
+<h2>The builds that contain the fixes</h2>
+<p>Any device at or above the build for its channel has the October fixes.</p>
+<table>
+<thead>
+<tr>
+<th>Product and channel</th>
+<th>Version</th>
+<th>Build</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current Channel</td>
+<td>2609</td>
+<td>20430.20182</td>
+</tr>
+<tr>
+<td>Monthly Enterprise Channel</td>
+<td>2609</td>
+<td>20430.20180</td>
+</tr>
+<tr>
+<td>Monthly Enterprise Channel</td>
+<td>2608</td>
+<td>20326.20232</td>
+</tr>
+<tr>
+<td>Monthly Enterprise Channel</td>
+<td>2607</td>
+<td>20228.20276</td>
+</tr>
+<tr>
+<td>Semi Annual Enterprise Channel</td>
+<td>2609</td>
+<td>20430.20178</td>
+</tr>
+<tr>
+<td>Semi Annual Enterprise Channel</td>
+<td>2608</td>
+<td>20326.20230</td>
+</tr>
+<tr>
+<td>Semi Annual Enterprise Channel</td>
+<td>2607</td>
+<td>20228.20274</td>
+</tr>
+<tr>
+<td>Office 2024 Retail</td>
+<td>2609</td>
+<td>20430.20182</td>
+</tr>
+<tr>
+<td>Office 2021 Retail</td>
+<td>2608</td>
+<td>20326.20232</td>
+</tr>
+<tr>
+<td>Office LTSC 2024 Volume Licensed</td>
+<td>2408</td>
+<td>17932.21056</td>
+</tr>
+<tr>
+<td>Office LTSC 2021 Volume Licensed</td>
+<td>2108</td>
+<td>14334.20974</td>
+</tr>
+<tr>
+<td>Office 2019 Volume Licensed</td>
+<td>1808</td>
+<td>10417.20228</td>
+</tr>
+</tbody>
+</table>
+<p>The Current Channel build also fixes an Excel crash after coauthoring and an Outlook crash while searching for people. The previous Current Channel build, 20430.20146 from 6 October, does not have the security fixes.</p>
+<p>Office LTSC 2021 and Office 2021 reached end of support on 13 October 2026, so these are the last builds those products will get.</p>
+<h2>Why Semi Annual devices are on 2609</h2>
+<p>If you still think of Semi Annual Enterprise Channel as a slow channel, the table will look wrong. Since the Version 2606 release in July 2026 Microsoft has unified Semi Annual Enterprise Channel with Monthly Enterprise Channel. Semi Annual devices now get the same feature and security updates, with their own build numbers, and once on 2606 or later they show as Monthly Enterprise Channel under <strong>File &gt; Account</strong>. Different build numbers between the two channels do not mean different security content. Any compliance script or report that looks for the literal text Semi Annual Enterprise Channel needs a look, because those devices will report differently.</p>
+<h2>Check a device</h2>
+<ol>
+<li>Open Word, Excel or Outlook and go to <strong>File &gt; Account</strong>.</li>
+<li>Under <strong>Product Information</strong> read the version and build next to <strong>About</strong>, and compare the build with the table above.</li>
+<li>Next to <strong>Update Options</strong> you should see <strong>Updates are automatically downloaded and installed</strong>. If you see something else, select <strong>Update Options &gt; Enable updates</strong>.</li>
+</ol>
+<h2>Push a device to the build now</h2>
+<p>Office updates arrive from the CDN gradually over several days, so a device that has not updated yet is not necessarily broken.</p>
+<ol start="4">
+<li>
+<p>On a single device, select <strong>File &gt; Account &gt; Update Options &gt; Update Now</strong>. Office downloads the update in the background and applies it when the apps close. The device needs at least 4 GB free on the system drive.</p>
+</li>
+<li>
+<p>To move a group of devices to an exact build, use the Office Deployment Tool with <code>TargetVersion</code>. Build the version string from 16.0 plus the build in the table. For Current Channel that is 16.0.20430.20182.</p>
+</li>
+</ol>
+<pre><code class="language-xml">&lt;Configuration&gt;
+  &lt;Updates Enabled=&quot;TRUE&quot; TargetVersion=&quot;16.0.20430.20182&quot; /&gt;
+&lt;/Configuration&gt;
+</code></pre>
+<p>Run it from an administrator command prompt in the folder that holds <code>setup.exe</code>.</p>
+<pre><code class="language-cmd">setup.exe /configure config.xml
+</code></pre>
+<p>When it finishes, <strong>File &gt; Account</strong> should show the target build. If the apps were open, the update waits until they close unless you add <code>FORCEAPPSHUTDOWN</code> with a value of TRUE in a <code>Property</code> element, which closes them and can lose unsaved work.</p>
+<ol start="6">
+<li>
+<p>For managed fleets, set a deadline so stragglers are forced through. In Group Policy the setting lives under the Office update policies.
+<span class="path">Computer Configuration &gt; Policies &gt; Administrative Templates &gt; Microsoft Office 2016 (Machine) &gt; Updates</span>
+Enable <strong>Update deadline</strong> and set the date and time the update must be installed by. Users get reminders, including one 30 minutes before the deadline, and Office closes the apps at the deadline. The same settings are available in Intune through the Settings Catalog. A Group Policy value wins over the same value set by the Office Deployment Tool.</p>
+</li>
+<li>
+<p>If you use cloud update at config.office.com, check <strong>Update progress</strong> for each profile. Cloud update takes priority over every other management tool for devices signed in by your users, so do not fight it with Group Policy.</p>
+</li>
+</ol>
+<h2>Confirm across the fleet</h2>
+<ol start="8">
+<li>
+<p>In your software inventory, list devices below the build for their channel. Any device on a version older than the oldest supported Monthly Enterprise version, 2607, is out of support and will not get the October fixes at all. Move it to a supported channel before worrying about the build.</p>
+</li>
+<li>
+<p>Pay particular attention to Outlook 2016 MSI installs. Community tracking of the release shows no October update for that product, so do not assume this release covers it.</p>
+</li>
+</ol>
+<p>I tend to find that the October problem devices are the ones nobody remembers. Shared machines, kiosk PCs and the old LTSC 2021 boxes in labs or production lines. With LTSC 2021 now out of support, this is a good month to get a real count of those, because there will be no November build for them.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/officeupdates/microsoft365-apps-security-updates">Release notes for Microsoft 365 Apps security updates</a></li>
+<li><a href="https://learn.microsoft.com/en-us/officeupdates/current-channel">Current Channel release notes</a></li>
+<li><a href="https://learn.microsoft.com/en-us/officeupdates/monthly-enterprise-channel">Monthly Enterprise Channel release notes</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/updates/unified-update-channels/">Unified update channels for Microsoft 365 Apps</a></li>
+<li><a href="https://learn.microsoft.com/en-US/deployoffice/updates/update-basics">Update basics for Microsoft 365 Apps</a></li>
+<li><a href="https://learn.microsoft.com/deployoffice/configure-update-settings-microsoft-365-apps">Configure update settings for Microsoft 365 Apps</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365-apps/deploy/office-deployment-tool-configuration-options">Office Deployment Tool configuration options</a></li>
+<li><a href="https://learn.microsoft.com/deployoffice/admincenter/cloud-update">Cloud update for Microsoft 365 Apps</a></li>
+<li><a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-october-2026-patch-tuesday-fixes-1-411-flaws-3-zero-days/">BleepingComputer on October 2026 Patch Tuesday</a></li>
+<li><a href="https://robert365.com/news/latest-updates-for-classic-outlook">Community summary of classic Outlook updates</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/intune-device-page-android-esim-updates/"><span>Older</span>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/" style="text-align:right"><span>Newer</span>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

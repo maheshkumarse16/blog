@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" width="760" height="300">
+<rect x="0" y="0" width="760" height="300" fill="#ffffff"/>
+<g font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect x="270" y="16" width="220" height="44" rx="8" fill="#ffffff" stroke="#2446c7" stroke-width="2"/>
+<text x="380" y="36" text-anchor="middle" font-size="14" fill="#151b26" font-weight="600">Existing .agent file</text>
+<text x="380" y="52" text-anchor="middle" font-size="12" fill="#5a6476">What does it do today</text>
+<line x1="380" y1="60" x2="380" y2="84" stroke="#5a6476" stroke-width="1.5"/>
+<line x1="100" y1="84" x2="660" y2="84" stroke="#5a6476" stroke-width="1.5"/>
+<line x1="100" y1="84" x2="100" y2="110" stroke="#5a6476" stroke-width="1.5"/>
+<line x1="287" y1="84" x2="287" y2="110" stroke="#5a6476" stroke-width="1.5"/>
+<line x1="473" y1="84" x2="473" y2="110" stroke="#5a6476" stroke-width="1.5"/>
+<line x1="660" y1="84" x2="660" y2="110" stroke="#5a6476" stroke-width="1.5"/>
+<rect x="18" y="110" width="164" height="70" rx="8" fill="#ffffff" stroke="#5a6476"/>
+<text x="100" y="134" text-anchor="middle" font-size="13" fill="#151b26">Answers questions</text>
+<text x="100" y="152" text-anchor="middle" font-size="13" fill="#151b26">about site content</text>
+<text x="100" y="170" text-anchor="middle" font-size="12" fill="#5a6476">no custom setup</text>
+<rect x="205" y="110" width="164" height="70" rx="8" fill="#ffffff" stroke="#5a6476"/>
+<text x="287" y="134" text-anchor="middle" font-size="13" fill="#151b26">Runs a repeatable</text>
+<text x="287" y="152" text-anchor="middle" font-size="13" fill="#151b26">task on the site</text>
+<text x="287" y="170" text-anchor="middle" font-size="12" fill="#5a6476">users all licensed</text>
+<rect x="391" y="110" width="164" height="70" rx="8" fill="#ffffff" stroke="#5a6476"/>
+<text x="473" y="134" text-anchor="middle" font-size="13" fill="#151b26">Custom instructions</text>
+<text x="473" y="152" text-anchor="middle" font-size="13" fill="#151b26">or used in Teams</text>
+<text x="473" y="170" text-anchor="middle" font-size="12" fill="#5a6476">broad audience</text>
+<rect x="578" y="110" width="164" height="70" rx="8" fill="#ffffff" stroke="#5a6476"/>
+<text x="660" y="134" text-anchor="middle" font-size="13" fill="#151b26">Copilot Studio agent</text>
+<text x="660" y="152" text-anchor="middle" font-size="13" fill="#151b26">published to</text>
+<text x="660" y="170" text-anchor="middle" font-size="13" fill="#151b26">SharePoint</text>
+<line x1="100" y1="180" x2="100" y2="206" stroke="#2446c7" stroke-width="1.5"/>
+<line x1="287" y1="180" x2="287" y2="206" stroke="#2446c7" stroke-width="1.5"/>
+<line x1="473" y1="180" x2="473" y2="206" stroke="#2446c7" stroke-width="1.5"/>
+<line x1="660" y1="180" x2="660" y2="206" stroke="#2446c7" stroke-width="1.5"/>
+<rect x="18" y="206" width="164" height="60" rx="8" fill="#eef1fb" stroke="#2446c7"/>
+<text x="100" y="230" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">Use Copilot in</text>
+<text x="100" y="248" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">SharePoint</text>
+<rect x="205" y="206" width="164" height="60" rx="8" fill="#eef1fb" stroke="#2446c7"/>
+<text x="287" y="230" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">Convert to</text>
+<text x="287" y="248" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">a skill</text>
+<rect x="391" y="206" width="164" height="60" rx="8" fill="#eef1fb" stroke="#2446c7"/>
+<text x="473" y="230" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">Upgrade to a</text>
+<text x="473" y="248" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">Microsoft 365 agent</text>
+<rect x="578" y="206" width="164" height="60" rx="8" fill="#eef1fb" stroke="#2446c7"/>
+<text x="660" y="230" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">Republish to Copilot</text>
+<text x="660" y="248" text-anchor="middle" font-size="13" fill="#2446c7" font-weight="600">app and Teams</text>
+<text x="380" y="290" text-anchor="middle" font-size="12" fill="#9a4f08">.agent files stop responding after March 2027</text>
+</g>
+</svg>

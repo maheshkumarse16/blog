@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent usage metrics in the Microsoft 365 admin center no longer need an Agent 365 licence | MaheshKumarSE</title>
+<meta name="description" content="From late November 2026 the active users, sessions, exceptions and run time figures for Microsoft built agents show in the admin center without Agent 365 or E7. Here is where the numbers appear, what they mean and how to read them without comparing the wrong reports.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/agent-365-activity-metrics-without-licence/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Agent usage metrics in the Microsoft 365 admin center no longer need an Agent 365 licence">
+<meta property="og:description" content="From late November 2026 the active users, sessions, exceptions and run time figures for Microsoft built agents show in the admin center without Agent 365 or E7. Here is where the numbers appear, what they mean and how to read them without comparing the wrong reports.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/agent-365-activity-metrics-without-licence/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Agent usage metrics in the Microsoft 365 admin center no longer need an Agent 365 licence", "description": "From late November 2026 the active users, sessions, exceptions and run time figures for Microsoft built agents show in the admin center without Agent 365 or E7. Here is where the numbers appear, what they mean and how to read them without comparing the wrong reports.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/agent-365-activity-metrics-without-licence/", "keywords": "Copilot, Microsoft 365"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/copilot/">Copilot</a><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a></div><h1>Agent usage metrics in the Microsoft 365 admin center no longer need an Agent 365 licence</h1><p class="dek">From late November 2026 the active users, sessions, exceptions and run time figures for Microsoft built agents show in the admin center without Agent 365 or E7. Here is where the numbers appear, what they mean and how to read them without comparing the wrong reports.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>Until now, if you opened an agent in the Microsoft 365 admin center and selected the Activity tab, you got a prompt telling you that you needed Microsoft 365 E7 or an Agent 365 licence. That is changing. Message Center post MC1506727, published on 13 October 2026, says Microsoft is removing the Agent 365 licence requirement for usage and activity metrics on supported agents built by Microsoft or on Microsoft platforms. General availability for worldwide tenants starts in late November 2026 and should complete the same month.</p>
+<p>For anyone who has been asked "which of these agents does anyone actually use", this is the most useful admin change in the Copilot space this month.</p>
+<h2>What becomes visible</h2>
+<p>The change covers existing and new supported agents. Once it arrives, these figures show without the extra licence.</p>
+<ol>
+<li>In the agent registry, the <strong>Active users</strong>, <strong>Total sessions</strong>, <strong>Exception rate</strong> and <strong>Run Time</strong> columns.</li>
+<li>On the agent overview page, the <strong>Active users</strong> figure, the <strong>Active users over time</strong> chart and the <strong>Trending agents by active users</strong> card.</li>
+<li>In an agent's details, the <strong>Activity</strong> tab with its <strong>Active users</strong>, <strong>Sessions</strong>, <strong>Exceptions</strong> and <strong><code>Agent run-time</code></strong> cards, plus the <strong>Active users over time</strong> and <strong>Sessions over time</strong> charts.</li>
+</ol>
+<p>Risk signals stay behind the licence. The Risks column in the registry, the Security tab and the other Agent 365 protection features still need E7 or Agent 365. Third party agents are also unchanged.</p>
+<h2>Where to find it</h2>
+<p>The registry is the place to start.
+<span class="path">Agents &gt; All agents &gt; Registry</span></p>
+<p>Select an agent to open its details fly out and pick the <strong>Activity</strong> tab. The default range is the last 30 days and you can change it. The tab also has an <strong>Active users</strong> table with <strong>User principal name</strong>, <strong>Total sessions</strong> and <strong>Last activity date (UTC)</strong> columns, which you can export to CSV.</p>
+<p>The overview page gives the tenant wide picture.
+<span class="path">Agents &gt; Overview</span></p>
+<p>Monitoring is open to any admin who can see the agents pages. Governance actions such as approving requests or assigning owners need AI Administrator, or Global Administrator, which Microsoft says to keep for emergencies.</p>
+<h2>What the numbers mean</h2>
+<p>The definitions are worth reading once, because they are not what most people assume.</p>
+<p><strong>Active users</strong> counts unique users with at least one interaction. <strong>Sessions</strong> are conversations, and a new session starts after 30 minutes of inactivity, so someone who returns after lunch counts twice. <strong>Exceptions</strong> are sessions that hit an error. <strong><code>Agent run-time</code></strong> is the total hours from the start of an interaction to the completion of the activity, so a long running agent can rack up hours with very few users.</p>
+<p>Supported agent types for the activity metrics are agents built with Microsoft Copilot Agent Builder, SharePoint agents and agents built with the Microsoft 365 Agents Toolkit. Foundry, Copilot Studio and Agent Builder agents send their observability data automatically. Custom and third party agents only report if their developers instrumented them.</p>
+<h2>Do not compare it with the Copilot usage report</h2>
+<p>This is the part that will cause arguments. The Copilot usage report under <strong>Reports &gt; Usage &gt; Microsoft 365 Copilot &gt; Agents</strong> covers agent use in Copilot Chat, Word, Excel and PowerPoint. The registry and Activity tab count use in Copilot, Teams, Outlook, SharePoint and the Microsoft 365 apps. Microsoft says plainly not to compare the two sets of numbers. If your Copilot adoption pack already quotes agent figures from the usage report, label which source each number comes from before someone puts them side by side.</p>
+<h2>Expect thin data at first</h2>
+<p>Microsoft warns that early metrics may look low or incomplete. It takes up to 30 days after data collection begins before an agent shows a full 30 day view. The data also only exists if the agent or platform sends activity and your observability settings allow it. Observability data is kept for 30 days and then deleted automatically, and it is stored in the default geography of the tenant, honouring the EU Data Boundary, with some service metrics possibly replicated to the EU or the US. Advanced Data Residency is not supported for this data. If you report quarterly, export monthly, because nothing older than 30 days will be there to pull.</p>
+<h2>Pulling the list with Graph</h2>
+<p>If you want the agent list in a script alongside the new figures, the catalog is available through Microsoft Graph with the <code>CopilotPackages.Read.All</code> scope, and it works for an account holding the AI Administrator role. Learn marks the API as preview.</p>
+<pre><code class="language-powershell">Connect-MgGraph -Scopes 'CopilotPackages.Read.All'
+$uri = &quot;https://graph.microsoft.com/v1.0/copilot/admin/catalog/packages&quot;
+$all = @()
+do {
+    $r = Invoke-MgGraphRequest -Method GET -Uri $uri
+    $all += $r.value
+    $uri = $r.'@odata.nextLink'
+} while ($uri)
+$all | ForEach-Object { $_.displayName }
+&quot;Total agents: $($all.Count)&quot;
+</code></pre>
+<p>A good run prints each agent name and a total that matches the <strong>Total agents</strong> tile in the registry. A 403 means the account lacks the role or the consent for the scope.</p>
+<h2>Getting ready</h2>
+<p>Before late November, decide who will own the review of these numbers, export the current registry with <strong>Export</strong> and <strong>All agents</strong> so you have a baseline, and tell your adoption lead that the first month of data will undercount. The Learn page for agent details still says you need E7 or Agent 365 for the Activity tab. Expect that text to change when the rollout reaches you.</p>
+<p>My view is that the run time figure will turn out to be the interesting one. Active users tells you who clicked. Run time tells you which agents are doing real work, and that is the number that should decide which agents you keep when the registry gets crowded.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://mc.merill.net/message/MC1506727">Message Center MC1506727 on agent usage and activity insights</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-details">Understand agent details in the Microsoft 365 admin center</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-365-overview">Agent 365 overview in the Microsoft 365 admin center</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-365/admin/manage/agent-registry">Agent registry in the Microsoft 365 admin center</a></li>
+<li><a href="https://learn.microsoft.com/microsoft-agent-365/admin/data-residency-protection-compliance">Agent 365 data residency, protection and compliance</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><i></i><a href="/2026/10/20/configmgr-2609-upgrade-checklist/" style="text-align:right"><span>Newer</span>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

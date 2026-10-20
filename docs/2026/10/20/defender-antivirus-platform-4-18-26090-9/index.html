@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Defender Antivirus platform 4.18.26090.9 renames a PowerShell property your scripts may read | MaheshKumarSE</title>
+<meta name="description" content="What changed in the 12 October 2026 Defender Antivirus platform and engine release, which scripts and reports can break, and how to stage the build through update channels and confirm it landed.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/defender-antivirus-platform-4-18-26090-9/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Defender Antivirus platform 4.18.26090.9 renames a PowerShell property your scripts may read">
+<meta property="og:description" content="What changed in the 12 October 2026 Defender Antivirus platform and engine release, which scripts and reports can break, and how to stage the build through update channels and confirm it landed.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/defender-antivirus-platform-4-18-26090-9/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Defender Antivirus platform 4.18.26090.9 renames a PowerShell property your scripts may read", "description": "What changed in the 12 October 2026 Defender Antivirus platform and engine release, which scripts and reports can break, and how to stage the build through update channels and confirm it landed.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/defender-antivirus-platform-4-18-26090-9/", "keywords": "Defender, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/defender/">Defender</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>Defender Antivirus platform 4.18.26090.9 renames a PowerShell property your scripts may read</h1><p class="dek">What changed in the 12 October 2026 Defender Antivirus platform and engine release, which scripts and reports can break, and how to stage the build through update channels and confirm it landed.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>Microsoft released Defender Antivirus platform 4.18.26090.9 and engine 1.1.26090.9 on 12 October 2026, together with security intelligence 1.461.1.0. The release notes file it under September 2026, which is why it is easy to miss when you skim the page. Most of the changes are quiet fixes. One of them is a rename that can break compliance scripts, and another fixes a bug that may explain odd ASR behaviour you have been chasing.</p>
+<h2>What is in the release</h2>
+<p>The Learn release notes list these changes for 4.18.26090.9.</p>
+<ol>
+<li>The protection engine now refreshes itself when the licence tier resolved on the device changes.</li>
+<li>A stalled security intelligence update worker that could block every later update is fixed.</li>
+<li>An update configuration issue that could leave <code>DisableBmNetworkSensor</code> set to 1 after a platform update is fixed.</li>
+<li>The configuration protection property in PowerShell is renamed from <code>ControlledConfigurationState</code> to <code>ConfigurationProtection</code>.</li>
+<li>The feature control cache is now kept through signature updates.</li>
+<li>Path normalisation for attack surface reduction rules is improved.</li>
+<li>ASR exclusions are no longer dropped when several policies target the same rule.</li>
+</ol>
+<p>No known issues are listed against this build.</p>
+<h2>Who should care</h2>
+<p>If you run a script, a proactive remediation or a compliance check that reads <code>ControlledConfigurationState</code> from <code>Get-MpComputerStatus</code>, that check needs attention. Configuration protection is still a preview feature, so most estates will not have it, but anyone piloting it probably wrote a detection script against the old property name. The Learn article on configuration protection still tells you to check <code>ControlledConfigurationState</code>, so the docs and the platform disagree for now. I would make detection scripts tolerate both names until the docs catch up.</p>
+<p>The ASR fix matters to anyone with layered policies. If you assign one ASR profile to all devices and a second profile with extra exclusions to a smaller group, and those exclusions seemed to vanish on some machines, this is the likely cause.</p>
+<h2>Stage the build before it reaches everyone</h2>
+<p>Platform and engine updates follow the gradual rollout channels. Beta gets builds first, Current Channel (Preview) next, then the broad population scales from 10% to 100%. To check this build on a pilot group before it lands everywhere, put those devices on the Preview channel.</p>
+<p><strong>Intune.</strong> Create or edit a Settings Catalog profile and add the Defender settings below.
+<span class="path">Devices &gt; Configuration &gt; Create &gt; New policy &gt; Windows 10 and later &gt; Settings catalog</span>
+Search the picker for Defender and set <strong>Platform Updates Channel</strong> and <strong>Engine Updates Channel</strong> to <strong>Current Channel (Preview)</strong> for the pilot group. Leave <strong>Security Intelligence Updates Channel</strong> alone, since it only offers staged and broad options.</p>
+<p><strong>Group Policy.</strong> The settings sit in this location.
+<span class="path">Computer Configuration &gt; Administrative Templates &gt; Windows Components &gt; Microsoft Defender Antivirus</span>
+Use <strong>Select the channel for Microsoft Defender monthly platform updates</strong> and <strong>Select the channel for Microsoft Defender monthly engine updates</strong>. They write <code>PlatformRing</code> and <code>EngineRing</code> under <code>HKLM\SOFTWARE\Policies\Microsoft\Windows Defender</code>.</p>
+<p><strong>PowerShell on a test machine.</strong></p>
+<pre><code class="language-powershell">Set-MpPreference -PlatformUpdatesChannel Preview
+Set-MpPreference -EngineUpdatesChannel Preview
+Get-MpPreference | Select-Object PlatformUpdatesChannel, EngineUpdatesChannel, DefinitionUpdatesChannel, DisableGradualRelease
+</code></pre>
+<p>The last command should show <code>Preview</code> for the first two values.</p>
+<h2>Confirm the build and fix your scripts</h2>
+<p>Check the versions on a device with this.</p>
+<pre><code class="language-powershell">Get-MpComputerStatus | Select-Object AMProductVersion, AMEngineVersion, AntivirusSignatureVersion
+</code></pre>
+<p>A device on the new build reports <code>4.18.26090.9</code> for <code>AMProductVersion</code> and <code>1.1.26090.9</code> for <code>AMEngineVersion</code>. Anything lower has not taken the update yet.</p>
+<p>To see which configuration protection property a device exposes, list the property names rather than assuming one.</p>
+<pre><code class="language-powershell">$s = Get-MpComputerStatus
+$s.PSObject.Properties.Name | Where-Object { $_ -match 'Config' }
+</code></pre>
+<p>On the new platform expect <code>ConfigurationProtection</code>. On older builds you will see <code>ControlledConfigurationState</code>. A detection script that reads whichever one exists will survive the mixed period while the rollout completes.</p>
+<p>For the ASR side, check the exclusions the device actually holds after the update.</p>
+<pre><code class="language-powershell">(Get-MpPreference).AttackSurfaceReductionOnlyExclusions
+</code></pre>
+<p>Then watch the Defender operational log for blocks against paths you excluded. The log is at <strong>Applications and Services Logs &gt; Microsoft &gt; Windows &gt; Windows Defender &gt; Operational</strong>. Event ID 1121 is a block, 1122 is an audit hit and 5007 records a settings change. At fleet level this query shows whether ASR events drop on the pilot after the update.</p>
+<pre><code class="language-kql">DeviceEvents
+| where Timestamp &gt; ago(7d)
+| where ActionType startswith &quot;Asr&quot;
+| summarize EventCount = count() by ActionType, bin(Timestamp, 1d)
+</code></pre>
+<p>If you were seeing blocks for paths that one of your policies excludes, the daily count of ASR action types ending in <code>Blocked</code> for those devices should fall once they run 4.18.26090.9.</p>
+<h2>A note on configuration protection</h2>
+<p>If you are piloting configuration protection, remember what it needs. Devices must be onboarded, managed by Intune or Defender security settings management, and running platform 4.18.26060.3004 or later. It is not supported on comanaged devices or in GCC High, and it is set in the Windows Security Experience profile under Endpoint security with the <strong>Configuration protection (Device)</strong> setting. Turning it on turns tamper protection off unless another policy sets it, which drops your tamper protection Secure Score item. That catches people out more than the property rename.</p>
+<p>My take is that this is a routine platform build with one sharp edge. Find every script that names <code>ControlledConfigurationState</code> today, and you will save yourself a confusing compliance report next month.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/microsoft-defender-endpoint-releases">Defender for Endpoint release notes with platform 4.18.26090.9</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/secure-controlled-configuration">Configuration protection for Defender Antivirus</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/configure-updates">Manage how and where Defender Antivirus receives updates</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-configure">Enable attack surface reduction rules and exclusions</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-windows-events">ASR events in the Windows event log</a></li>
+<li><a href="https://learn.microsoft.com/en-us/defender-endpoint/attack-surface-reduction-rules-monitor">Monitor attack surface reduction rules with advanced hunting</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/copilot-entry-points-outlook-word-excel-powerpoint/"><span>Older</span>Copilot buttons are moving in Outlook, Word, Excel and PowerPoint. What to tell your users</a><a href="/2026/10/20/endpoint-dlp-archive-classification-change/" style="text-align:right"><span>Newer</span>Endpoint DLP will report zip and rar files as one item from late October</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
