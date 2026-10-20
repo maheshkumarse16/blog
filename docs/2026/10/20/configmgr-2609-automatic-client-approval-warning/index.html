@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ConfigMgr 2609 now warns if you automatically approve all computers. How to change it safely | MaheshKumarSE</title>
+<meta name="description" content="The 2609 prerequisite check flags the Automatically approve all computers option, which Microsoft plans to remove. How to see which clients depend on it, switch to trusted domain approval and approve the stragglers.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/configmgr-2609-automatic-client-approval-warning/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="ConfigMgr 2609 now warns if you automatically approve all computers. How to change it safely">
+<meta property="og:description" content="The 2609 prerequisite check flags the Automatically approve all computers option, which Microsoft plans to remove. How to see which clients depend on it, switch to trusted domain approval and approve the stragglers.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/configmgr-2609-automatic-client-approval-warning/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ConfigMgr 2609 now warns if you automatically approve all computers. How to change it safely", "description": "The 2609 prerequisite check flags the Automatically approve all computers option, which Microsoft plans to remove. How to see which clients depend on it, switch to trusted domain approval and approve the stragglers.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/configmgr-2609-automatic-client-approval-warning/", "keywords": "ConfigMgr"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/configmgr/">ConfigMgr</a></div><h1>ConfigMgr 2609 now warns if you automatically approve all computers. How to change it safely</h1><p class="dek">The 2609 prerequisite check flags the Automatically approve all computers option, which Microsoft plans to remove. How to see which clients depend on it, switch to trusted domain approval and approve the stragglers.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>When you run the prerequisite check for Configuration Manager 2609, you may see a new warning called <strong>Insecure client approval method</strong>. It appears on a central administration site or primary site when the hierarchy is set to <strong>Automatically approve all computers (not recommended)</strong>.</p>
+<p>It is only a warning and the upgrade will still go ahead. The important part is what comes next. Microsoft says the option is planned for removal in a future release, because it lets any computer that installs a client be trusted without anyone looking at it. When it goes, hierarchies still using it will have to change anyway, so it is better to do it on your own schedule.</p>
+<h2>What client approval actually controls</h2>
+<p>Approval only matters for clients that talk to site systems over HTTP with a self signed certificate. Approving such a client tells the site it is a trusted computer.</p>
+<p>Clients that always use HTTPS, or that use a PKI certificate over HTTP, do not need approval at all. By default the site also approves clients from the same Active Directory forest, trusted forests and connected Microsoft Entra tenants.</p>
+<p>There are three methods in the hierarchy settings, matching these PowerShell values.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th><code>Set-CMHierarchySetting</code> value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Manual approval of each computer</td>
+<td><code>ManuallyApproveEachComputer</code></td>
+</tr>
+<tr>
+<td>Automatic approval for computers in trusted domains</td>
+<td><code>AutomaticallyApproveComputersInTrustedDomains</code></td>
+</tr>
+<tr>
+<td>Automatic approval of all computers</td>
+<td><code>AutomaticallyApproveAllComputers</code></td>
+</tr>
+</tbody>
+</table>
+<p>Microsoft describes trusted domain approval as the most secure choice. Approving everything is only reasonable when something else, such as network access control, already stops untrusted machines reaching the network.</p>
+<h2>Find out who depends on the setting</h2>
+<p>Before changing anything, work out which clients would stop being approved. In practice these are workgroup machines, devices in untrusted forests and anything on HTTP that is not domain joined.</p>
+<ol>
+<li>
+<p>In the console, go to the devices list.</p>
+<p><span class="path">Assets and Compliance &gt; Devices</span></p>
+</li>
+<li>
+<p>Right click a column heading to add the <strong>Domain</strong> column if it is not showing, then sort by it. Devices whose domain is a workgroup name or a forest you do not trust are the ones to look at.</p>
+</li>
+<li>Check how those devices talk to the site. If your management points only accept HTTPS, approval does not apply to them and you can ignore them.</li>
+<li>Make a short list of the HTTP, self signed clients outside trusted domains. These are the machines you will approve by hand after the change.</li>
+</ol>
+<h2>Change the approval method</h2>
+<ol>
+<li>
+<p>Go to the sites node.</p>
+<p><span class="path">Administration &gt; Site Configuration &gt; Sites</span></p>
+</li>
+<li>
+<p>Select <strong>Hierarchy Settings</strong> in the ribbon.</p>
+</li>
+<li>Open the <strong>Client Approval and Conflicting Records</strong> tab.</li>
+<li>Change the approval method from the automatic for all computers option to automatic approval for computers in trusted domains.</li>
+<li>Select <strong>OK</strong>. The change applies to the whole hierarchy.</li>
+</ol>
+<p>If you prefer PowerShell, connect to the site drive from the console and run this.</p>
+<pre><code class="language-powershell">Set-CMHierarchySetting -ApprovalMethod AutomaticallyApproveComputersInTrustedDomains
+</code></pre>
+<p>Open <strong>Hierarchy Settings</strong> again afterwards to confirm the tab shows the new method.</p>
+<h2>Approve the clients that are left</h2>
+<p>New clients outside trusted domains will now wait for approval. Approve the ones on your list.</p>
+<ol>
+<li>In <strong>Assets and Compliance &gt; Devices</strong>, select one or more devices.</li>
+<li>Select <strong>Approve</strong> in the ribbon, or right click and choose <strong>Approve</strong>.</li>
+</ol>
+<p>Or from PowerShell, by name or through the pipeline.</p>
+<pre><code class="language-powershell">Approve-CMDevice -DeviceName &quot;WKS-LAB-01&quot;
+
+Get-CMDevice -Name &quot;WKS-LAB-01&quot; | Approve-CMDevice
+</code></pre>
+<p>A client can only be approved after it is installed and assigned to a site. If you try earlier, there is nothing to approve yet.</p>
+<p>If you ever need to stop trusting a machine, <strong>Block</strong> in the same ribbon stops it receiving policy. It only blocks communication from that client to site systems, so pair it with the usual steps if the device has been compromised.</p>
+<h2>Check the warning has gone</h2>
+<p>Run the prerequisite check again from <strong>Administration &gt; Updates and Servicing</strong> by right clicking the 2609 update and selecting <strong>Run prerequisite check</strong>. Follow <code>C:\ConfigMgrPrereq.log</code> on the site server. The <strong>Insecure client approval method</strong> line should no longer appear as a warning.</p>
+<h2>My take</h2>
+<p>This is one of those settings that was usually switched on years ago to fix a lab or a migration and then forgotten. In most hierarchies I have seen, almost every client is domain joined or on HTTPS already, so trusted domain approval changes nothing visible. The handful of workgroup kiosks or test VMs that need a manual approval are a fair price for closing a hole that let any machine with a client installer join your site. If every device already talks to the site over HTTPS, the switch is close to free, so there is no reason to leave it until Microsoft removes the option for you.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/plan-design/changes/whats-new-version-2609">Microsoft Learn on what is new in ConfigMgr 2609</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/servers/deploy/install/list-of-prerequisite-checks#insecure-client-approval-method">Microsoft Learn list of prerequisite checks, including the insecure client approval method</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/clients/manage/manage-clients">Microsoft Learn on managing clients, including approve and block</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/clients/deploy/plan/security-and-privacy-for-clients">Microsoft Learn on security and privacy for ConfigMgr clients</a></li>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/configurationmanager/set-cmhierarchysetting">Set-CMHierarchySetting reference</a></li>
+<li><a href="https://learn.microsoft.com/en-us/powershell/module/configurationmanager/approve-cmdevice">Approve-CMDevice reference</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/agent-365-activity-metrics-without-licence/"><span>Older</span>Agent usage metrics in the Microsoft 365 admin center no longer need an Agent 365 licence</a><a href="/2026/10/20/configmgr-2609-cmg-vm-size-quota-check/" style="text-align:right"><span>Newer</span>ConfigMgr 2609 moves your CMG to new Azure VM sizes. How to check vCPU quota before you upgrade</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

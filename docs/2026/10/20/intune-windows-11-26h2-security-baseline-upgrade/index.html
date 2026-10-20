@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How to move your Intune Windows security baseline to version 26H2 without a big bang | MaheshKumarSE</title>
+<meta name="description" content="The Windows 11 26H2 security baseline is in Intune, but existing profiles do not update themselves. A step by step way to create the new version, pilot it, swap assignments and retire the old profile safely.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/intune-windows-11-26h2-security-baseline-upgrade/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="How to move your Intune Windows security baseline to version 26H2 without a big bang">
+<meta property="og:description" content="The Windows 11 26H2 security baseline is in Intune, but existing profiles do not update themselves. A step by step way to create the new version, pilot it, swap assignments and retire the old profile safely.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/intune-windows-11-26h2-security-baseline-upgrade/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "How to move your Intune Windows security baseline to version 26H2 without a big bang", "description": "The Windows 11 26H2 security baseline is in Intune, but existing profiles do not update themselves. A step by step way to create the new version, pilot it, swap assignments and retire the old profile safely.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/intune-windows-11-26h2-security-baseline-upgrade/", "keywords": "Intune, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>How to move your Intune Windows security baseline to version 26H2 without a big bang</h1><p class="dek">The Windows 11 26H2 security baseline is in Intune, but existing profiles do not update themselves. A step by step way to create the new version, pilot it, swap assignments and retire the old profile safely.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>9 min read</span></div>
+</header>
+<div class="prose"><p>The Windows security baseline for Windows 11 version 26H2 arrived in Intune in the week of 5 October 2026. It brings new settings, some changed defaults and updated guidance, and it is now the latest Windows baseline in the admin center.</p>
+<p>What catches people out is that nothing happens to your existing profiles. Once a newer version exists, the settings in your current profile become read only. You can still change its name, description and assignments, but to get the 26H2 settings you have to create a new version of the profile and move devices onto it.</p>
+<p>This guide is the way I do that move so devices never sit without a baseline and you can back out in minutes.</p>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Licence.</strong> Security baselines need Microsoft Intune Plan 1.</li>
+<li><strong>Permissions.</strong> Your role needs <strong>Organization</strong> Read and <strong>Security baselines</strong> Assign, Create, Delete, Read and Update. The least privileged built in role that has these is <strong>Policy and Profile Manager</strong>.</li>
+<li><strong>Comanaged devices.</strong> If ConfigMgr also manages these devices, the <strong>Device configuration</strong> workload must be switched to Intune or the baseline will not apply.</li>
+<li><strong>Profile age.</strong> The in place <strong>Update Version</strong> option works for baseline profiles created from May 2023 onwards. Older profiles have to be rebuilt, which is covered in the troubleshooting table.</li>
+<li><strong>A pilot group.</strong> Have an Entra ID device group with a handful of real machines from different hardware models and teams. Include at least one device used for Remote Desktop and one used by a developer, because those are the people who complain first.</li>
+<li><strong>A list of your customisations.</strong> Write down every setting you changed from the Microsoft default in the current profile and the reason. You will need it when you review the new version.</li>
+<li><strong>One known gap.</strong> The <strong>Configure NetBIOS settings</strong> policy is not part of the 26H2 baseline in Intune. Microsoft says it will be added later. If you need it now, set it with a separate profile.</li>
+</ul>
+<h2>Step 1. Look at what you have</h2>
+<ol>
+<li>
+<p>Sign in to the Microsoft Intune admin center and open the baselines list.</p>
+<p><span class="path">Endpoint security &gt; Security baselines</span></p>
+<p>The list shows each baseline type with the number of profiles using it and the <strong>Last Published</strong> date.</p>
+</li>
+<li>
+<p>Select the Windows security baseline type. The <strong>Profiles</strong> pane opens with every profile created from that baseline.</p>
+</li>
+<li>Select <strong>Versions</strong> to see which baseline versions your profiles use. If more than one version is in use, deal with the oldest first so you do not end up with three versions fighting over the same devices.</li>
+<li>Open your current profile, select <strong>Properties</strong> and note the <strong>Scope tags</strong> and <strong>Assignments</strong>, including every excluded group. The new version will not copy them.</li>
+</ol>
+<h2>Step 2. Create the 26H2 version</h2>
+<ol>
+<li>Back on the <strong>Profiles</strong> pane, tick the check box next to the profile you want to move. Tick only one.</li>
+<li>Select <strong>Update Version</strong> in the toolbar.</li>
+<li>
+<p>In the <strong>Update Version</strong> pane choose one of the two options.</p>
+<ul>
+<li><strong>Accept baseline changes but keep my existing setting customizations</strong> keeps the values you changed and applies Microsoft's new defaults everywhere else. This is what most people want.</li>
+<li><strong>Accept baseline changes and discard existing setting customizations</strong> throws away your changes and gives you the plain 26H2 defaults.</li>
+</ul>
+<p>The choice applies to the whole profile. You cannot keep some customisations and drop others at this point, so pick keep and fix individual settings afterwards.</p>
+</li>
+<li>
+<p>Select <strong>Create</strong>. The <strong>Upgrade Policy</strong> workflow opens on the <strong>Basics</strong> tab.</p>
+</li>
+<li>Give it a <strong>Name</strong> that includes the version, for example <code>Windows baseline 26H2 pilot</code>. The name is required. The <strong>Description</strong> is filled in for you.</li>
+<li>On <strong>Configuration settings</strong>, expand each group and check the values against your list of customisations. New settings arrive with their default value. Settings that are not in 26H2 are gone and will no longer be enforced.</li>
+<li>On <strong>Scope tags</strong>, add the same tags as the original profile. The field starts empty.</li>
+<li>On <strong>Assignments</strong>, under <strong>Select groups to include</strong>, add only your pilot group. Leave everything else for now.</li>
+<li>On <strong>Review + create</strong>, select <strong>Create</strong>.</li>
+</ol>
+<p>The new profile appears in the <strong>Profiles</strong> list next to the old one. The old profile is untouched. It keeps its settings, name, scope tags and assignments and carries on applying to devices.</p>
+<h2>Step 3. Stop the two versions overlapping on the pilot</h2>
+<p>Two baseline profiles that set the same setting to different values on one device produce a conflict, and a conflicted setting is not applied.</p>
+<ol>
+<li>Open the original profile, select <strong>Properties</strong>, then <strong>Edit</strong> next to <strong>Assignments</strong>.</li>
+<li>Under <strong>Select groups to exclude</strong>, add the pilot group.</li>
+<li>Select <strong>Review + save</strong>.</li>
+</ol>
+<p>Now the pilot devices get only the 26H2 profile and everyone else stays on the old one.</p>
+<h2>Step 4. Check the settings that changed for real devices</h2>
+<p>Before you leave the pilot alone for a week, look at the settings that usually bite.</p>
+<ul>
+<li>Anything under <strong>Administrative Templates</strong> for <strong>Remote Assistance</strong> and <strong>Remote Desktop Services</strong>.</li>
+<li>Device control settings, such as preventing installation of devices that match certain setup classes, and BitLocker write protection for removable drives, which is enabled in the 26H2 defaults.</li>
+<li><strong>Credential Guard</strong> and virtualisation based security settings on older hardware.</li>
+<li>Local security options such as <strong>Enumerate administrator accounts on elevation</strong>.</li>
+</ul>
+<p>If your organisation also uses Administrator protection, read my post on the Remote Desktop 0xC000000D problem from earlier today before the pilot goes wide.</p>
+<h2>Verify it worked</h2>
+<ol>
+<li>Open the new profile from the <strong>Profiles</strong> pane. The overview shows <strong>Device and user check in status</strong>, plus the <strong>Device assignment status</strong> and <strong>Per setting status</strong> tiles.</li>
+<li>Select <strong>View report</strong>. The first time, select <strong>Generate report</strong> to build it. Filter on <strong>Assignment status</strong> and select <strong>Generate again</strong> after a change.</li>
+<li>Open <strong>Per setting status</strong>. Each setting shows a count of <strong>Success</strong>, <strong>Error</strong> and <strong>Conflict</strong>. You want zero in the last two.</li>
+<li>To find the cause of a problem, go to the <strong>Monitor</strong> section of the profile and open <code>Per-setting status</code>, then select the number in the <strong>Error</strong> or <strong>Conflict</strong> column to see the affected devices.</li>
+<li>
+<p>For a single device, go to the device page and look at the profile there.</p>
+<p><span class="path">Devices &gt; All devices &gt; select the device &gt; Device configuration</span></p>
+</li>
+<li>
+<p>On the device itself, collect a diagnostic report and check the policy area.</p>
+<p><code>powershell
+mdmdiagnosticstool.exe -area "DeviceEnrollment;DeviceProvisioning;Autopilot" -zip "c:\users\public\documents\MDMDiagReport.zip"</code></p>
+<p>Open <code>MDMDiagHtmlReport.html</code> from the zip. The baseline policies appear in the managed policies list with their current values. A setting that shows the old value usually means the device has not checked in since you moved it.</p>
+</li>
+</ol>
+<p>Give it time. The report can take up to 24 hours after the first assignment and up to six hours after later changes. Do not chase a missing device after one hour.</p>
+<h2>Step 5. Move everyone across</h2>
+<p>When the pilot has been clean for a week or so, move the rest of the estate in a couple of batches.</p>
+<ol>
+<li>Edit the new profile's <strong>Assignments</strong> and add the next group under <strong>Select groups to include</strong>. Add the exclusions you noted in Step 1.</li>
+<li>Edit the old profile's <strong>Assignments</strong> and add the same group under <strong>Select groups to exclude</strong>.</li>
+<li>Repeat for each batch. On the last one, remove all include groups from the old profile.</li>
+<li>Once the old profile has no groups assigned and the new one reports healthy for a few days, delete the old profile from the <strong>Profiles</strong> list.</li>
+</ol>
+<p>If you want a quick rehearsal first, use <strong>Duplicate</strong> from the profile's menu to make a test copy. The copy keeps settings and scope tags but has no assignments, so it is safe to play with.</p>
+<h2>Roll back</h2>
+<p>If the pilot breaks something, remove the pilot group from the exclusions on the old profile and from the includes on the new one. The devices go back to the old version at their next check in.</p>
+<p>Be aware that Intune does not undo settings it stops managing. When a setting leaves a baseline, the device keeps its last value until something else sets it. Each setting comes from a CSP and each CSP handles removal its own way. If a 26H2 setting caused the problem, fix it by setting the value you want in the old profile or a separate profile, rather than by simply unassigning.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Update Version</strong> is not offered for the profile</td>
+<td>The profile was created before May 2023 in the old format</td>
+<td>Use <strong>Change Version</strong>, select <strong>Export Profile Settings</strong> to save the old values, then create a fresh 26H2 profile and copy your customisations across by hand</td>
+</tr>
+<tr>
+<td>New profile shows no devices</td>
+<td>Scope tags and assignments are not carried over</td>
+<td>Add the include groups and scope tags on the new profile</td>
+</tr>
+<tr>
+<td>Settings show <strong>Conflict</strong> on pilot devices</td>
+<td>Old and new baseline, or another profile, set the same setting</td>
+<td>Exclude the pilot group from the old baseline and check device configuration profiles that set the same value</td>
+</tr>
+<tr>
+<td>Settings show <strong>Error</strong> on some models</td>
+<td>The setting is not supported on that hardware or edition</td>
+<td>Open the device's setting details to see the error, then set that value differently for the affected group</td>
+</tr>
+<tr>
+<td>You cannot edit settings in the old profile</td>
+<td>Settings become read only once a newer version exists</td>
+<td>Change settings in the 26H2 profile instead</td>
+</tr>
+<tr>
+<td>A setting stayed after you removed the baseline</td>
+<td>CSPs do not always revert when no longer managed</td>
+<td>Set the desired value explicitly with another profile</td>
+</tr>
+<tr>
+<td>NetBIOS policy missing from the 26H2 baseline</td>
+<td>It is not in this baseline yet</td>
+<td>Configure it with a separate profile until Microsoft adds it</td>
+</tr>
+</tbody>
+</table>
+<p>The step people skip is the exclusion on the old profile. Without it the pilot devices get both versions, the reports fill with conflicts and someone decides the new baseline is broken when it is really just overlapping.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/intune/whats-new/">Microsoft Learn on what is new in Intune, including the 26H2 baseline</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/security-baselines/configure-baselines">Microsoft Learn on managing security baseline profiles and updating to a new version</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/security-baselines/monitor-baselines">Microsoft Learn on monitoring security baselines</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/security-baselines/ref-windows-mdm-settings?pivots=mdm-26h2">Microsoft Learn on the default settings in the Windows 26H2 baseline</a></li>
+<li><a href="https://techcommunity.microsoft.com/blog/microsoft-security-baselines/windows-11-version-26h2-security-baseline/4560382">Microsoft Security Baselines blog on the Windows 11 version 26H2 baseline</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm-collect-logs">Microsoft Learn on collecting MDM diagnostic logs</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/intune-device-page-android-esim-updates/"><span>Older</span>Intune&#x27;s new device page, bulk eSIM actions for Android and Teams calls on Managed Home Screen</a><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/" style="text-align:right"><span>Newer</span>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

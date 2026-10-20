@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ConfigMgr 2609 moves your CMG to new Azure VM sizes. How to check vCPU quota before you upgrade | MaheshKumarSE</title>
+<meta name="description" content="Updating to ConfigMgr 2609 migrates every cloud management gateway to Dadv6 virtual machines, and the migration fails with QuotaExceeded if the subscription has no room. How to work out what you need, raise the quota and confirm the CMG is healthy afterwards.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/configmgr-2609-cmg-vm-size-quota-check/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="ConfigMgr 2609 moves your CMG to new Azure VM sizes. How to check vCPU quota before you upgrade">
+<meta property="og:description" content="Updating to ConfigMgr 2609 migrates every cloud management gateway to Dadv6 virtual machines, and the migration fails with QuotaExceeded if the subscription has no room. How to work out what you need, raise the quota and confirm the CMG is healthy afterwards.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/configmgr-2609-cmg-vm-size-quota-check/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "ConfigMgr 2609 moves your CMG to new Azure VM sizes. How to check vCPU quota before you upgrade", "description": "Updating to ConfigMgr 2609 migrates every cloud management gateway to Dadv6 virtual machines, and the migration fails with QuotaExceeded if the subscription has no room. How to work out what you need, raise the quota and confirm the CMG is healthy afterwards.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/configmgr-2609-cmg-vm-size-quota-check/", "keywords": "ConfigMgr"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/configmgr/">ConfigMgr</a></div><h1>ConfigMgr 2609 moves your CMG to new Azure VM sizes. How to check vCPU quota before you upgrade</h1><p class="dek">Updating to ConfigMgr 2609 migrates every cloud management gateway to Dadv6 virtual machines, and the migration fails with QuotaExceeded if the subscription has no room. How to work out what you need, raise the quota and confirm the CMG is healthy afterwards.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>There is one part of the ConfigMgr 2609 update that has nothing to do with your site server and everything to do with your Azure subscription. When the site updates, every cloud management gateway is moved to a new virtual machine size from the Dadv6 family. If the subscription does not have enough vCPU quota for that family in the CMG's region, the migration fails and <code>CloudMgr.log</code> fills with <code>QuotaExceeded</code>.</p>
+<p>Microsoft has added a quota check to the 2609 release notes for exactly this reason. Here is how to run it properly, with the sums worked out, before you click <strong>Install Update Pack</strong>.</p>
+<h2>Why the size is changing</h2>
+<p>CMG scale sets used Av2 and B series sizes. Those sizes are due to retire in November 2028 and are already short of capacity in some regions. With 2609, each CMG tier maps to a new size.</p>
+<table>
+<thead>
+<tr>
+<th>CMG tier</th>
+<th>Old size</th>
+<th>Old vCPU</th>
+<th>New size</th>
+<th>New vCPU</th>
+<th>New memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small</td>
+<td><code>Standard_B2s</code></td>
+<td>2</td>
+<td><code>Standard_D2ads_v6</code></td>
+<td>2</td>
+<td>8 GiB</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td><code>Standard_A2_v2</code></td>
+<td>2</td>
+<td><code>Standard_D4ads_v6</code></td>
+<td>4</td>
+<td>16 GiB</td>
+</tr>
+<tr>
+<td>Large</td>
+<td><code>Standard_A4_v2</code></td>
+<td>4</td>
+<td><code>Standard_D8ads_v6</code></td>
+<td>8</td>
+<td>32 GiB</td>
+</tr>
+</tbody>
+</table>
+<p>Medium and Large double their vCPU count. That doubling is what pushes subscriptions over their limit. The cost is described as close to the old sizes, but check it with whoever pays the Azure bill.</p>
+<p>The same update also moves CMGs from Azure Load Balancer inbound NAT rules version 1 to version 2, turns off shared key access on CMG storage and uses a Windows Server 2022 image without the old .NET 6 packages. Version 1 NAT rules retire on 30 September 2027, so 2609 is not an update to sit on for a year.</p>
+<h2>Before you start</h2>
+<ul>
+<li><strong>ConfigMgr version.</strong> The site must be on 2503 or later to take 2609 as an in console update.</li>
+<li><strong>ConfigMgr role.</strong> You need <strong>Full administrator</strong> or <strong>Infrastructure administrator</strong> to manage the CMG.</li>
+<li><strong>SQL access.</strong> Read access to the site database at the top level site, which is the CAS if you have one or the standalone primary otherwise.</li>
+<li><strong>Azure role.</strong> Contributor, or a role that includes Contributor access, on each subscription that hosts a CMG. You need it to raise a quota request.</li>
+<li><strong>Azure CLI.</strong> Installed on your admin workstation, or use Cloud Shell in the Azure portal.</li>
+<li><strong>Time.</strong> Quota requests are often approved within minutes, but some need a support ticket. Do this at least a few days before the upgrade window.</li>
+</ul>
+<h2>Step 1. List every CMG and its size</h2>
+<ol>
+<li>Open SQL Server Management Studio and connect to the site database at the top level site.</li>
+<li>
+<p>Run this query. It only reads data.</p>
+<p><code>sql
+SELECT Name, Region, SubscriptionId, VmSize, NumberOfInstances
+FROM Azure_Service;</code></p>
+<p>Expect one row per CMG. <code>VmSize</code> shows the current size, for example <code>Standard_A2_v2</code>, and <code>NumberOfInstances</code> shows how many VMs the scale set runs.</p>
+</li>
+<li>
+<p>Copy the results into a spreadsheet. Group the rows by <code>SubscriptionId</code> and <code>Region</code>, because quota is counted per subscription per region.</p>
+</li>
+</ol>
+<h2>Step 2. Work out the vCPUs you need</h2>
+<ol start="4">
+<li>For each CMG, find the new vCPU value from the table above and multiply it by <code>NumberOfInstances</code>.</li>
+<li>Add up the totals for all CMGs in the same subscription and region.</li>
+<li>Add whatever else already uses Dadv6 vCPUs in that subscription and region, such as other workloads your cloud team runs.</li>
+<li>Add headroom for temporary instances during the upgrade and later maintenance. I add at least one extra instance's worth per CMG.</li>
+</ol>
+<p>A worked example. Two Medium CMGs with two instances each, both in UK South in the same subscription. Each needs 4 vCPUs times 2 instances, so 8 vCPUs. Together that is 16 vCPUs. Add one temporary instance per CMG, another 8, and you need room for 24 Dadv6 vCPUs in UK South.</p>
+<p>Then check the second number. <strong>Total Regional vCPUs</strong> is a separate limit that counts every VM family in the region. The old CMG cores are part of the current usage figure, and during the migration both the old and new instances can exist for a while, so make sure the regional limit has room for the new total on top of what is already running.</p>
+<h2>Step 3. Check the quota with Azure CLI</h2>
+<ol start="8">
+<li>
+<p>Sign in with <code>az login</code> and run the following in PowerShell, replacing the placeholders. The subscription ID and region come from the SQL query.</p>
+<p>```powershell
+$subscriptionId = '<subscription ID>'
+$region = '<region name>'
+$usage = az vm list-usage --location $region --query "[?name.value=='standardDadv6Family']" --output json --subscription $subscriptionId
+$usage</p>
+<p>az vm list-usage --location $region --query "[?name.value=='cores']" --output json --subscription $subscriptionId
+```</p>
+<p>The first command returns the Dadv6 family entry and the second returns the total regional cores entry. Each shows the current usage and the limit.</p>
+</li>
+<li>
+<p>Subtract the current usage from the limit for each one. If the remainder is at least the number you worked out in Step 2, you are fine for that region. If the Dadv6 query returns an empty list, check the region name first. If it is right, open the <strong>Quotas</strong> page described in Step 4 and look for the family there before you go any further.</p>
+</li>
+<li>Repeat for every subscription and region pair from your spreadsheet.</li>
+</ol>
+<h2>Step 4. Raise the quota if you are short</h2>
+<ol start="11">
+<li>In the Azure portal, type "quotas" into the search box and select <strong>Quotas</strong>.</li>
+<li>On the <strong>Overview</strong> page select <strong>Compute</strong>.</li>
+<li>On <strong>My quotas</strong>, filter to the right subscription and region and select the <strong>standard Dadv6 Family vCPUs</strong> row.</li>
+<li>Select <strong>New Quota Request</strong>, then <strong>Enter a new limit</strong>.</li>
+<li>In the <strong>New Quota Request</strong> pane, type the new limit. Use the current usage plus your Step 2 figure, rounded up.</li>
+<li>Select <strong>Submit</strong>. When a family request is approved, Azure raises the regional vCPU quota for that region to match.</li>
+<li>If the request is not approved automatically, the portal offers a link to open a support request instead. For a quota that cannot be adjusted on that page, select the support icon on the row, set <strong>Quota type</strong> to <strong>Other Requests</strong>, select <strong>Next</strong>, enter the limit you need under <strong>Problem details</strong>, then <strong>Next</strong> and <strong>Create</strong>.</li>
+<li>Run the CLI commands from Step 3 again and confirm the limits now show the new values.</li>
+</ol>
+<h2>Step 5. Upgrade and watch the migration</h2>
+<ol start="19">
+<li>Install 2609 the normal way from <strong>Administration &gt; Updates and Servicing</strong>.</li>
+<li>When the site update finishes, upgrade the ConfigMgr console. The old console does not show the new CMG sizes correctly.</li>
+<li>On the top level site server, open <code>CloudMgr.log</code> from the <code>Logs</code> folder under the ConfigMgr install directory and follow it with CMTrace. You will see the deployment and status activity for each CMG as it moves.</li>
+</ol>
+<p>If the log shows a <code>QuotaExceeded</code> error, it looks like this.</p>
+<pre><code class="language-json">{
+  &quot;details&quot;: [
+    {
+      &quot;code&quot;: &quot;QuotaExceeded&quot;,
+      &quot;message&quot;: &quot;Operation could not be completed as it results in exceeding approved Total Regional Cores quota. Additional details - Deployment Model: Resource Manager, Location: &lt;Your location&gt;, Current Limit: 10, Current Usage: 8, Additional Required: 8, (Minimum) New Limit Required: 16.&quot;
+    }
+  ]
+}
+</code></pre>
+<p>The message tells you which limit you hit and the minimum new limit required. Raise that quota as in Step 4 and the migration can carry on.</p>
+<h2>Verify it worked</h2>
+<ol>
+<li>
+<p>In the console, go to the CMG node.</p>
+<p><span class="path">Administration &gt; Cloud Services &gt; Cloud Management Gateway</span></p>
+<p>Each CMG should show a healthy status, and with the new console the size column reflects the new VM size.</p>
+</li>
+<li>
+<p>Select a CMG and choose <strong>Connection analyzer</strong> in the ribbon.</p>
+</li>
+<li>Pick <strong>Microsoft Entra user</strong> and select <strong>Sign In</strong>, or pick <strong>Client certificate</strong>, then select <strong>Start</strong>. Every test should pass. Select any failed entry to read the detail in the <strong>Description</strong> field.</li>
+<li>In the Azure portal, open the CMG's virtual machine scale set and confirm the instance size is the Dadv6 size from the table.</li>
+<li>Check <code>CMGService.log</code> and <code>SMS_Cloud_ProxyConnector.log</code> on the CMG connection point server for steady traffic from internet clients. Logs from the Azure side sync to storage every five minutes, so allow up to ten minutes before you worry.</li>
+</ol>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QuotaExceeded</code> on Total Regional Cores</td>
+<td>The regional limit is too low even though the family quota is fine</td>
+<td>Raise <strong>Total Regional vCPUs</strong> for that region and let the migration retry</td>
+</tr>
+<tr>
+<td><code>QuotaExceeded</code> on the Dadv6 family</td>
+<td>No family quota or not enough for all instances</td>
+<td>Raise <strong>standard Dadv6 Family vCPUs</strong> using Step 4</td>
+</tr>
+<tr>
+<td>Dadv6 query returns nothing</td>
+<td>Wrong region name, or the family is not listed for that subscription</td>
+<td>Check the region name, then look for the family on the <strong>Quotas</strong> page and raise a support request if it is missing</td>
+</tr>
+<tr>
+<td>Console still shows old sizes</td>
+<td>The console was not upgraded after the site update</td>
+<td>Install the new console from the prompt or the site server's console setup</td>
+</tr>
+<tr>
+<td>Need more detail in <code>CloudMgr.log</code></td>
+<td>Default logging level</td>
+<td>Raise <strong>Logging level</strong> under <code>HKLM\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_CLOUD_SERVICES_MANAGER</code> and reproduce the problem</td>
+</tr>
+<tr>
+<td>Clients stop using the CMG after the move</td>
+<td>Service or connector problem</td>
+<td>Run the connection analyzer and read <code>CMGService.log</code> and <code>SMS_Cloud_ProxyConnector.log</code></td>
+</tr>
+</tbody>
+</table>
+<p>The thing that trips people up is not the family quota, which everyone checks. It is the regional total, because CMG subscriptions are often shared with other teams who quietly used up most of it. Ask your cloud team for both numbers before the change board, not on the night.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/plan-design/changes/whats-new-version-2609">Microsoft Learn on what is new in ConfigMgr 2609, including the CMG VM sizes and quota check</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/clients/manage/cmg/monitor-clients-cloud-management-gateway">Microsoft Learn on monitoring the cloud management gateway and its logs</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/core/clients/manage/cmg/plan-cloud-management-gateway">Microsoft Learn on planning a cloud management gateway</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/quotas/per-vm-quota-requests">Microsoft Learn on increasing VM family vCPU quotas</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/quotas/regional-quota-requests">Microsoft Learn on increasing regional vCPU quotas</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/configmgr/hotfix/2609/2377842">Microsoft Learn summary of changes in ConfigMgr 2609</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/configmgr-2609-automatic-client-approval-warning/"><span>Older</span>ConfigMgr 2609 now warns if you automatically approve all computers. How to change it safely</a><a href="/2026/10/20/configmgr-2609-upgrade-checklist/" style="text-align:right"><span>Newer</span>ConfigMgr 2609 is here: what changed and how to upgrade safely</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

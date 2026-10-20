@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intune can now open Defender for Endpoint during Android setup on corporate devices | MaheshKumarSE</title>
+<meta name="description" content="A new connector toggle makes Defender for Endpoint open automatically during out of box setup on fully managed and work profile Android devices. What it needs, how to switch it on and the assignment detail that decides whether it works.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/intune-android-defender-auto-launch-during-setup/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Intune can now open Defender for Endpoint during Android setup on corporate devices">
+<meta property="og:description" content="A new connector toggle makes Defender for Endpoint open automatically during out of box setup on fully managed and work profile Android devices. What it needs, how to switch it on and the assignment detail that decides whether it works.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/intune-android-defender-auto-launch-during-setup/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Intune can now open Defender for Endpoint during Android setup on corporate devices", "description": "A new connector toggle makes Defender for Endpoint open automatically during out of box setup on fully managed and work profile Android devices. What it needs, how to switch it on and the assignment detail that decides whether it works.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/intune-android-defender-auto-launch-during-setup/", "keywords": "Intune, Android, Defender"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/android/">Android</a><a class="tag" href="/topics/defender/">Defender</a></div><h1>Intune can now open Defender for Endpoint during Android setup on corporate devices</h1><p class="dek">A new connector toggle makes Defender for Endpoint open automatically during out of box setup on fully managed and work profile Android devices. What it needs, how to switch it on and the assignment detail that decides whether it works.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>One of the quieter items in the Intune September service release fixes a real annoyance for anyone rolling out Defender for Endpoint on corporate Android phones. Intune can now open the Defender app automatically during out of box setup, so the user finishes the Defender onboarding as part of enrolment instead of being chased for it a week later.</p>
+<p>It applies to corporate owned fully managed devices (COBO) and corporate owned devices with a work profile (COPE). Personally owned work profile devices are not included.</p>
+<h2>Why this matters</h2>
+<p>On Android, Defender onboarding is driven by the app. The app installs, but until the user opens it, signs in and accepts the permissions, the device does not report to Defender and does not send a risk level to Intune. If your compliance policy requires a machine risk score, those devices sit in a non compliant or unknown state and Conditional Access starts blocking mail on day one. Getting the user to open Defender during setup closes that gap.</p>
+<p>If the user skips or abandons the Defender step, the Intune setup step stays available so they can open Defender again from there.</p>
+<h2>What you need first</h2>
+<ul>
+<li>Intune and Defender for Endpoint licences for the users.</li>
+<li>The <strong>Endpoint Security Manager</strong> role, or a custom role with <strong>Read</strong> and <strong>Modify</strong> on <strong>Mobile Threat Defense</strong>.</li>
+<li>Managed Google Play connected to the tenant.</li>
+<li>The Intune connection enabled from the Defender side, so the Defender for Endpoint connector in Intune can be configured.</li>
+<li>The <strong>Microsoft Defender: Antivirus</strong> app (package <code>com.microsoft.scmx</code>) approved in Managed Google Play.</li>
+</ul>
+<p>Only one Mobile Threat Defense partner in a tenant can hold the MTD role permissions on Android. If you have another MTD vendor connected with that toggle on, you have to choose.</p>
+<h2>Turn it on</h2>
+<ol>
+<li>
+<p>Open the Defender for Endpoint connector.</p>
+<p><span class="path">Endpoint security &gt; Defender for Endpoint</span></p>
+</li>
+<li>
+<p>Under the Android settings, turn on <strong>Grant MTD role permissions to Microsoft Defender for Endpoint on enrolled Android COBO and COPE devices</strong>. The auto launch option depends on this toggle and does nothing without it.</p>
+</li>
+<li>Turn on <strong>Automatically launch Defender for Endpoint during setup on Android COBO and COPE devices</strong>.</li>
+<li>Select <strong>Save</strong>.</li>
+<li>
+<p>Go to the Defender app in the app list.</p>
+<p><span class="path">Apps &gt; All apps &gt; Microsoft Defender: Antivirus &gt; Properties &gt; Assignments</span></p>
+</li>
+<li>
+<p>Under <strong>Required</strong>, add the user groups that enrol corporate Android devices, or <strong>All devices</strong>. The reason for this choice is in the next section.</p>
+</li>
+<li>Save the assignment and check it shows under <strong>Required</strong> on the app's overview page.</li>
+</ol>
+<h2>The assignment detail that decides whether it works</h2>
+<p>Microsoft is clear that Defender has to be assigned to user groups or to all devices before the device enrols. A device group assignment depends on the device object existing in Entra and being added to the group, and that processing often finishes after setup has already moved on. If Defender is not installed by the time Intune reaches the launch step, there is nothing to open.</p>
+<p>So if you normally target apps at a dynamic device group based on enrolment profile, keep doing that for everything else, but give Defender a user group or <strong>All devices</strong> assignment. You can narrow it with an assignment filter for corporate ownership if you do not want it on personal devices.</p>
+<h2>What users see</h2>
+<p>During setup, Intune opens Defender on its own. The user signs in if asked and accepts the permission prompts. Microsoft recommends <strong>Allow all the time</strong> for location, which some users will refuse unless you tell them in advance, so put one line about it in your enrolment instructions.</p>
+<p>When they finish, setup carries on. If they back out, the Intune setup step for Defender stays in the list so they can return to it.</p>
+<h2>How to check it worked</h2>
+<ol>
+<li>Enrol a test COBO or COPE device from factory reset and watch Defender open during setup.</li>
+<li>In the Defender portal, confirm the device appears in the device inventory after onboarding.</li>
+<li>In Intune, open the device and look at the compliance status for any policy that uses the machine risk score. It should move from not evaluated to compliant once Defender reports.</li>
+</ol>
+<p>If the device never shows in Defender, the usual reasons are that the app did not install in time, the user did not complete onboarding, the Intune to Defender connection is not active, or there was a sign in or permission error inside the app.</p>
+<h2>Things to watch</h2>
+<p>This only affects devices that enrol after you turn it on. Existing devices are not prompted again, so you still need your usual chase for phones that never onboarded.</p>
+<p>The release name in the What's new list is shorter than the toggle text in the portal. When you write it up for your service desk, use the toggle label, because that is what they will see on screen.</p>
+<p>In my experience the thing that breaks this is the app assignment, not the toggle. Most teams target Defender at the same device group as every other app, see the launch step fail on the first few phones, and conclude the feature does not work. Change the assignment first and test again before you open a case.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/intune/whats-new/">Microsoft Learn on what is new in Intune, service release 2609</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/mobile-threat-defense/enable-connector">Microsoft Learn on enabling a Mobile Threat Defense connector and its Android toggles</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/microsoft-defender/deploy-android">Microsoft Learn on deploying Defender for Endpoint on Android with Intune</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-security/microsoft-defender/configure-integration">Microsoft Learn on configuring the Defender for Endpoint integration with Intune</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/endpoint-dlp-block-ftp-sftp-transfers/"><span>Older</span>How to audit and block FTP and SFTP uploads with Endpoint DLP</a><a href="/2026/10/20/intune-cname-auto-discovery-mdm-only-enrollment-ends/" style="text-align:right"><span>Newer</span>Intune stops using the EnterpriseEnrollment CNAME for Windows MDM only enrolment in January 2027</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

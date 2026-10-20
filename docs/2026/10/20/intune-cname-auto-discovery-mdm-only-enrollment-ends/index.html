@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intune stops using the EnterpriseEnrollment CNAME for Windows MDM only enrolment in January 2027 | MaheshKumarSE</title>
+<meta name="description" content="From 15 January 2027 Windows devices enrolling with Enroll only in device management will no longer find Intune through DNS. Who is affected, what users will see and how to update your enrolment steps now.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/20/intune-cname-auto-discovery-mdm-only-enrollment-ends/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Intune stops using the EnterpriseEnrollment CNAME for Windows MDM only enrolment in January 2027">
+<meta property="og:description" content="From 15 January 2027 Windows devices enrolling with Enroll only in device management will no longer find Intune through DNS. Who is affected, what users will see and how to update your enrolment steps now.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/20/intune-cname-auto-discovery-mdm-only-enrollment-ends/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-20"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Intune stops using the EnterpriseEnrollment CNAME for Windows MDM only enrolment in January 2027", "description": "From 15 January 2027 Windows devices enrolling with Enroll only in device management will no longer find Intune through DNS. Who is affected, what users will see and how to update your enrolment steps now.", "datePublished": "2026-10-20", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/20/intune-cname-auto-discovery-mdm-only-enrollment-ends/", "keywords": "Intune, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-20">20 October 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>Intune stops using the EnterpriseEnrollment CNAME for Windows MDM only enrolment in January 2027</h1><p class="dek">From 15 January 2027 Windows devices enrolling with Enroll only in device management will no longer find Intune through DNS. Who is affected, what users will see and how to update your enrolment steps now.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-20">20 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>Microsoft has announced in message center post MC1509780, published on 15 October 2026, that Intune will stop supporting DNS CNAME auto discovery for Windows MDM only enrolment. The change lands on 15 January 2027 or soon after.</p>
+<p>For most organisations this changes nothing. If your Windows devices are Entra joined or Entra hybrid joined, the enrolment does not go through this path at all. The people who will feel it are the ones who still use the <strong>Enroll only in device management</strong> link in Windows Settings and rely on a DNS record to point the device at Intune.</p>
+<h2>What actually changes</h2>
+<p>Today, when a user types their work email address into the MDM only flow, Windows looks for a CNAME called <code>EnterpriseEnrollment</code> in the user's email domain. If it finds one pointing at <code>EnterpriseEnrollment-s.manage.microsoft.com</code>, the device finds the Intune enrolment service without the user typing anything else.</p>
+<p>After the change, Intune no longer honours that lookup for MDM only enrolment. Windows will fail to discover the service and the user will be asked for the server address. The address they need is this one.</p>
+<pre><code class="language-text">https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc
+</code></pre>
+<p>A few things stay exactly as they are.</p>
+<ul>
+<li>Devices that are already enrolled stay enrolled. Nothing is re enrolled or removed.</li>
+<li>MDM only enrolment itself is still supported. Only the DNS based discovery goes away.</li>
+<li>Enrolment through Entra join and Entra hybrid join is not affected.</li>
+<li>The <code>EnterpriseRegistration</code> CNAME, which points at <code>EnterpriseRegistration.windows.net</code>, belongs to Entra device registration and is outside this change.</li>
+</ul>
+<h2>Who should care</h2>
+<p>The usual suspects are personally owned Windows devices, contractor laptops that cannot be joined, kiosks or lab machines set up by hand, and old enrolment guides that still tell users to pick <strong>Enroll only in device management</strong>. If your service desk has a script that walks users through that link, it is going to break for anyone who enrols after mid January.</p>
+<h2>Check whether you rely on it</h2>
+<ol>
+<li>
+<p>In the Intune admin center, open the Windows enrolment options.</p>
+<p><span class="path">Devices &gt; Device onboarding &gt; Enrollment &gt; Windows</span></p>
+</li>
+<li>
+<p>Under <strong>Enrollment options</strong>, open <strong>CNAME Validation</strong>, type each of your user email domains into <strong>Domain</strong> and select <strong>Test</strong>. A pass means the record exists and points at Intune, which tells you someone set this up for a reason.</p>
+</li>
+<li>
+<p>From any machine, confirm the record with a quick lookup. Replace the domain with your own.</p>
+<p><code>powershell
+Resolve-DnsName -Name EnterpriseEnrollment.contoso.com -Type CNAME</code></p>
+<p>A result whose <code>NameHost</code> is <code>EnterpriseEnrollment-s.manage.microsoft.com</code> means the record is live. An error saying the name does not exist means you never used CNAME discovery and you can stop here.</p>
+</li>
+<li>
+<p>Search your user guides, onboarding emails and service desk knowledge articles for the phrase "Enroll only in device management". Each hit needs an extra step adding the server address.</p>
+</li>
+</ol>
+<h2>Update the enrolment steps</h2>
+<p>The manual flow on the device stays almost the same. Here is how I would write it for users from January.</p>
+<ol>
+<li>Open <strong>Settings</strong>, then <strong>Accounts</strong>, then <strong>Access work or school</strong>.</li>
+<li>Select <strong>Enroll only in device management</strong>.</li>
+<li>Type your work email address and select <strong>Next</strong>.</li>
+<li>If Windows says it could not find a management endpoint for that address, enter the server address <code>https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc</code> in the box it shows and continue.</li>
+<li>Sign in with your work account and complete any multifactor prompt.</li>
+</ol>
+<p>If you would rather users never type a URL, Windows supports a deep link that opens the same MDM only flow with the values already filled in. It only opens from Microsoft Edge.</p>
+<pre><code class="language-text">ms-device-enrollment:?mode=mdm&amp;username=user@contoso.com&amp;servername=https://enrollment.manage.microsoft.com/enrollmentserver/discovery.svc
+</code></pre>
+<p>Put it behind a button on an intranet page or in an onboarding email and test it on a spare device before you send it out. The <code>servername</code> parameter is documented as the MDM server URL, so a quick test tells you whether your users get straight to the sign in page.</p>
+<p>Government cloud tenants use different host names. The US Government record points at <code>EnterpriseEnrollment-s.manage.microsoft.us</code> and the manual fallback is <code>enrollment.manage.microsoft.us</code>, so check the published endpoint for your cloud before you edit any guide.</p>
+<h2>If an enrolment fails after the change</h2>
+<p>Collect the MDM diagnostics on the device. From a PowerShell window opened as administrator, run this.</p>
+<pre><code class="language-powershell">mdmdiagnosticstool.exe -area &quot;DeviceEnrollment;DeviceProvisioning;Autopilot&quot; -zip &quot;c:\users\public\documents\MDMDiagReport.zip&quot;
+</code></pre>
+<p>The zip contains <code>MDMDiagHtmlReport.html</code> and the event logs. In Event Viewer the relevant channel is under <strong>Applications and Services Logs</strong>, <strong>Microsoft</strong>, <strong>Windows</strong>, then the DeviceManagement Enterprise Diagnostics Provider folder, in the <strong>Admin</strong> log. A discovery failure shows up there before any certificate or policy errors, which makes it easy to tell apart from a licence or enrolment restriction problem.</p>
+<h2>Should you delete the record</h2>
+<p>Microsoft has not said you must remove the <code>EnterpriseEnrollment</code> CNAME, and leaving it in place does no harm. I would leave it until February and then tidy it up with your DNS team, so nobody spends an afternoon wondering why a record exists that no longer does anything. Leave <code>EnterpriseRegistration</code> alone.</p>
+<p>The bigger win is to ask why devices are still enrolling this way at all. In most estates I have seen, MDM only enrolment survives because of one old process nobody revisited. If those devices can be Entra joined, this retirement is a good excuse to fix that instead of rewriting the old guide.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://mc.merill.net/message/MC1509780">Message center post MC1509780 on the end of CNAME auto discovery</a></li>
+<li><a href="https://techcommunity.microsoft.com/blog/intunecustomersuccess/preparing-for-end-of-support-for-cname-auto-discovery-in-windows-mdm-only-enroll/4564973">Intune Customer Success blog on preparing for the end of CNAME auto discovery</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/device-enrollment/windows/create-cname-autodiscovery">Microsoft Learn on enabling auto discovery of the Intune enrolment server</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm-enrollment-of-windows-devices">Microsoft Learn on MDM enrolment of Windows devices and the deep link format</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm-collect-logs">Microsoft Learn on collecting MDM diagnostic logs</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/intune-android-defender-auto-launch-during-setup/"><span>Older</span>Intune can now open Defender for Endpoint during Android setup on corporate devices</a><a href="/2026/10/20/intune-deployments-phased-rollout-rings/" style="text-align:right"><span>Newer</span>How to roll out apps and policies in rings with Intune deployments</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li><li><a href="/2026/10/20/microsoft-365-apps-october-2026-security-builds/"><time datetime="2026-10-20">20 October 2026</time>Microsoft 365 Apps October 2026 security update: the builds to check for and how to get there</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
