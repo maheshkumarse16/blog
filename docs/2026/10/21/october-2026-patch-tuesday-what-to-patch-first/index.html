@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>October 2026 Patch Tuesday: the five CVEs I am patching first | MaheshKumarSE</title>
+<meta name="description" content="1,411 CVEs landed in one month. These are the five that stood out on my vulnerability dashboard, why they matter on endpoints and servers, and the exact checks I use to confirm each one is closed.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="October 2026 Patch Tuesday: the five CVEs I am patching first">
+<meta property="og:description" content="1,411 CVEs landed in one month. These are the five that stood out on my vulnerability dashboard, why they matter on endpoints and servers, and the exact checks I use to confirm each one is closed.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-21"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "October 2026 Patch Tuesday: the five CVEs I am patching first", "description": "1,411 CVEs landed in one month. These are the five that stood out on my vulnerability dashboard, why they matter on endpoints and servers, and the exact checks I use to confirm each one is closed.", "datePublished": "2026-10-21", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/", "keywords": "Vulnerability Management, Windows 11, ConfigMgr, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-21">21 October 2026</time><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/configmgr/">ConfigMgr</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>October 2026 Patch Tuesday: the five CVEs I am patching first</h1><p class="dek">1,411 CVEs landed in one month. These are the five that stood out on my vulnerability dashboard, why they matter on endpoints and servers, and the exact checks I use to confirm each one is closed.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-21">21 October 2026</time><span>9 min read</span></div>
+</header>
+<div class="prose"><p>When the October data refreshed in my vulnerability dashboard, the list was longer than I have ever seen it. Microsoft fixed 1,411 CVEs this month, a record, with around 70 rated Critical. Nobody patches 1,411 things in order of CVE number, so the first job is to sort the noise from the handful that actually need to move today.</p>
+<p>These were the five that rose to the top for me, and the reasoning behind each one.</p>
+<table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>Component</th>
+<th>Why it is near the top</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CVE-2026-96951</code></td>
+<td>Windows Shell</td>
+<td>Exploited in the wild, on the CISA Known Exploited Vulnerabilities list</td>
+</tr>
+<tr>
+<td><code>CVE-2026-108398</code></td>
+<td>.NET Framework</td>
+<td>Publicly disclosed, bypasses Windows Defender Application Control</td>
+</tr>
+<tr>
+<td><code>CVE-2026-70229</code></td>
+<td>Active Directory Domain Services</td>
+<td>Remote code execution, no privileges needed, CVSS 8.1</td>
+</tr>
+<tr>
+<td><code>CVE-2026-88075</code></td>
+<td>Configuration Manager</td>
+<td>SQL injection leading to elevation of privilege over the network, CVSS 8.8</td>
+</tr>
+<tr>
+<td><code>CVE-2026-70049</code></td>
+<td>Configuration Manager</td>
+<td>SQL injection leading to elevation of privilege over an adjacent network, CVSS 8.0</td>
+</tr>
+</tbody>
+</table>
+<p>A sixth one, <code>CVE-2026-92707</code>, a denial of service in the MessagePack library used by .NET apps, was also publicly disclosed. It is rated Moderate. If you have in house .NET applications that use MessagePack, pass it to the developers. It did not change my patching order.</p>
+<h2>Why these five</h2>
+<p><strong>The Shell bypass is the only one being exploited.</strong> <code>CVE-2026-96951</code> lets an attacker get round Mark of the Web, the tag Windows puts on files that came from the internet. That tag is what triggers SmartScreen warnings and Protected View in Office. Take it away and a phishing attachment opens with no warning at all. That is exactly the kind of flaw attackers use first, which is why it is already in the CISA catalogue.</p>
+<p><strong>The .NET flaw goes after application control.</strong> <code>CVE-2026-108398</code> lets a signed in attacker place a crafted .NET assembly and get a protected process to load it, which can bypass Windows Defender Application Control. It was found by James Forshaw of Google Project Zero and the details are public. If you rely on WDAC or App Control for Business to stop unapproved code, this one undermines the control you are counting on.</p>
+<p><strong>The Active Directory flaw needs no credentials.</strong> <code>CVE-2026-70229</code> is an incorrect authorisation issue in Active Directory Domain Services that allows remote code execution over the network without privileges or user interaction. Attack complexity is rated High, which helps, but a domain controller is the last place you want unauthenticated code running. The CVE record lists Windows 10, Windows 11 and every supported Windows Server version as affected, so it comes in with the normal cumulative update everywhere. The domain controllers are what make it urgent.</p>
+<p><strong>The two ConfigMgr flaws are SQL injection.</strong> Both let a low privileged user on the network escalate privileges through the site. In most estates the ConfigMgr site server and its database can push software to every device, so elevation there means control of the fleet.</p>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Access.</strong> You need rights to view device update status in Intune, and Full Administrator or an equivalent role in Configuration Manager for the site update.</li>
+<li><strong>Know your build numbers.</strong> After the October update, Windows 11 should report build 26100.9711 (24H2), 26200.9711 (25H2), 26300.9711 (26H2), 28000.3231 (26H1) or 22621.7652 (23H2). Anything lower is missing the Shell fix.</li>
+<li><strong>Know your ConfigMgr version.</strong> The CVE records list fixed builds for 2503, 2509 and 2603. Version 2609 is not listed as affected.</li>
+<li><strong>Expedited updates in Intune have prerequisites.</strong> Intune Plan 1, a Windows licence that includes the Windows Autopatch entitlement, Pro, Enterprise or Education editions (not LTSC), devices that are Entra joined or hybrid joined, diagnostic data set to at least Required, and the Microsoft Account Sign In Assistant service (<code>wlidsvc</code>) running.</li>
+<li><strong>Read the known issues.</strong> The October update stops standard users connecting over Remote Desktop to hosts with Administrator protection turned on (error <code>0xC000000D</code>), and some USB Audio Class 1.0 devices show Code 10. Neither is a reason to hold the update, but warn the service desk first.</li>
+</ul>
+<h2>Step 1. Close the Shell bypass on endpoints</h2>
+<ol>
+<li>Confirm which devices are still below the October build. On a single device, this returns the build and the update revision.</li>
+</ol>
+<pre><code class="language-powershell">$cv = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+&quot;{0}.{1}&quot; -f $cv.CurrentBuildNumber, $cv.UBR
+</code></pre>
+<p>A patched 25H2 device returns <code>26200.9711</code> or higher. A result such as <code>26200.9650</code> means the October update is missing.</p>
+<ol start="2">
+<li>Check that <code>KB5127648</code> (or <code>KB5127646</code> on 26H1, <code>KB5126653</code> on 23H2) shows as installed.</li>
+</ol>
+<pre><code class="language-powershell">Get-HotFix | Where-Object HotFixID -in 'KB5127648','KB5127646','KB5126653'
+</code></pre>
+<p>A good result lists the KB with an <code>InstalledOn</code> date. No output means it is not there.</p>
+<ol start="3">
+<li>Across the fleet, use the Windows quality update reporting in Intune to list devices that have not reached the October build, and export the list.</li>
+<li>For the devices that are behind, create an expedited quality update profile in Intune and target the October 2026 security release. This tells eligible devices to install it straight away and skip any deferral set in your update rings.</li>
+<li>Leave the restart behaviour to your existing update rings, which is where Intune takes it from. If your rings allow long restart deadlines, shorten them for this release.</li>
+<li>Keep the Remote Desktop exception scoped. If you already turned off Administrator protection on a few RDP hosts for the <code>0xC000000D</code> issue, do not widen that group as part of this push.</li>
+</ol>
+<h2>Step 2. Make sure the .NET fix is actually installed</h2>
+<ol start="7">
+<li>The .NET Framework fixes ship as their own cumulative update for .NET Framework, separate from the Windows cumulative update. A device can be fully up to date on Windows and still be missing the .NET part, so check it on its own.</li>
+<li>Look at the installed updates on a sample device.</li>
+</ol>
+<pre><code class="language-powershell">Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 10 HotFixID, Description, InstalledOn
+</code></pre>
+<p>You should see two October entries, the Windows cumulative update and a separate .NET Framework update. If you only see one, the .NET update has not arrived.</p>
+<ol start="9">
+<li>If you use WDAC or App Control for Business on high value machines, such as privileged access workstations, jump hosts and build servers, put those first in the queue for the .NET update.</li>
+</ol>
+<h2>Step 3. Patch the domain controllers</h2>
+<ol start="10">
+<li>Patch domain controllers in your normal server window, but bring this month's window forward if you can. Do one domain controller per site first, confirm replication, then the rest.</li>
+<li>After each one restarts, confirm it took the October cumulative update and that replication is healthy.</li>
+</ol>
+<pre><code class="language-powershell">repadmin /replsummary
+</code></pre>
+<p>A good result shows <code>0</code> in the fails column for every domain controller. Any failures should be fixed before you patch the next one.</p>
+<h2>Step 4. Patch Configuration Manager</h2>
+<ol start="12">
+<li>In the console, check for the October security update for your version.</li>
+</ol>
+<p><span class="path">Administration &gt; Overview &gt; Updates and Servicing</span></p>
+<ol start="13">
+<li>Install it the same way as any in console update, then confirm the new site version.</li>
+</ol>
+<p><span class="path">Administration &gt; Site Configuration &gt; Sites</span></p>
+<ol start="14">
+<li>Compare the version against the fixed builds from the CVE records. For <code>CVE-2026-88075</code> they are 5.00.9135.1040 or later on 2503, 5.00.9141.1039 or later on 2509, and 5.00.9146.1026 or later on 2603. For <code>CVE-2026-70049</code> they are 5.00.9135.1042, 5.00.9141.1041 and 5.00.9146.1027, so the second set is the one to aim for.</li>
+<li>If you are planning the move to 2609 anyway, this is a good reason to bring it forward, since 2609 is not listed as affected.</li>
+<li>Until the site is patched, limit who can reach the site server and SQL from the network. Both flaws need an authenticated low privileged user, so anyone with an account and a network path is a candidate.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>Shell fix.</strong> Rerun the build check from step 1 on a sample of devices from each ring. Every one should report the October build or higher.</li>
+<li><strong>.NET fix.</strong> Check the same sample for the separate .NET Framework update from step 2.</li>
+<li><strong>Domain controllers.</strong> Every domain controller shows the October cumulative update and <code>repadmin /replsummary</code> shows no failures.</li>
+<li><strong>ConfigMgr.</strong> The site version in <strong>Sites</strong> matches or exceeds the fixed build for your branch.</li>
+<li><strong>Dashboard.</strong> Give your vulnerability tool a full scan cycle, then confirm the five CVEs have dropped off the exposure list. If a CVE stays open on a device that reports the right build, rescan that device before assuming the patch failed.</li>
+</ul>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device never picks up the expedited update</td>
+<td>A prerequisite is missing, often diagnostic data below Required or <code>wlidsvc</code> disabled</td>
+<td>Check the service and the diagnostic data policy on the device, then sync</td>
+</tr>
+<tr>
+<td>Device shows the October Windows build but the dashboard still flags the .NET CVE</td>
+<td>The separate .NET Framework update is not installed</td>
+<td>Check installed updates for the .NET entry and deploy it</td>
+</tr>
+<tr>
+<td>LTSC devices ignore the expedite profile</td>
+<td>LTSC is not supported for expedited updates</td>
+<td>Use an update ring with zero deferral for those devices</td>
+</tr>
+<tr>
+<td>Standard users cannot RDP after the update, error <code>0xC000000D</code></td>
+<td>Known issue with Administrator protection on the target host</td>
+<td>Apply the scoped workaround to the affected hosts only</td>
+</tr>
+<tr>
+<td>USB headset shows Code 10</td>
+<td>Known issue with some USB Audio Class 1.0 devices</td>
+<td>Microsoft is directing business customers to Support for Business</td>
+</tr>
+<tr>
+<td>ConfigMgr update not showing in the console</td>
+<td>Service connection point offline or still downloading</td>
+<td>Check <code>dmpdownloader.log</code> on the site server</td>
+</tr>
+<tr>
+<td>Replication failures after patching a domain controller</td>
+<td>Restart left a service or link unhealthy</td>
+<td>Fix replication before you move on to the next domain controller</td>
+</tr>
+</tbody>
+</table>
+<p>The part that usually catches people out this month is .NET. Teams see a compliant Windows build in their reporting, tick the box, and the WDAC bypass stays open for weeks because nobody looked at the second update. If you only change one thing in your checks, add the .NET Framework update to the list.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://www.bleepingcomputer.com/news/microsoft/microsoft-october-2026-patch-tuesday-fixes-1-411-flaws-3-zero-days/">BleepingComputer on the October 2026 Patch Tuesday fixes and zero days</a></li>
+<li><a href="https://www.fortra.com/blog/october-2026-patch-tuesday-analysis">Fortra analysis of the October 2026 Patch Tuesday</a></li>
+<li><a href="https://app.opencve.io/cve/CVE-2026-70229">CVE record for CVE-2026-70229, Active Directory Domain Services</a></li>
+<li><a href="https://app.opencve.io/cve/CVE-2026-88075">CVE record for CVE-2026-88075, Configuration Manager</a></li>
+<li><a href="https://app.opencve.io/cve/CVE-2026-70049">CVE record for CVE-2026-70049, Configuration Manager</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/intune-service/protect/windows-10-expedite-updates">Microsoft Learn on expedited Windows quality updates in Intune</a></li>
+<li><a href="https://windowsreport.com/?p=1512407">Windows Report on the KB5127648 known issues</a></li>
+<li><a href="https://www.it-connect.tech/windows-11-kb5127648-what-you-need-to-know-about-the-october-2026-update/">IT Connect on the October 2026 Windows 11 builds</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><span>Older</span>Windows 11 October 2026 update: builds, fixes and what to patch first</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><time datetime="2026-10-21">21 October 2026</time>October 2026 Patch Tuesday: the five CVEs I am patching first</a></li><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li><li><a href="/2026/10/20/onboard-linux-desktops-defender-for-endpoint/"><time datetime="2026-10-20">20 October 2026</time>How to onboard Linux desktops to Defender for Endpoint now the preview is open</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
