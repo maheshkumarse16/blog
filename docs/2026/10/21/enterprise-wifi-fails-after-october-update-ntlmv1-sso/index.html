@@ -28,7 +28,7 @@
 </header>
 <div class="layout"><main><article>
 <header class="post-head"><div class="meta"><span class="kind kind-workaround">Workaround</span><time datetime="2026-10-21">21 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/entra-id/">Entra ID</a></div><h1>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</h1><p class="dek">After KB5127648, WiFi, wired 802.1X and VPN connections that use PEAP with MSCHAPv2 stop signing in automatically on Windows 11. Why it happens, how to confirm it, and how to roll out Microsoft&#x27;s temporary workaround with an Intune remediation.</p>
-<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-21">21 October 2026</time><span>8 min read</span></div>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-21">21 October 2026</time><span>10 min read</span></div>
 </header>
 <div class="prose"><p>Over the last few days my LinkedIn feed has filled up with EUC engineers saying the same thing. The October update went out, and the next morning laptops would not join the corporate WiFi. Home networks were fine. The office WPA2 Enterprise network was not. A few people said uninstalling <code>KB5127648</code> brought WiFi back, which is the last thing you want to do this month with an exploited zero day in that update.</p>
 <p>So I spent some time digging into it. The short version is that this is not a random bug. It is a planned security change that Microsoft announced over a year ago, and it finally switched on by default with the October update. Once you know that, the fix is straightforward, and you can push it to the right devices with Intune in about fifteen minutes.</p>
@@ -48,6 +48,17 @@
 <li>Networks and VPNs that use MSCHAPv2 based authentication with single sign on, typically domain joined or hybrid joined machines</li>
 </ul>
 <p>Devices with Credential Guard turned on are not affected by this change, because Credential Guard was already blocking this behaviour. If your MSCHAPv2 WiFi worked on those machines, it was not using single sign on.</p>
+<h2>Who does not need to worry</h2>
+<p>A lot of people read "PEAP" in the reports and assume every PEAP network is broken. That is not quite right. The problem is MSCHAPv2, the password based method that usually runs inside PEAP. PEAP is only the tunnel around it. You can stop worrying if any of these describe your setup.</p>
+<ul>
+<li><strong>Your WiFi uses certificates.</strong> <code>EAP-TLS</code> and <code>PEAP-TLS</code> authenticate the device or user with a certificate, not a password, so this change does not touch them. If you already push WiFi profiles with SCEP, PKCS or Cloud PKI certificates from Intune, you are fine.</li>
+<li><strong>Your devices have Credential Guard running.</strong> Credential Guard was already blocking this kind of single sign on, so the October update changes nothing for those devices.</li>
+<li><strong>Users type their password every time.</strong> The block only applies to single sign on, where Windows reuses the signed in credentials. Manual entry still works, although Windows will no longer save the credentials.</li>
+<li><strong>You use WPA2 or WPA3 Personal.</strong> A shared passphrase does not use MSCHAPv2.</li>
+<li><strong>The device is not on Windows 11 24H2 or later.</strong> Microsoft lists Windows 11 24H2, 25H2 and 26H2 and Windows Server 2025. Macs, iPhones and Android devices are not affected either, because this is a Windows change.</li>
+<li><strong>Someone already set the value.</strong> If <code>BlockNtlmv1SSO</code> was already configured on your devices before the update, the October default does not apply to them.</li>
+</ul>
+<p>If you are not sure which method your network uses, open the WiFi profile in Intune and check the EAP type and the authentication method, or ask your network team what the RADIUS server accepts. "MSCHAPv2" or "secured password" anywhere in that answer means you are in scope.</p>
 <h2>Symptoms</h2>
 <ul>
 <li>The device does not connect to the corporate WiFi or wired 802.1X network automatically after the October update.</li>

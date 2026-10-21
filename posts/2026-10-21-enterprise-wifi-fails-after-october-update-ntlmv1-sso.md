@@ -32,6 +32,19 @@ Microsoft's Message Center post MC1508562 describes this as a planned hardening 
 
 Devices with Credential Guard turned on are not affected by this change, because Credential Guard was already blocking this behaviour. If your MSCHAPv2 WiFi worked on those machines, it was not using single sign on.
 
+## Who does not need to worry
+
+A lot of people read "PEAP" in the reports and assume every PEAP network is broken. That is not quite right. The problem is MSCHAPv2, the password based method that usually runs inside PEAP. PEAP is only the tunnel around it. You can stop worrying if any of these describe your setup.
+
+* **Your WiFi uses certificates.** `EAP-TLS` and `PEAP-TLS` authenticate the device or user with a certificate, not a password, so this change does not touch them. If you already push WiFi profiles with SCEP, PKCS or Cloud PKI certificates from Intune, you are fine.
+* **Your devices have Credential Guard running.** Credential Guard was already blocking this kind of single sign on, so the October update changes nothing for those devices.
+* **Users type their password every time.** The block only applies to single sign on, where Windows reuses the signed in credentials. Manual entry still works, although Windows will no longer save the credentials.
+* **You use WPA2 or WPA3 Personal.** A shared passphrase does not use MSCHAPv2.
+* **The device is not on Windows 11 24H2 or later.** Microsoft lists Windows 11 24H2, 25H2 and 26H2 and Windows Server 2025. Macs, iPhones and Android devices are not affected either, because this is a Windows change.
+* **Someone already set the value.** If `BlockNtlmv1SSO` was already configured on your devices before the update, the October default does not apply to them.
+
+If you are not sure which method your network uses, open the WiFi profile in Intune and check the EAP type and the authentication method, or ask your network team what the RADIUS server accepts. "MSCHAPv2" or "secured password" anywhere in that answer means you are in scope.
+
 ## Symptoms
 
 * The device does not connect to the corporate WiFi or wired 802.1X network automatically after the October update.
