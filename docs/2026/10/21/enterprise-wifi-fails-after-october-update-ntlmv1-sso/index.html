@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix | MaheshKumarSE</title>
+<meta name="description" content="After KB5127648, WiFi, wired 802.1X and VPN connections that use PEAP with MSCHAPv2 stop signing in automatically on Windows 11. Why it happens, how to confirm it, and how to roll out Microsoft&#x27;s temporary workaround with an Intune remediation.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix">
+<meta property="og:description" content="After KB5127648, WiFi, wired 802.1X and VPN connections that use PEAP with MSCHAPv2 stop signing in automatically on Windows 11. Why it happens, how to confirm it, and how to roll out Microsoft&#x27;s temporary workaround with an Intune remediation.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-21"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix", "description": "After KB5127648, WiFi, wired 802.1X and VPN connections that use PEAP with MSCHAPv2 stop signing in automatically on Windows 11. Why it happens, how to confirm it, and how to roll out Microsoft's temporary workaround with an Intune remediation.", "datePublished": "2026-10-21", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/", "keywords": "Windows 11, Intune, Entra ID"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-workaround">Workaround</span><time datetime="2026-10-21">21 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/entra-id/">Entra ID</a></div><h1>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</h1><p class="dek">After KB5127648, WiFi, wired 802.1X and VPN connections that use PEAP with MSCHAPv2 stop signing in automatically on Windows 11. Why it happens, how to confirm it, and how to roll out Microsoft&#x27;s temporary workaround with an Intune remediation.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-21">21 October 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>Over the last few days my LinkedIn feed has filled up with EUC engineers saying the same thing. The October update went out, and the next morning laptops would not join the corporate WiFi. Home networks were fine. The office WPA2 Enterprise network was not. A few people said uninstalling <code>KB5127648</code> brought WiFi back, which is the last thing you want to do this month with an exploited zero day in that update.</p>
+<p>So I spent some time digging into it. The short version is that this is not a random bug. It is a planned security change that Microsoft announced over a year ago, and it finally switched on by default with the October update. Once you know that, the fix is straightforward, and you can push it to the right devices with Intune in about fifteen minutes.</p>
+<h2>What is actually happening</h2>
+<p>Windows 11 24H2 and later removed the NTLMv1 protocol, but NTLMv1 derived cryptography is still used inside MSCHAPv2. That matters because a lot of enterprise WiFi, wired 802.1X and VPN setups still use <code>PEAP-MSCHAPv2</code> or <code>EAP-MSCHAPv2</code> with single sign on, where Windows reuses the signed in user's credentials to connect.</p>
+<p>Microsoft has been phasing this out through a registry value called <code>BlockNtlmv1SSO</code>.</p>
+<ul>
+<li><strong>0 means Audit mode.</strong> Single sign on still works and Windows logs a warning.</li>
+<li><strong>1 means Enforce mode.</strong> Windows blocks the NTLMv1 derived credentials and logs an error.</li>
+</ul>
+<p>Since late August 2025, Windows 11 24H2 and later has been running in Audit mode. With updates released on or after 13 October 2026, the default changed. <strong>If the value is not set, Windows now behaves as if it is 1.</strong> The update does not create the value, it just changes what happens when it is missing.</p>
+<p>Microsoft's Message Center post MC1508562 describes this as a planned hardening change, not a known issue. That is why you will not find it on the release health page for <code>KB5127648</code>.</p>
+<h2>Who is affected</h2>
+<ul>
+<li>Windows 11 24H2, 25H2 and 26H2, and Windows Server 2025</li>
+<li>Devices where <strong>Credential Guard is turned off</strong></li>
+<li>Networks and VPNs that use MSCHAPv2 based authentication with single sign on, typically domain joined or hybrid joined machines</li>
+</ul>
+<p>Devices with Credential Guard turned on are not affected by this change, because Credential Guard was already blocking this behaviour. If your MSCHAPv2 WiFi worked on those machines, it was not using single sign on.</p>
+<h2>Symptoms</h2>
+<ul>
+<li>The device does not connect to the corporate WiFi or wired 802.1X network automatically after the October update.</li>
+<li>Users can still connect if they type their credentials in manually, but Windows will not save them for next time.</li>
+<li>MSCHAPv2 based VPN profiles that relied on single sign on behave the same way.</li>
+<li>WPA2 Personal and certificate based networks such as EAP TLS keep working.</li>
+</ul>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Confirm the device is affected before you change anything.</strong> Use the event check in step 1. This is a security control, so you only want to relax it where you have to.</li>
+<li><strong>Licences for Remediations.</strong> Users need Windows Enterprise E3 or E5 (included in Microsoft 365 F3, E3 or E5), Windows Education A3 or A5, or Windows VDA per user. Devices must be Entra joined or hybrid joined and enrolled in Intune, or comanaged.</li>
+<li><strong>Role.</strong> You need rights to create and assign script packages in Intune.</li>
+<li><strong>A device group</strong> containing only the machines that need the exception, for example <code>Devices NTLMv1 SSO Exception</code>.</li>
+<li><strong>No restart is needed.</strong> Microsoft states the registry change takes effect without one.</li>
+<li><strong>Do not uninstall KB5127648.</strong> It fixes <code>CVE-2026-96951</code>, which is being exploited. Removing the whole update to fix WiFi is the wrong trade.</li>
+</ul>
+<h2>Step 1. Confirm the cause on an affected device</h2>
+<ol>
+<li>On a laptop that will not connect, open PowerShell as administrator.</li>
+<li>Look for NTLM events 4024 and 4025 in the NTLM operational log.</li>
+</ol>
+<pre><code class="language-powershell">Get-WinEvent -LogName 'Microsoft-Windows-NTLM/Operational' -FilterXPath &quot;*[System[(EventID=4024 or EventID=4025)]]&quot; -MaxEvents 20 |
+    Format-Table TimeCreated, Id, LevelDisplayName -AutoSize
+</code></pre>
+<ol start="3">
+<li>
+<p>Read the result.
+   * <strong>Event 4025, Error.</strong> The message says an attempt to use NTLMv1 derived credentials for single sign on was blocked by policy. This is the issue.
+   * <strong>Event 4024, Warning.</strong> The device is in Audit mode and single sign on is still allowed. Something else is wrong with the WiFi.
+   * <strong>No events.</strong> The connection is not using MSCHAPv2 single sign on, so look elsewhere, starting with the <code>Microsoft-Windows-WLAN-AutoConfig/Operational</code> log.</p>
+</li>
+<li>
+<p>Check the current registry value and Credential Guard status.</p>
+</li>
+</ol>
+<pre><code class="language-powershell">Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name BlockNtlmv1SSO -ErrorAction SilentlyContinue
+(Get-CimInstance -ClassName Win32_DeviceGuard -Namespace root\Microsoft\Windows\DeviceGuard).SecurityServicesRunning
+</code></pre>
+<p>No output from the first command means the value is not set, so the device is in Enforce mode after the October update. If the second command does not include <code>1</code>, Credential Guard is not running, which matches the affected profile.</p>
+<h2>Step 2. Build the Intune remediation</h2>
+<p>Save these two scripts as <code>.ps1</code> files with <code>UTF-8</code> encoding.</p>
+<p><strong>Detection script</strong> (<code>Detect-BlockNtlmv1SSO.ps1</code>)</p>
+<pre><code class="language-powershell">$path  = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0'
+$value = (Get-ItemProperty -Path $path -Name 'BlockNtlmv1SSO' -ErrorAction SilentlyContinue).BlockNtlmv1SSO
+
+if ($value -eq 0) {
+    Write-Output &quot;BlockNtlmv1SSO is 0 (Audit mode)&quot;
+    exit 0
+}
+
+Write-Output &quot;BlockNtlmv1SSO is '$value' (Enforce mode or not set)&quot;
+exit 1
+</code></pre>
+<p><strong>Remediation script</strong> (<code>Remediate-BlockNtlmv1SSO.ps1</code>)</p>
+<pre><code class="language-powershell">$path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0'
+
+if (-not (Test-Path $path)) {
+    New-Item -Path $path -Force | Out-Null
+}
+
+New-ItemProperty -Path $path -Name 'BlockNtlmv1SSO' -PropertyType DWord -Value 0 -Force | Out-Null
+Write-Output &quot;BlockNtlmv1SSO set to 0 (Audit mode)&quot;
+exit 0
+</code></pre>
+<p>An exit code of 1 from the detection script tells Intune the issue is present, so it runs the remediation. Any other exit code means no action.</p>
+<ol start="5">
+<li>In the Intune admin center, open the remediations area.</li>
+</ol>
+<p><span class="path">Devices &gt; Manage devices &gt; Scripts and remediations</span></p>
+<ol start="6">
+<li>Select <strong>Create script package</strong>.</li>
+<li>On <strong>Basics</strong>, set <strong>Name</strong> to something clear like <code>WiFi NTLMv1 SSO Audit mode exception</code> and add a description that links to your change record.</li>
+<li>On <strong>Settings</strong>, upload the detection script as the <strong>Detection script file</strong> and the remediation script as the <strong>Remediation script file</strong>.</li>
+<li>Set <code>Run this script using the logged-on credentials</code> to <strong>No</strong>. The script writes to <code>HKLM</code>, so it must run as SYSTEM.</li>
+<li>Set <strong>Enforce script signature check</strong> to <strong>No</strong> unless you sign your scripts, and leave <code>Run script in 64-bit PowerShell</code> at <strong>No</strong>. The <code>HKLM\SYSTEM</code> hive is not redirected for 32 bit processes, so it makes no difference here.</li>
+<li>Select <strong>Next</strong>, add scope tags if you use them, then on <strong>Assignments</strong> add your exception device group.</li>
+<li>Set the schedule to <strong>Hourly</strong> with a value of 1 for the first day so devices pick it up quickly, then change it to <strong>Daily</strong> once the affected devices are back online.</li>
+<li>Review and create.</li>
+</ol>
+<h2>Step 3. Keep the exception scoped</h2>
+<ol start="14">
+<li>Only add devices you have confirmed in step 1, or whole groups that you know connect to an MSCHAPv2 network. Do not assign this to All devices.</li>
+<li>Record the exception with an end date. Microsoft describes Audit mode as "a scoped, temporary security exception" because it lowers the protection that Enforce mode gives.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li>In Intune, go back to <strong>Devices &gt; Manage devices &gt; Scripts and remediations</strong>, open the package and select <strong>Device status</strong>. Affected devices should show that the issue was found and fixed, and the output column shows <code>BlockNtlmv1SSO set to 0</code>.</li>
+<li>On a device, rerun the registry check from step 1. It should now return <code>BlockNtlmv1SSO : 0</code>.</li>
+<li>Ask the user to disconnect and reconnect to the corporate network. It should join without asking for credentials.</li>
+<li>Rerun the event check. New entries should be <strong>4024</strong> warnings, not 4025 errors. That confirms single sign on is working in Audit mode.</li>
+</ul>
+<h2>Roll back</h2>
+<p>When you are ready to go back to the secure default, which should be once your WiFi and VPN use certificates:</p>
+<ol>
+<li>Edit the remediation script to set the value to <code>1</code> instead of <code>0</code>, and update the detection script to check for <code>1</code>, or</li>
+<li>Remove the assignment and deploy a one off script that deletes the value, since a missing value now means Enforce mode.</li>
+</ol>
+<pre><code class="language-powershell">Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0' -Name 'BlockNtlmv1SSO' -ErrorAction SilentlyContinue
+</code></pre>
+<p>After the change, event 4025 should reappear on any device that still tries MSCHAPv2 single sign on. That gives you a list of what is left to migrate.</p>
+<h2>The real fix</h2>
+<p>The registry value buys time. The long term answer from Microsoft is to move WiFi and VPN from MSCHAPv2 to certificate based authentication, <code>EAP-TLS</code> or <code>PEAP-TLS</code>, and to turn on Credential Guard where the hardware supports it. In Intune, Credential Guard is a Settings catalog policy under the <strong>Device Guard</strong> category, setting <strong>Credential Guard</strong>, with the options <strong>Enabled with UEFI lock</strong> or <strong>Enabled without lock</strong>. Pick the second one if you want to be able to switch it off remotely.</p>
+<p>Be aware that turning on Credential Guard also stops MSCHAPv2 single sign on, so do it together with the certificate migration, not before.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remediation shows as run but WiFi still fails</td>
+<td>The device logs no 4024 or 4025 events, so it is a different problem</td>
+<td>Check the WLAN AutoConfig operational log and the RADIUS server logs</td>
+</tr>
+<tr>
+<td>Detection keeps reporting the issue after remediation</td>
+<td>Another policy or script sets the value back to 1</td>
+<td>Search your scripts and baselines for <code>BlockNtlmv1SSO</code> and remove the conflict</td>
+</tr>
+<tr>
+<td>Script package never runs on a device</td>
+<td>Licence or join state does not meet the Remediations prerequisites</td>
+<td>Confirm the user licence and that the device is Entra joined or hybrid joined</td>
+</tr>
+<tr>
+<td>Users connect manually but credentials are not saved</td>
+<td>Device is still in Enforce mode</td>
+<td>Confirm the device is in the exception group and has synced</td>
+</tr>
+<tr>
+<td>VPN still prompts after WiFi is fixed</td>
+<td>VPN profile uses a different authentication method</td>
+<td>Check the VPN profile's EAP settings, the same registry value covers MSCHAPv2 based VPN too</td>
+</tr>
+<tr>
+<td>Devices with Credential Guard on still cannot use MSCHAPv2 single sign on</td>
+<td>Credential Guard blocks it regardless of this value</td>
+<td>Move those devices to certificate based authentication</td>
+</tr>
+</tbody>
+</table>
+<p>What surprised me most when reading through this is how long the warning has been there. Event 4024 has been logging on Windows 11 24H2 devices since late August 2025, telling anyone who looked exactly which connections would break. If you collect that event centrally, it is worth adding to your dashboards now, because the next round of NTLM hardening will not be the last.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://support.microsoft.com/help/5066470">Microsoft Support KB5066470 on the NTLMv1 changes in Windows 11 24H2 and Windows Server 2025</a></li>
+<li><a href="https://mc.merill.net/message/MC1508562">Message Center MC1508562 on NTLMv1 hardening and network connections</a></li>
+<li><a href="https://windowsreport.com/?p=1512387">Windows Report on KB5127648 and WPA2 Enterprise PEAP authentication</a></li>
+<li><a href="https://borncity.com/news/windows-updates-microsoft-bestaetigt-wpa-802-1x-ausfaelle-in-firmennetzen/">Borncity on Microsoft confirming 802.1X failures in company networks</a></li>
+<li><a href="https://learn.microsoft.com/en-us/intune/intune-service/fundamentals/remediations">Microsoft Learn on Remediations in Intune</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/configure">Microsoft Learn on configuring Credential Guard</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><span>Older</span>Windows 11 October 2026 update: builds, fixes and what to patch first</a><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/" style="text-align:right"><span>Newer</span>October 2026 Patch Tuesday: the five CVEs I am patching first</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><time datetime="2026-10-21">21 October 2026</time>October 2026 Patch Tuesday: the five CVEs I am patching first</a></li><li><a href="/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/"><time datetime="2026-10-21">21 October 2026</time>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</a></li><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li><li><a href="/2026/10/20/remote-desktop-0xc000000d-administrator-protection/"><time datetime="2026-10-20">20 October 2026</time>Remote Desktop fails with 0xC000000D when Administrator protection is on</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
