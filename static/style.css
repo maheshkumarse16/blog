@@ -120,3 +120,8 @@ aside p { margin: 0; color: var(--muted); line-height: 1.5; }
 .prose figure img { display: block; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
 .prose figcaption { font-family: var(--f-display); font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
 .prose .path { font-family: var(--f-display); font-size: 0.92rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 8px 12px; display: block; margin: 0 0 1em; }
+
+/* Comments */
+.comments { max-width: 68ch; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--rule); }
+.comments h2 { font-family: var(--f-display); font-size: 1.3rem; margin: 0 0 6px; }
+.comments-note { color: var(--muted); font-size: 0.95rem; margin: 0 0 16px; }

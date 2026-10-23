@@ -45,6 +45,27 @@ TYPES = ["What's new", "Known issue", "Fix", "Workaround", "How to"]
 FONTS = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap"
 
 
+COMMENTS = """<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>"""
+
+
 def esc(s):
     return html.escape(str(s), quote=True)
 
@@ -215,6 +236,7 @@ def build():
 </header>
 <div class="prose">{p["html"]}</div>
 {nav}
+{COMMENTS}
 </article>"""
         write(p["path"], page(p["title"], body, path=p["path"], description=p["description"], head_extra=head_extra, sidebar=side))
 
