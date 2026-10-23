@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027 | MaheshKumarSE</title>
+<meta name="description" content="Microsoft is retiring Windows 365 User settings in Intune. Existing policies will not migrate on their own, and from January 2027 they stop applying, which takes local admin and point in time restore with them. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027">
+<meta property="og:description" content="Microsoft is retiring Windows 365 User settings in Intune. Existing policies will not migrate on their own, and from January 2027 they stop applying, which takes local admin and point in time restore with them. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-23"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027", "description": "Microsoft is retiring Windows 365 User settings in Intune. Existing policies will not migrate on their own, and from January 2027 they stop applying, which takes local admin and point in time restore with them. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings.", "datePublished": "2026-10-23", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/", "keywords": "Cloud PC, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-23">23 October 2026</time><a class="tag" href="/topics/cloud-pc/">Cloud PC</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</h1><p class="dek">Microsoft is retiring Windows 365 User settings in Intune. Existing policies will not migrate on their own, and from January 2027 they stop applying, which takes local admin and point in time restore with them. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-23">23 October 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>We have been working through this change in our own environment over the last couple of weeks, and it is one of those Microsoft retirements that looks small in the Message Center but can quietly break things if nobody owns it. So I wanted to write up what we found and the order we did it in, in case it saves someone else the head scratching.</p>
+<h2>What is changing</h2>
+<p>Windows 365 <strong>User settings</strong> is being retired. It is the policy type in Intune that most of us have used for years to do three things on Cloud PCs.</p>
+<ul>
+<li>Make users local administrators on their Cloud PC</li>
+<li>Set how often restore points are taken and let users restore their own Cloud PC</li>
+<li>Control disaster recovery options</li>
+</ul>
+<p>Microsoft is replacing it with a single <strong>Cloud PC Settings</strong> framework in Intune. The old capabilities are split across two new profile types, <strong>Cloud PC Configuration</strong> and <strong>Windows App settings</strong>.</p>
+<p>The important part is in Message Center post MC1418556. <strong>Existing User settings policies will not be migrated automatically.</strong> You have to recreate them yourself.</p>
+<h2>Why Microsoft is doing it</h2>
+<p>Microsoft's reason is consolidation. Windows 365 settings were spread across several separate experiences, and the new framework brings them into one place so they are managed the same way and scale better. In practice it also lines Cloud PC settings up with how the rest of Intune works, rather than being a special case.</p>
+<h2>When</h2>
+<p>The timeline was revised on 3 September 2026. The current dates are:</p>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>October 2026</td>
+<td>You can no longer create new User settings policies. The tab shows as <strong>User settings (legacy)</strong> and is greyed out. You can still edit existing ones.</td>
+</tr>
+<tr>
+<td>November 2026</td>
+<td>Existing User settings policies become read only.</td>
+</tr>
+<tr>
+<td>January 2027</td>
+<td>User settings are fully retired. Existing policies stop applying to anyone.</td>
+</tr>
+</tbody>
+</table>
+<p>If you are reading this in late October, the first stage has already happened. From November you will not even be able to tweak an old policy, so the sensible window to do this work is now.</p>
+<h2>What breaks if you do nothing</h2>
+<p>After January 2027, any Cloud PC that relied on a User settings policy will lose what it gave them.</p>
+<ul>
+<li>Users who were local admins on their Cloud PC through User settings lose those rights.</li>
+<li>Point in time restore stops behaving the way you configured it, and users lose the ability to restore their own Cloud PC.</li>
+<li>Disaster recovery settings defined there no longer apply.</li>
+</ul>
+<p>Microsoft lists it as a breaking change. The admin impact is high, even though most users will not notice until something they rely on is missing.</p>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Role.</strong> You need an Intune role that can manage Windows 365, such as Intune Administrator or Windows 365 Administrator.</li>
+<li><strong>Access to Microsoft Graph PowerShell</strong> if you want to export the old policies rather than copying them by hand. The read only scope <code>CloudPC.Read.All</code> is enough.</li>
+<li><strong>A list of the groups</strong> each policy is assigned to. These are user groups.</li>
+<li><strong>A test user with a Cloud PC</strong> in a group you can assign on its own.</li>
+<li><strong>Know the conflict rule.</strong> If a user is in more than one User settings policy, Intune uses the <strong>most recently created</strong> policy and ignores the rest. The last modified date does not count. Keep this in mind when you compare old and new behaviour.</li>
+<li><strong>Windows 365 Flex Cloud PCs in Shared mode</strong> never used User settings, so they are not part of this work.</li>
+</ul>
+<h2>Step 1. Inventory every User settings policy</h2>
+<ol>
+<li>In the Intune admin center, open the existing policies.</li>
+</ol>
+<p><span class="path">Devices &gt; Cloud PC Settings</span></p>
+<ol start="2">
+<li>Open each policy on the <strong>User settings (legacy)</strong> tab and write down its name, its assigned groups and these three values.
+   * <strong>Enable local admin</strong>
+   * <strong>Allow user to initiate restore service</strong>
+   * <code>Frequency of restore-point service</code></li>
+<li>If you have more than a handful, export them with Graph instead. This lists every policy with its assignments.</li>
+</ol>
+<pre><code class="language-powershell">Connect-MgGraph -Scopes &quot;CloudPC.Read.All&quot;
+
+$uri = &quot;https://graph.microsoft.com/v1.0/deviceManagement/virtualEndpoint/userSettings?`$expand=assignments&quot;
+$settings = (Invoke-MgGraphRequest -Method GET -Uri $uri).value
+
+$settings | ForEach-Object {
+    [pscustomobject]@{
+        Name          = $_.displayName
+        Created       = $_.createdDateTime
+        LocalAdmin    = $_.localAdminEnabled
+        UserReset     = $_.resetEnabled
+        RestorePoints = ($_.restorePointSetting | ConvertTo-Json -Compress)
+        Groups        = ($_.assignments.target.groupId -join &quot;, &quot;)
+    }
+} | Export-Csv .\W365UserSettings.csv -NoTypeInformation
+</code></pre>
+<p>A good result is a CSV with one row per policy. <code>LocalAdmin</code> and <code>UserReset</code> show <code>True</code> or <code>False</code>, and <code>RestorePoints</code> shows the frequency and whether user restore is allowed. If the file is empty, check that you signed in with an account that can read Windows 365 settings.</p>
+<ol start="4">
+<li>Sort the list by the <strong>Created</strong> column. Where a user is in more than one policy, the newest one is the one actually in effect today. That is the behaviour you need to reproduce, not the older policies.</li>
+</ol>
+<h2>Step 2. Decide what each setting becomes</h2>
+<p>Before you build anything, map each value to its new home. We found it easiest to agree this with the team first so nobody recreated things twice.</p>
+<ol start="5">
+<li><strong>User self service actions go to Windows App settings.</strong> This profile has the options <strong>Enable Users to Reset their Cloud PC</strong> and <strong>Allow Users to Initiate a Restore</strong>. When they are off, only IT can reset or restore.</li>
+<li><strong>Cloud PC level settings go to Cloud PC Configuration.</strong> That covers local admin, restore point frequency and disaster recovery, which Microsoft lists as moving into Cloud PC Settings.</li>
+<li>Take the opportunity to tidy up. If you have several old policies that only differ slightly, this is a good moment to cut them down to two or three clear profiles with no overlapping groups.</li>
+</ol>
+<h2>Step 3. Create the new profiles</h2>
+<ol start="8">
+<li>Open the new settings area.</li>
+</ol>
+<p><span class="path">Devices &gt; Windows 365 &gt; Settings &gt; Create</span></p>
+<ol start="9">
+<li>Choose <strong>Cloud PC Configuration</strong> and recreate the local admin, restore point frequency and disaster recovery values from your inventory. Both new profile types are marked preview at the time of writing, so the field names may not match the old ones word for word. Match on meaning, not on label.</li>
+<li>Assign it to the same groups as the old policy it replaces. Check on the assignment page whether the profile targets users or devices, and pick the matching groups. Do not assume it works the same way as the old user based policy.</li>
+<li>Go back to <strong>Create</strong>, choose <strong>Windows App settings</strong>, and set <strong>Enable Users to Reset their Cloud PC</strong> and <strong>Allow Users to Initiate a Restore</strong> to match the old values.</li>
+<li>Assign it the same way.</li>
+</ol>
+<h2>Step 4. Pilot before you touch the old policies</h2>
+<ol start="13">
+<li>Assign the new profiles to your test group first, not to production groups.</li>
+<li>Ask the test user to <strong>sign out and sign back in</strong> to the Cloud PC. Local admin rights in particular only change at sign in.</li>
+<li>Run the checks in the next section. Only when the pilot looks right, add the production groups to the new profiles.</li>
+<li>Leave the old User settings policies in place until you have confirmed the new ones on real users. They become read only in November, but they keep applying until January, so they are a safety net for now.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>Local admin.</strong> On the test Cloud PC, open PowerShell and check the local Administrators group.</li>
+</ul>
+<pre><code class="language-powershell">Get-LocalGroupMember -Group &quot;Administrators&quot; | Select-Object Name, PrincipalSource
+</code></pre>
+<p>If local admin is meant to be on, the user's account should appear in the list. If it is meant to be off, it should not.</p>
+<ul>
+<li><strong>Restore points.</strong> In the Intune admin center, open the Cloud PC and check that restore points are being created at the interval you set. Remember there is a limit of 10 restore points, so a shorter interval gives you a shorter history.</li>
+<li><strong>User restore and reset.</strong> In Windows App, the test user should see the restore and reset options only if you enabled them.</li>
+<li><strong>No surprises for other users.</strong> Pick one user from each production group and repeat the local admin check after they have signed in again.</li>
+</ul>
+<h2>Retire the old policies</h2>
+<ol start="17">
+<li>Once every group is covered by the new profiles and verified, remove the assignments from the old User settings policies, then delete them.</li>
+</ol>
+<p><span class="path">Devices &gt; Cloud PC Settings</span></p>
+<p>Select the menu on the policy row, choose <strong>Delete</strong>, then <strong>Yes</strong>.</p>
+<ol start="18">
+<li>Update your build documentation, runbooks and service desk articles that mention User settings.</li>
+<li>Brief the service desk that local admin and restore now come from different profiles, so they look in the right place when a ticket comes in.</li>
+</ol>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User lost local admin after you changed profiles</td>
+<td>User has not signed out since the change, or is in a group the new profile does not cover</td>
+<td>Ask them to sign out and in, then check group membership against the profile assignment</td>
+</tr>
+<tr>
+<td>User has local admin you did not expect</td>
+<td>They are still in an old User settings policy, and the newest created one wins</td>
+<td>Check every old policy they are in and remove the assignment</td>
+</tr>
+<tr>
+<td>Restore option missing in Windows App</td>
+<td><strong>Allow Users to Initiate a Restore</strong> is off in the Windows App settings profile, or the user is not in its assigned group</td>
+<td>Check the profile value and assignment</td>
+</tr>
+<tr>
+<td>Restore history shorter than expected</td>
+<td>Restore point interval is short and only 10 points are kept</td>
+<td>Increase the interval</td>
+</tr>
+<tr>
+<td>Graph export returns nothing</td>
+<td>Account lacks permission to read Windows 365 settings</td>
+<td>Sign in with a Windows 365 or Intune administrator and consent to <code>CloudPC.Read.All</code></td>
+</tr>
+<tr>
+<td>Custom script that adds users to Administrators stops working</td>
+<td>Turning local admin off in a profile removes those rights</td>
+<td>Move the script's logic into the profile, or exclude those users</td>
+</tr>
+</tbody>
+</table>
+<p>The part that caught us out was the conflict rule. A few users were in two old policies, and the one in effect was not the one anyone expected, because it was simply the newest. Sorting the export by created date before rebuilding anything saved us from copying the wrong values into the new profiles.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://www.itelio.com/en/microsoft-message-center/mc1418556">Message Center MC1418556 on Windows 365 User settings moving to the new settings framework</a></li>
+<li><a href="https://pupuweb.com/mc1418556-windows-365-user-settings-transition-to-the-new-settings-framework/">Summary of MC1418556 with the admin actions</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows-365/enterprise/assign-users-as-local-admin">Microsoft Learn on making users local admins on Cloud PCs</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows-365/enterprise/restore-configure">Microsoft Learn on configuring point in time restore</a></li>
+<li><a href="https://learn.microsoft.com/en-us/graph/api/resources/cloudpcusersetting">Microsoft Graph reference for cloudPcUserSetting</a></li>
+<li><a href="https://www.anoopcnair.com/cloud-pc-configurations-and-windows-app-intune/">Anoop C Nair on the new Cloud PC Configuration and Windows App settings</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><span>Older</span>October 2026 Patch Tuesday: the five CVEs I am patching first</a></nav>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/"><time datetime="2026-10-23">23 October 2026</time>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</a></li><li><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><time datetime="2026-10-21">21 October 2026</time>October 2026 Patch Tuesday: the five CVEs I am patching first</a></li><li><a href="/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/"><time datetime="2026-10-21">21 October 2026</time>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</a></li><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li><li><a href="/2026/10/20/upgrade-sharepoint-agent-files-before-march-2027/"><time datetime="2026-10-20">20 October 2026</time>How to find and upgrade SharePoint .agent files before they stop working in March 2027</a></li><li><a href="/2026/10/20/replace-office-ltsc-2021-after-end-of-support/"><time datetime="2026-10-20">20 October 2026</time>Office LTSC 2021 is out of support. How to replace it with Microsoft 365 Apps</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
