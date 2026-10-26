@@ -7,6 +7,10 @@ description: "Microsoft Certification Week is giving away 100% exam vouchers thr
 tags: [Intune, ConfigMgr, Windows 11, macOS, iOS, Android, Cloud PC, AVD, Defender, Purview, Vulnerability Management, Entra ID, Microsoft 365, Copilot]
 ---
 
+<figure>
+<img src="/images/2026/10/microsoft-certification-week-voucher.jpg" alt="Microsoft Certification Week infographic showing how to get a free exam voucher and some of the eligible certifications" width="1536" height="1024">
+</figure>
+
 This one is not a fix or a known issue. It is simply advice, and it is time sensitive.
 
 For Microsoft Certification Week, Microsoft is sponsoring **free exam vouchers that cover the full cost of a role based certification exam**, handed out through the [LevelUp for Microsoft](https://learn.mslevelup.com/learner_modules/list/1776182) learning platform. I went through it myself this week. I completed a prep course, scored over 80% on the practice exam, and my voucher is secured. If you have been putting off a certification because of the exam fee, this is the time to stop putting it off.
@@ -43,6 +47,10 @@ A couple of exams people often ask about, such as `SC-300` and `AZ-500`, are not
 ## Step by step
 
 Here is exactly what to do, with the links you need at each stage.
+
+<figure class="banner">
+<img src="/images/2026/10/microsoft-certification-week-voucher-steps.jpg" alt="Four steps to the voucher: enrol in an eligible course, complete the Welcome to Cert Prep module, pass the practice test with 80% or above, get a 100% discounted exam voucher" width="870" height="250">
+</figure>
 
 ### Part 1. Check you are eligible
 

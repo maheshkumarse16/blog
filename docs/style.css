@@ -125,3 +125,4 @@ aside p { margin: 0; color: var(--muted); line-height: 1.5; }
 .comments { max-width: 68ch; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--rule); }
 .comments h2 { font-family: var(--f-display); font-size: 1.3rem; margin: 0 0 6px; }
 .comments-note { color: var(--muted); font-size: 0.95rem; margin: 0 0 16px; }
+.prose figure.banner img { width: 100%; border-radius: 10px; }
