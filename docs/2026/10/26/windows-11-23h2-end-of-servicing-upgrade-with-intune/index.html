@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune | MaheshKumarSE</title>
+<meta name="description" content="The November 2026 Patch Tuesday is the last security update for Windows 11 23H2 Enterprise and Education. A step by step guide to finding every remaining 22H2 and 23H2 device, moving them to a supported version with an Intune feature update policy, and clearing the usual blockers.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune">
+<meta property="og:description" content="The November 2026 Patch Tuesday is the last security update for Windows 11 23H2 Enterprise and Education. A step by step guide to finding every remaining 22H2 and 23H2 device, moving them to a supported version with an Intune feature update policy, and clearing the usual blockers.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-26"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune", "description": "The November 2026 Patch Tuesday is the last security update for Windows 11 23H2 Enterprise and Education. A step by step guide to finding every remaining 22H2 and 23H2 device, moving them to a supported version with an Intune feature update policy, and clearing the usual blockers.", "datePublished": "2026-10-26", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/", "keywords": "Windows 11, Intune, Vulnerability Management"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-26">26 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a></div><h1>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune</h1><p class="dek">The November 2026 Patch Tuesday is the last security update for Windows 11 23H2 Enterprise and Education. A step by step guide to finding every remaining 22H2 and 23H2 device, moving them to a supported version with an Intune feature update policy, and clearing the usual blockers.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-26">26 October 2026</time><span>7 min read</span></div>
+</header>
+<div class="prose"><p>Every estate has them. The handful of laptops that missed the last feature update because they were in a drawer, on a long leave, stuck on a safeguard hold or simply never in the right group. For Windows 11 23H2 Enterprise and Education, that tail now has a hard deadline.</p>
+<p><strong>The 10 November 2026 security update is the last one for 23H2 Enterprise and Education.</strong> From December, any 23H2 device stops getting security fixes, and it will start lighting up in every vulnerability report you run. 22H2 Enterprise and Education already reached end of servicing in October 2025, so anything still on 22H2 is already unpatched.</p>
+<p>That leaves about two weeks. Here is how I would use them.</p>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Licences and roles.</strong> Feature update policies need Microsoft Intune Plan 1 and a Windows licence that includes the Windows Autopatch entitlement. To create policies you need the Policy and Profile manager role, or a custom role with the Device configurations permissions. To view reports, Read Only Operator or Help Desk Operator is enough.</li>
+<li><strong>Device requirements.</strong> Devices must be Intune managed and Entra joined or hybrid joined, running Pro, Pro Education, Enterprise or Education. Enterprise LTSC is not supported by feature update policies.</li>
+<li><strong>Diagnostic data</strong> must be set to at least <strong>Required</strong>.</li>
+<li><strong>The Microsoft Account Sign In Assistant service</strong> (<code>wlidsvc</code>) must be enabled and running. This one is disabled by hardening scripts more often than you would think.</li>
+<li><strong>Pick your target version.</strong> Windows 11 25H2 is the obvious choice for most estates, or 26H2 if you have already tested it. 24H2 Enterprise is supported until October 2027, but there is little point upgrading to something that old.</li>
+<li><strong>A pilot group</strong> of a few 23H2 devices whose users will tell you quickly if something breaks.</li>
+</ul>
+<h2>Step 1. Find every device still on 22H2 or 23H2</h2>
+<p>Windows 11 23H2 reports an OS version starting <code>10.0.22631</code>, and 22H2 reports <code>10.0.22621</code>.</p>
+<ol>
+<li>In the Intune admin center, open the device list.</li>
+</ol>
+<p><span class="path">Devices &gt; All devices</span></p>
+<ol start="2">
+<li>Add a filter on <strong>OS</strong> for Windows, then sort or filter on the <strong>OS version</strong> column and look for versions starting <code>10.0.22631</code> and <code>10.0.22621</code>.</li>
+<li>Export the list. For more than a few hundred devices, Graph is quicker and easier to repeat.</li>
+</ol>
+<pre><code class="language-powershell">Connect-MgGraph -Scopes &quot;DeviceManagementManagedDevices.Read.All&quot;
+
+$uri = &quot;https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?`$filter=operatingSystem eq 'Windows'&amp;`$select=deviceName,osVersion,userPrincipalName,lastSyncDateTime,complianceState&quot;
+$devices = @()
+do {
+    $page = Invoke-MgGraphRequest -Method GET -Uri $uri
+    $devices += $page.value
+    $uri = $page.'@odata.nextLink'
+} while ($uri)
+
+$devices |
+    Where-Object { $_.osVersion -like '10.0.22631*' -or $_.osVersion -like '10.0.22621*' } |
+    Select-Object deviceName, osVersion, userPrincipalName, lastSyncDateTime, complianceState |
+    Sort-Object lastSyncDateTime |
+    Export-Csv .\Win11-23H2-and-22H2.csv -NoTypeInformation
+</code></pre>
+<p>A good result is a CSV of the devices you need to move. Sorting by <code>lastSyncDateTime</code> puts the ones that have not checked in for weeks at the top. Those are rarely an upgrade problem. They are an asset problem, so hand that list to whoever owns hardware.</p>
+<ol start="4">
+<li>Put the devices that synced in the last 14 days into an Entra device group, for example <code>Win11 FU 23H2 Remediation</code>. Those are the ones a feature update policy can actually reach before the deadline.</li>
+</ol>
+<h2>Step 2. Check nothing is holding them back</h2>
+<p>Most stragglers are not broken. Something in policy is quietly stopping them.</p>
+<ol start="5">
+<li>Check the update rings assigned to these devices. If a device is targeted by both a feature update policy and an update ring, set <strong>Feature update deferral period (days)</strong> to <strong>0</strong> in the ring. Otherwise the ring deferral delays the feature update.</li>
+<li>Make sure feature updates are <strong>not paused</strong> in that ring.</li>
+<li>Check that diagnostic data is set to <strong>Required</strong> or higher and that <code>wlidsvc</code> is not disabled by a script or baseline. On a sample device you can confirm the service like this.</li>
+</ol>
+<pre><code class="language-powershell">Get-Service wlidsvc | Select-Object Name, Status, StartType
+</code></pre>
+<p><code>StartType</code> should be <code>Manual</code> or <code>Automatic</code>, not <code>Disabled</code>. The service starts on demand, so a <code>Stopped</code> status on its own is fine.</p>
+<ol start="8">
+<li>Check free disk space on a few of the oldest devices. A full feature update needs plenty of room, and small SSDs full of OneDrive files are one of the most common reasons an upgrade sits at "pending" for weeks.</li>
+</ol>
+<h2>Step 3. Create the feature update policy</h2>
+<ol start="9">
+<li>Open the feature updates area.</li>
+</ol>
+<p><span class="path">Devices &gt; Windows &gt; Windows updates &gt; Feature updates</span></p>
+<ol start="10">
+<li>Select <strong>Create profile</strong>.</li>
+<li>On <strong>Deployment settings</strong>, enter a <strong>Name</strong> such as <code>Windows 11 25H2 for 23H2 remediation</code> and a short description.</li>
+<li>In <strong>Feature update to deploy</strong>, select your target version, for example Windows 11, version 25H2. Only versions that are still supported appear in the list.</li>
+<li>Choose <strong>Make available to users as a required update</strong>. With only two weeks left, an optional update is not going to get you there. The optional choice also needs a Windows Autopatch licence.</li>
+<li>Under <strong>Rollout options</strong>, decide how fast to go. If the group is small, make it available straight away. If it is a few thousand devices, spread it over several days so you are not pulling the whole payload over the network in one morning.</li>
+<li>Select <strong>Next</strong>, assign the policy to your pilot group first, then select <strong>Next</strong> again.</li>
+<li>On <strong>Review + create</strong>, check the settings and select <strong>Create</strong>.</li>
+</ol>
+<h2>Step 4. Pilot, then widen</h2>
+<ol start="17">
+<li>Give the pilot a day or two. Ask those users to leave their devices on and connected overnight.</li>
+<li>Once the pilot devices report the new version, edit the policy and add your full remediation group.</li>
+<li>Remind users about restarts. The restart experience, deadlines and active hours still come from your update rings, so if those are relaxed, consider a tighter deadline ring just for this group until the deadline passes.</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>In Intune.</strong> Open <strong>Devices &gt; Windows &gt; Windows updates &gt; Feature updates</strong> to see your profile's assignment and support status. For per device progress, go to <strong>Reports &gt; Windows Updates</strong>, open the <strong>Reports</strong> tab and run the <strong>Feature Updates report</strong> for your policy.</li>
+<li><strong>Readiness.</strong> In the Windows feature updates organisational report, a device in the <code>OfferReady</code> state has finished policy processing and will be offered the update at its next scan.</li>
+<li><strong>On the device.</strong> After the upgrade, confirm the version.</li>
+</ul>
+<pre><code class="language-powershell">(Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion').DisplayVersion
+</code></pre>
+<p>A device moved to 25H2 returns <code>25H2</code>. If it still returns <code>23H2</code> after a few days, check the troubleshooting table below.</p>
+<ul>
+<li><strong>Rerun the Graph export from step 1</strong> every couple of days. The list should shrink towards zero, or towards just the devices that are not syncing at all.</li>
+</ul>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device never shows as offered</td>
+<td>Diagnostic data below Required, or <code>wlidsvc</code> disabled</td>
+<td>Fix the policy or script that sets them, then sync the device</td>
+</tr>
+<tr>
+<td>Report shows the device is held</td>
+<td>A Microsoft safeguard hold applies to that hardware or driver</td>
+<td>Check the hold details in the report, update the driver or firmware, or target a different version</td>
+</tr>
+<tr>
+<td>Upgrade stuck downloading or pending for days</td>
+<td>Low disk space or a slow or metered connection</td>
+<td>Free up space, check OneDrive usage, and make sure the device is on a decent network overnight</td>
+</tr>
+<tr>
+<td>Device installed a quality update but not the feature update</td>
+<td>Update ring defers or pauses feature updates</td>
+<td>Set <strong>Feature update deferral period (days)</strong> to 0 and unpause feature updates</td>
+</tr>
+<tr>
+<td>Upgrade rolls back after restart</td>
+<td>Driver or app compatibility, often older security or VPN agents</td>
+<td>Read <code>setuperr.log</code> and <code>setupact.log</code> under <code>C:\$WINDOWS.~BT\Sources\Panther</code>, or run Microsoft's SetupDiag tool, then update the driver or agent</td>
+</tr>
+<tr>
+<td>Device removed from the group never gets the update</td>
+<td>Devices that drop out of a feature update policy are not offered a feature update until they are assigned a new one</td>
+<td>Keep devices in the group until they have upgraded</td>
+</tr>
+<tr>
+<td>Enterprise LTSC devices ignored</td>
+<td>LTSC is not supported by feature update policies</td>
+<td>Leave LTSC alone, it has its own lifecycle</td>
+</tr>
+</tbody>
+</table>
+<p>In most estates I have seen, the real work here is step 2, not step 3. Creating the policy takes five minutes. Finding out that one old update ring was pausing feature updates for a whole department is what eats the day, so check the rings before you blame the devices.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://www.it-connect.tech/windows-11-kb5127648-what-you-need-to-know-about-the-october-2026-update/">IT Connect on the October 2026 update and the end of updates for 23H2 Enterprise and Education</a></li>
+<li><a href="https://www.neoteo.com/en/microsoft-adds-a-remote-desktop-issue-to-its-october-windows-11-update">Neoteo on the November 2026 end of updates for 23H2 Enterprise and Education</a></li>
+<li><a href="https://learn.microsoft.com/lt-LT/mem/intune/protect/windows-10-feature-updates">Microsoft Learn on Windows feature update prerequisites and update ring interaction in Intune</a></li>
+<li><a href="https://learn.microsoft.com/lt-lt/intune/device-updates/windows/configure-feature-update-policy">Microsoft Learn on creating a Windows feature update policy and its reports</a></li>
+<li><a href="https://www.anoopcnair.com/windows-11-feature-update-deployment-policy/">Anoop C Nair on upgrading with the Intune feature update deployment policy</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/"><span>Older</span>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</a><a href="/2026/10/26/windows-11-october-preview-update-what-to-watch/" style="text-align:right"><span>Newer</span>Coming up this week: the Windows 11 October preview update and what to watch for</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/26/windows-11-october-preview-update-what-to-watch/"><time datetime="2026-10-26">26 October 2026</time>Coming up this week: the Windows 11 October preview update and what to watch for</a></li><li><a href="/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/"><time datetime="2026-10-26">26 October 2026</time>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune</a></li><li><a href="/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/"><time datetime="2026-10-23">23 October 2026</time>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</a></li><li><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><time datetime="2026-10-21">21 October 2026</time>October 2026 Patch Tuesday: the five CVEs I am patching first</a></li><li><a href="/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/"><time datetime="2026-10-21">21 October 2026</time>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</a></li><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

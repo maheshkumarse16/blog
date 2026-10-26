@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coming up this week: the Windows 11 October preview update and what to watch for | MaheshKumarSE</title>
+<meta name="description" content="Microsoft&#x27;s optional preview update for Windows 11 usually lands in the fourth week of the month. A short note on what I am hoping it fixes, what it will not change, and how to handle it safely before the November Patch Tuesday.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/26/windows-11-october-preview-update-what-to-watch/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Coming up this week: the Windows 11 October preview update and what to watch for">
+<meta property="og:description" content="Microsoft&#x27;s optional preview update for Windows 11 usually lands in the fourth week of the month. A short note on what I am hoping it fixes, what it will not change, and how to handle it safely before the November Patch Tuesday.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/26/windows-11-october-preview-update-what-to-watch/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-26"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Coming up this week: the Windows 11 October preview update and what to watch for", "description": "Microsoft's optional preview update for Windows 11 usually lands in the fourth week of the month. A short note on what I am hoping it fixes, what it will not change, and how to handle it safely before the November Patch Tuesday.", "datePublished": "2026-10-26", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/26/windows-11-october-preview-update-what-to-watch/", "keywords": "Windows 11, Vulnerability Management"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-10-26">26 October 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/vulnerability-management/">Vulnerability Management</a></div><h1>Coming up this week: the Windows 11 October preview update and what to watch for</h1><p class="dek">Microsoft&#x27;s optional preview update for Windows 11 usually lands in the fourth week of the month. A short note on what I am hoping it fixes, what it will not change, and how to handle it safely before the November Patch Tuesday.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-26">26 October 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>A quick heads up for this week. Microsoft normally releases the optional non security preview update for Windows 11 in the fourth week of the month, so the October preview should appear in the next few days. I will write it up properly once it is out and the release notes are published, but here is what I will be looking for and how I plan to handle it.</p>
+<h2>What a preview update is, and is not</h2>
+<p>The preview update is optional. It carries the non security fixes and changes that will roll into the next Patch Tuesday, which this time is <strong>10 November 2026</strong>. It contains no new security fixes, so there is no security reason to rush it onto the fleet.</p>
+<p>What it does give you is an early look. If something you are fighting today is fixed in the preview, you can test it on a few devices now, and then you know what to expect when the same fix arrives in the November security update.</p>
+<h2>What I am hoping to see fixed</h2>
+<p>There are two open known issues on the October update, <code>KB5127648</code>, that a lot of us are living with.</p>
+<ul>
+<li><strong>Remote Desktop error <code>0xC000000D</code> for standard users.</strong> Standard users cannot connect over RDP to Windows 11 devices with Administrator protection turned on. Microsoft has said a fix is coming in a future update. If it lands in the preview, that is the moment to plan removing any Administrator protection exceptions you put in place on your RDP hosts. I covered the workaround in an earlier post.</li>
+<li><strong>Some USB Audio Class 1.0 devices showing Code 10 or playing no sound.</strong> Microsoft has limited this to that device class. If you have users with older USB headsets or DACs, this is the one they will be asking about.</li>
+</ul>
+<p>When the release notes come out, these are the first two things I will check for.</p>
+<h2>What the preview will not change</h2>
+<p><strong>The enterprise WiFi and VPN sign in change is not a bug, so do not expect a fix for it.</strong> Since the October update, Windows blocks NTLMv1 derived credentials for single sign on by default on devices without Credential Guard. That breaks automatic sign in on networks that use PEAP or EAP with MSCHAPv2. Microsoft describes this as a planned hardening change. The temporary workaround is the <code>BlockNtlmv1SSO</code> registry value, and the real fix is moving to certificate based authentication. I wrote up the full Intune remediation for it last week. A preview update will not undo it.</p>
+<h2>How I handle preview updates</h2>
+<ul>
+<li><strong>Do not push it to everyone.</strong> Previews are optional for a reason. The same fixes arrive in the November Patch Tuesday along with the security fixes, so most devices should simply wait for that.</li>
+<li><strong>Install it by hand on a few test devices.</strong> Pick devices that represent your real problems, such as an RDP host with Administrator protection, a laptop with one of the affected USB audio devices, and a standard build. Install the preview from Windows Update on those devices only.</li>
+<li><strong>Check the release notes for anything that touches your stack.</strong> Preview notes are often long. Search them for the things you care about, such as Remote Desktop, Windows Hello, BitLocker, VPN, Secure Boot and printing.</li>
+<li><strong>Watch the known issues section.</strong> A preview can introduce new problems too, and the known issues section is the first place they appear.</li>
+</ul>
+<h2>A forum report I am keeping an eye on</h2>
+<p>On 22 October someone posted on Microsoft Q&amp;A that, after the October updates, BitLocker encrypted data drives opened with the right key but then showed up as RAW instead of NTFS. It is a single report from one machine, the cause has not been identified and Microsoft has not commented. I am not treating it as a known issue. I mention it only so that if you see something similar, you know you are not the first, and you report it through Feedback Hub with as much detail as you can.</p>
+<h2>The dates to keep in mind</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>This week</td>
+<td>Windows 11 October optional preview update expected</td>
+</tr>
+<tr>
+<td>10 November 2026</td>
+<td>November Patch Tuesday, and the last security update for Windows 11 23H2 Enterprise and Education</td>
+</tr>
+<tr>
+<td>November 2026</td>
+<td>Windows 365 User settings policies become read only</td>
+</tr>
+</tbody>
+</table>
+<p>If you still have 23H2 devices, that 10 November date is the one to worry about, not the preview. I have written a separate guide on finding them and upgrading them with an Intune feature update policy.</p>
+<p>I will update this post with the actual KB number and the confirmed fixes once Microsoft publishes the preview.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://windowsreport.com/?p=1512407">Windows Report on the KB5127648 Remote Desktop and USB audio known issues</a></li>
+<li><a href="https://bleepingcomputer.com/news/security/microsoft-recent-windows-updates-may-trigger-remote-desktop-failures">BleepingComputer on the Remote Desktop failures with Administrator protection</a></li>
+<li><a href="https://mc.merill.net/message/MC1508562">Message Center MC1508562 on the NTLMv1 hardening change</a></li>
+<li><a href="https://learn.microsoft.com/en-us/answers/questions/6046419/windows-11-october-2026-updates-bitlocker-drives-b">Microsoft Q&amp;A report of BitLocker drives showing as RAW after the October updates</a></li>
+<li><a href="https://www.it-connect.tech/windows-11-kb5127648-what-you-need-to-know-about-the-october-2026-update/">IT Connect on the October update and the 23H2 end of updates</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/"><span>Older</span>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/26/windows-11-october-preview-update-what-to-watch/"><time datetime="2026-10-26">26 October 2026</time>Coming up this week: the Windows 11 October preview update and what to watch for</a></li><li><a href="/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/"><time datetime="2026-10-26">26 October 2026</time>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune</a></li><li><a href="/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/"><time datetime="2026-10-23">23 October 2026</time>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</a></li><li><a href="/2026/10/21/october-2026-patch-tuesday-what-to-patch-first/"><time datetime="2026-10-21">21 October 2026</time>October 2026 Patch Tuesday: the five CVEs I am patching first</a></li><li><a href="/2026/10/21/enterprise-wifi-fails-after-october-update-ntlmv1-sso/"><time datetime="2026-10-21">21 October 2026</time>Enterprise WiFi stopped connecting after the October update? Here is the cause and the Intune fix</a></li><li><a href="/2026/10/20/windows-11-october-2026-update-kb5127648/"><time datetime="2026-10-20">20 October 2026</time>Windows 11 October 2026 update: builds, fixes and what to patch first</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
