@@ -137,9 +137,11 @@ If you later enable Machine Identity Isolation on purpose, do it only after ever
 
 ## What I took from helping the others
 
-The first instinct for most people was a password problem, and a password reset does nothing for a broken secure channel. Once the domain functional level and the registry value were checked, the cause was clear.
+Some friends hit this on their own accounts. Each of them could not sign in with the right password, and their first assumption was that the account or the password was the problem. That is the natural reaction, and it sends people down the wrong path, including account lockouts and password resets that change nothing.
 
-If you see this in your estate, check the domain first. The Windows side is quick to fix. Finding out why the feature was enabled in a domain that does not support it takes longer, so start there.
+What helped them most was telling them straight away that this is a known issue. Microsoft has documented it on the release health dashboard, with a cause, a fix in KB5124010 and workarounds. Once they knew it was a known problem with the update and not something wrong with their account, they stopped chasing the password and looked at the device's trust with the domain instead.
+
+If you see this in your estate, check the Microsoft release health entry first. Then check the domain functional level before you touch the device, because finding out why the feature was enabled in a domain that does not support it takes longer than the Windows side of the fix.
 
 <div class="refs" markdown="1">
 
