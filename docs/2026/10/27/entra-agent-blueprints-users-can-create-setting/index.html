@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Users can create agent blueprints from November: check the Entra setting now (MC1506733) | MaheshKumarSE</title>
+<meta name="description" content="Microsoft is letting ordinary users in Entra create agent blueprints by default from 4 November 2026, under message MC1506733. This step by step guide shows where the setting lives, what the default means, how to set it to No, and how to check your existing agents before the rollout reaches your directory.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/10/27/entra-agent-blueprints-users-can-create-setting/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Users can create agent blueprints from November: check the Entra setting now (MC1506733)">
+<meta property="og:description" content="Microsoft is letting ordinary users in Entra create agent blueprints by default from 4 November 2026, under message MC1506733. This step by step guide shows where the setting lives, what the default means, how to set it to No, and how to check your existing agents before the rollout reaches your directory.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/10/27/entra-agent-blueprints-users-can-create-setting/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-10-27"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Users can create agent blueprints from November: check the Entra setting now (MC1506733)", "description": "Microsoft is letting ordinary users in Entra create agent blueprints by default from 4 November 2026, under message MC1506733. This step by step guide shows where the setting lives, what the default means, how to set it to No, and how to check your existing agents before the rollout reaches your directory.", "datePublished": "2026-10-27", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/10/27/entra-agent-blueprints-users-can-create-setting/", "keywords": "Entra ID, Microsoft 365, Copilot"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-10-27">27 October 2026</time><a class="tag" href="/topics/entra-id/">Entra ID</a><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a><a class="tag" href="/topics/copilot/">Copilot</a></div><h1>Users can create agent blueprints from November: check the Entra setting now (MC1506733)</h1><p class="dek">Microsoft is letting ordinary users in Entra create agent blueprints by default from 4 November 2026, under message MC1506733. This step by step guide shows where the setting lives, what the default means, how to set it to No, and how to check your existing agents before the rollout reaches your directory.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-10-27">27 October 2026</time><span>7 min read</span></div>
+</header>
+<div class="prose"><p>Microsoft has announced message MC1506733, and it changes who can create agent blueprints in Microsoft Entra. Until now, a blueprint was something only administrators created. From 4 November 2026, with the rollout finishing in late November, any user without a built in or custom Entra role will be able to create one unless an administrator turns the setting off.</p>
+<p>I checked the setting before writing this up. The setting is shown below. In the directory I checked, it is set to <strong>No</strong>, so ordinary users cannot create blueprints. That is the position I recommend for most organisations. The rest of this post explains what the setting does, what the default means for you, and what to check before the change reaches your directory.</p>
+<figure>
+<img src="/images/2026/10/entra-agent-blueprints-setting.png" alt="Microsoft Entra admin center showing Users User settings with the Default user role permissions list. The setting Users can register agent identity blueprints is set to No and is circled in red." width="1818" height="865">
+</figure>
+
+<h2>What an agent blueprint is</h2>
+<p>An AI agent is a program that signs in and acts using its own identity in Entra. A blueprint is the template that agent identities are built from. It defines how an agent is set up and how it signs in. Creating a blueprint is the first step in making a new agent.</p>
+<p>That makes it a control point. Whoever can create blueprints can decide what new agent identities look like and how they authenticate, so the setting deserves the same care as the one that controls app registrations.</p>
+<h2>What the default means for you</h2>
+<p>Microsoft's change makes the default <strong>Yes</strong> for ordinary users from 4 November. An ordinary user is anyone without a built in or custom Entra role. Admins and people holding the Agent ID Developer role can still create blueprints whatever the setting says.</p>
+<p>Two things to note from the change.</p>
+<ul>
+<li>Turning the setting off does not delete blueprints or agents that already exist.</li>
+<li>The setting is separate from <strong>Users can register applications</strong>. A directory that has blocked app registrations is not automatically protected from this change, so check both settings.</li>
+</ul>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Role.</strong> You need at least the Cloud Application Administrator role to change the setting.</li>
+<li><strong>Know your current position.</strong> Open the setting and record what it says now. The screenshot above shows <strong>No</strong> in the directory I checked, which means nothing changes for users until Microsoft's rollout reaches it. Yours may be different.</li>
+<li><strong>Know who holds the Agent ID Developer role.</strong> Those people can still create blueprints even with the setting off, so you need their names before you start.</li>
+<li><strong>Decide who should create agents.</strong> Agree the answer with the people who own agent use cases. In most organisations that is a small group, and everyone else should go through them.</li>
+</ul>
+<h2>The steps, in order</h2>
+<ol>
+<li>
+<p><strong>Open the Microsoft Entra admin center.</strong> Sign in with an account that has the Cloud Application Administrator role or higher.</p>
+</li>
+<li>
+<p><strong>Go to the user settings.</strong> Select <strong>Entra ID</strong>, then <strong>Users</strong>, then <strong>User settings</strong>. The page opens on the user settings list in the centre column.</p>
+</li>
+<li>
+<p><strong>Find the Default user role permissions section.</strong> This section holds the switches that apply to ordinary users. It sits near the top of the page, below the Learn more link.</p>
+</li>
+<li>
+<p><strong>Find the agent blueprint switch.</strong> Look for <strong>Users can register agent identity blueprints</strong>. This is the switch shown circled in the screenshot. Microsoft's own documentation may call it <strong>Users can create agent blueprints</strong>. Both names refer to the same setting.</p>
+</li>
+<li>
+<p><strong>Read the current value.</strong> The switch shows Yes or No. If it shows Yes, ordinary users can create blueprints now, and you should change it. If it shows No, you are already protected from this change.</p>
+</li>
+<li>
+<p><strong>Set it to No.</strong> Turn the switch off and save. Use the same change window you use for other user setting changes, so the change is traceable.</p>
+</li>
+<li>
+<p><strong>Check the app registration switch.</strong> Look at <strong>Users can register applications</strong> in the same section. Set it to whatever your application governance says. This switch controls a different risk, but it is part of the same decision.</p>
+</li>
+<li>
+<p><strong>Review who can create agents.</strong> Admins and Agent ID Developers can still create blueprints. Review the assignments for those roles and check that each person still needs them.</p>
+</li>
+<li>
+<p><strong>Move privileged roles to eligible.</strong> Where you use Privileged Identity Management, assign the Agent ID Developer role as eligible rather than permanent. Users then activate it only when they need it.</p>
+</li>
+<li>
+<p><strong>Inventory existing blueprints and agents.</strong> Make a list of every agent identity blueprint and agent that exists in the directory now. For each one, record the owner, what it does and whether it is still needed. Blueprints created before the change keep working, so this list is your starting point for a review.</p>
+</li>
+<li>
+<p><strong>Check the sign in and audit logs.</strong> Look for agent sign ins and for blueprint creation events in your audit logs. Note any that come from accounts you do not expect. This gives you a baseline before the change, so you can compare later.</p>
+</li>
+<li>
+<p><strong>Record the decision.</strong> Write down the date, the value you set, who approved it and why. Add a note to review the setting every month, because Microsoft may change it again.</p>
+</li>
+<li>
+<p><strong>Tell the helpdesk and service owners.</strong> Explain that ordinary users cannot create agent blueprints, and give them a route for requests. Without this, the first person to try will open a ticket and nobody will know the answer.</p>
+</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>Setting.</strong> Reopen <strong>User settings</strong> and confirm that <strong>Users can register agent identity blueprints</strong> shows <strong>No</strong>.</li>
+<li><strong>Test as an ordinary user.</strong> Sign in with a standard test account that has no Entra role and try to create a blueprint. It should be refused. If the test account can still create one, check the Default user role permissions again and confirm the change has saved.</li>
+<li><strong>Admin path.</strong> Sign in with an admin account and confirm that the admin can still create a blueprint. This confirms the change is limited to ordinary users.</li>
+<li><strong>Inventory.</strong> Compare the inventory from step 10 with the list of blueprints now in the directory. Any new blueprint you did not expect is a finding to investigate.</li>
+</ul>
+<h2>Roll back</h2>
+<p>If a team needs ordinary users to create blueprints, you can set the switch back to Yes. Do this only with a documented reason, a named owner and a review date. Keep the decision record from step 12 up to date when you do.</p>
+<p>Rolling back does not change anything that already exists. The inventory from step 10 still applies, so keep it current whether the switch is Yes or No.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The switch is missing from the page</td>
+<td>Your role does not allow you to see the setting</td>
+<td>Sign in with an account that has the Cloud Application Administrator role or higher</td>
+</tr>
+<tr>
+<td>A user can still create a blueprint after you set it to No</td>
+<td>The change has not saved, or the user holds a role such as Agent ID Developer</td>
+<td>Reopen the setting, then check the user's role assignments</td>
+</tr>
+<tr>
+<td>The label on your page is different</td>
+<td>Microsoft has renamed the setting in the portal</td>
+<td>Look for the switch with the agent blueprint wording, and check the Learn more link</td>
+</tr>
+<tr>
+<td>An existing agent stops working after the change</td>
+<td>Turning the switch off does not remove existing agents, so the cause is elsewhere</td>
+<td>Check the agent's sign in logs and its owner, then look at any recent policy change</td>
+</tr>
+<tr>
+<td>You are unsure whether a blueprint is needed</td>
+<td>The owner is no longer in the business or the use case has ended</td>
+<td>Put the blueprint on the review list from step 10 and agree a removal date with the owner</td>
+</tr>
+</tbody>
+</table>
+<h2>Priorities for this week</h2>
+<p>Check the switch now. It takes a few minutes, and it means the change is already in place when the rollout reaches your directory. Then do the inventory and the log check, because those tell you whether anyone has already created agents you did not expect. The rest of the steps can follow on your normal review cycle.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://mc.ai-news.cz/message/MC1506733">Microsoft message center post MC1506733 on users creating agent blueprints in Microsoft Entra</a></li>
+<li><a href="https://precloud.us/blog/mc1506733-entra-users-create-agent-blueprints">precloud.us summary of MC1506733 with the admin steps</a></li>
+<li><a href="https://lazyadmin.nl/office-365/microsoft-entra-lets-users-create-agent-blueprints-by-default/">LazyAdmin on Microsoft Entra letting users create agent blueprints by default</a></li>
+<li><a href="https://office365itpros.com/2026/10/15/agent-blueprint-option/">Office365ITPros on the agent blueprint option</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/27/domain-trust-failed-machine-identity-isolation-26h2/"><span>Older</span>Domain trust relationship failed after the September 2026 updates: Machine Identity Isolation and how to fix it</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/10/27/entra-agent-blueprints-users-can-create-setting/"><time datetime="2026-10-27">27 October 2026</time>Users can create agent blueprints from November: check the Entra setting now (MC1506733)</a></li><li><a href="/2026/10/27/domain-trust-failed-machine-identity-isolation-26h2/"><time datetime="2026-10-27">27 October 2026</time>Domain trust relationship failed after the September 2026 updates: Machine Identity Isolation and how to fix it</a></li><li><a href="/2026/10/26/windows-11-october-preview-update-what-to-watch/"><time datetime="2026-10-26">26 October 2026</time>Coming up this week: the Windows 11 October preview update and what to watch for</a></li><li><a href="/2026/10/26/windows-11-23h2-end-of-servicing-upgrade-with-intune/"><time datetime="2026-10-26">26 October 2026</time>Windows 11 23H2 Enterprise support ends on 10 November: find the stragglers and upgrade them with Intune</a></li><li><a href="/2026/10/26/hurry-up-free-microsoft-certification-voucher/"><time datetime="2026-10-26">26 October 2026</time>Hurry up, free Microsoft certification vouchers are available for Certification Week</a></li><li><a href="/2026/10/23/windows-365-user-settings-deprecation-migrate-to-cloud-pc-settings/"><time datetime="2026-10-23">23 October 2026</time>Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
