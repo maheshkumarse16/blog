@@ -9,7 +9,7 @@ tags: [Windows 11, Intune]
 
 A few friends asked me about this one this week, so I thought it was worth writing up for everyone. The symptom is simple to describe and frustrating to live with. An Always On VPN connection hangs on Connecting. The first attempt fails, and every attempt after that either hangs again or reports that the specified port is already in use. The user can see the network, but the tunnel never comes up, so internal sites and file shares stop working.
 
-This is not a one off. The issue affects Windows 11 24H2 and later after the September 2026 security updates. Microsoft tracks it in its release health dashboard under the issue reference WI1482218. The reports I checked say Microsoft first marked it as resolved on 13 October 2026, then changed the status back to Mitigated. That means a permanent fix is still being worked on, and there is no confirmed date for it.
+This is not a one off. The issue affects Windows 11 24H2 and later after the September 2026 security updates. The reports I checked say Microsoft tracks it under the issue reference WI1482218, and that Microsoft first marked it as resolved on 13 October 2026, then reopened it as Mitigated. I could not find this entry on Microsoft's own release health pages, so treat the reference and status as reported rather than confirmed. Reports say a permanent fix is still being worked on, with no confirmed date.
 
 Until that fix ships, you can avoid the problem. The workaround is to stop the VPN profile from choosing its protocol automatically, and to set it to one protocol that your VPN gateway supports. This post covers how to confirm the problem, make the change, check it and roll it out safely.
 
@@ -48,7 +48,7 @@ Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 5
 
    You should see the September 2026 security update in the list, and ideally KB5127648 or later after you install it.
 
-3. **Check the issue status.** Open Microsoft's release health dashboard and search for WI1482218. Note the current status, because it tells you whether the fix is still pending.
+3. **Check the issue status.** Open Microsoft's release health dashboard for your version and search for WI1482218 or for Always On VPN. If you cannot find it there, that matches what I found, so rely on your own testing and your support case with Microsoft.
 
 4. **Find where the profile is defined.** Work out whether your Always On VPN profile is set in an Intune configuration profile, in a Settings catalog policy, or in a ProfileXML file. Each one changes the setting in a different place, so start by finding the one that applies to your devices.
 

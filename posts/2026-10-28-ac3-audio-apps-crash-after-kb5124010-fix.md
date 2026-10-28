@@ -9,7 +9,7 @@ tags: [Windows 11, Intune]
 
 A few friends asked me about this one too, so I thought it was worth writing up for everyone. The symptom is hard to pin down at first. An app or a game runs fine, then closes without any error as soon as it plays a certain kind of audio, such as music or an audio clip in a game. Nothing is written to the screen, so users blame the app, the game or their own machine.
 
-The cause is the AC3 audio codec, also known as Dolby Digital. Windows has a built in decoder for AC3 audio, and some older apps depend on it. After the September 2026 update KB5124010, that decoder path failed for these apps. The reports I checked say the problem affects Windows 11 24H2, 25H2 and 26H2, and that it is fixed in the October update KB5127648 and later. I could not open Microsoft's own release health entry from this session, so please check it yourself before you rely on the detail.
+The cause is the AC3 audio codec, also known as Dolby Digital. Windows has a built in decoder for AC3 audio, and some older apps depend on it. After the September 2026 update KB5124010, that decoder path failed for these apps. The reports I checked say the problem affects Windows 11 24H2, 25H2 and 26H2, and that it is fixed in the October update KB5127648 and later. Microsoft's release health entry, titled "Applications which require AC3 audio decoding might close unexpectedly", confirms the problem. It names KB5124010 as the update that introduced it. It was opened on 8 October 2026 and resolved by the Windows updates released on 13 October 2026, including KB5127648 and later.
 
 This post covers how to confirm that you are seeing this issue, how to install the fixed build, and a temporary workaround if you cannot update straight away.
 
@@ -37,6 +37,8 @@ If the app still crashes on a fixed build, it may have a separate problem, so ch
 * **Check your software policy.** If you plan to install a third party codec pack, check your organisation's rules first, because a codec installed outside the standard process is an extra piece of software you have to manage.
 
 ## The steps, in order
+
+Microsoft's entry gives no workaround. It says to install the latest security update. The uninstall and codec steps below come from third party guides, so use them only if you cannot install the fixed update yet.
 
 1. **Confirm the symptom.** Reproduce the crash on the test device. Open the app, then play the audio that triggers it. Note whether the app closes with no message at all.
 
@@ -112,6 +114,6 @@ The quickest path is to install the fixed build. Use the codec or the uninstall 
 1. [BetaNews on KB5127648 fixing the Dolby Digital crashes in games and apps](https://betanews.com/article/windows-11-kb5127648-dolby-digital-crashes/)
 2. [WinTips on apps and games crashing after KB5124010 because of AC3 audio](https://www.wintips.org/apps-and-games-crash-after-kb5124010-due-to-ac-3-audio-how-to-fix/)
 3. [Windows forum on KB5127648 fixing Dolby Digital AC3 app crashes](https://windowsforum.com/news/kb5127648-fixes-windows-11-dolby-digital-ac-3-app-crashes-but-usb-audio-issues-remain.449851/)
-4. [Microsoft Windows release health dashboard for Windows 11, version 25H2](https://learn.microsoft.com/en-us/windows/release-health/status-windows-11-25h2)
+4. [Microsoft Windows release health entry for applications that require AC3 audio decoding, Windows 11 version 25H2 page](https://learn.microsoft.com/en-us/windows/release-health/status-windows-11-25h2)
 
 </div>
