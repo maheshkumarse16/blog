@@ -176,7 +176,7 @@ def sidebar(posts):
         f'<li><a href="{p["path"]}"><time datetime="{p["date"]}">{nice_date(p["date"])}</time>{esc(p["title"])}</a></li>'
         for p in posts[:6]
     )
-    return f"""<section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career across the Microsoft endpoint stack. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+    return f"""<section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career in enterprise IT. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
 <section><h2>Topics</h2><ul class="tags">{tags}</ul></section>
 <section><h2>Recent posts</h2><ul class="recent">{recent}</ul></section>"""
 
