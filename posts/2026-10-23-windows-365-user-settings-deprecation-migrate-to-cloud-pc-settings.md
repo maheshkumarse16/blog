@@ -1,11 +1,20 @@
 ---
-title: "Windows 365 User settings are going away: what changes, when, and how to migrate before January 2027"
+title: "Windows 365 User settings are going away: what changes, when, and how to migrate (updated for MC1528019)"
 date: 2026-10-23
 author: Mahesh
 type: How to
-description: "Microsoft is retiring Windows 365 User settings in Intune. Existing policies will not migrate on their own, and from January 2027 they stop applying, which takes local admin and point in time restore with them. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings."
+description: "Microsoft is retiring Windows 365 User settings in Intune. Under the updated plan in MC1528019, existing policies become read only in early December 2026 but keep applying until they are migrated, and Microsoft plans to migrate any that remain between April and June 2027. A step by step guide to inventory, recreate and validate everything in the new Cloud PC settings yourself."
 tags: [Cloud PC, Intune]
 ---
+
+> **Update, 9 November 2026.** Microsoft has changed the plan in Message Center post MC1528019, published on 27 October 2026. The main changes are these.
+>
+> * **No January 2027 cut off.** Existing User settings policies will no longer be removed or stop applying in January 2027. They keep applying until they are migrated and validated.
+> * **Local admin is now generally available.** The **Enable local admin** setting became generally available in Cloud PC configurations in early November 2026.
+> * **New dates.** The legacy tab is renamed and greyed out from mid November 2026, so you cannot create new legacy policies. Existing policies become read only in early December 2026.
+> * **Automatic migration later.** Microsoft plans to migrate remaining eligible policies between April and June 2027, with dates to be confirmed. Policies migrated by Microsoft get the **lowest rank**, so anything you create yourself takes precedence.
+>
+> The steps in this guide have not changed. The pressure is lower, but doing the migration yourself still means you choose the values, the assignments and the rank, instead of inheriting whatever the automatic migration produces. I have updated the timeline and the sections below to match.
 
 We have been working through this change in our own environment over the last couple of weeks, and it is one of those Microsoft retirements that looks small in the Message Center but can quietly break things if nobody owns it. So I wanted to write up what we found and the order we did it in, in case it saves someone else the head scratching.
 
@@ -19,7 +28,7 @@ Windows 365 **User settings** is being retired. It is the policy type in Intune 
 
 Microsoft is replacing it with a single **Cloud PC Settings** framework in Intune. The old capabilities are split across two new profile types, **Cloud PC Configuration** and **Windows App settings**.
 
-The important part is in Message Center post MC1418556. **Existing User settings policies will not be migrated automatically.** You have to recreate them yourself.
+The original Message Center post, MC1418556, said existing User settings policies would not be migrated automatically. The update in MC1528019 changes that. Microsoft now plans to migrate remaining eligible policies between April and June 2027, and those migrated policies get the lowest rank. Recreating them yourself is still the cleaner option, because you control the result.
 
 ## Why Microsoft is doing it
 
@@ -27,25 +36,24 @@ Microsoft's reason is consolidation. Windows 365 settings were spread across sev
 
 ## When
 
-The timeline was revised on 3 September 2026. The current dates are:
+The timeline was revised again in MC1528019 on 27 October 2026. The current dates are:
 
 | When | What happens |
 |---|---|
-| October 2026 | You can no longer create new User settings policies. The tab shows as **User settings (legacy)** and is greyed out. You can still edit existing ones. |
-| November 2026 | Existing User settings policies become read only. |
-| January 2027 | User settings are fully retired. Existing policies stop applying to anyone. |
+| Early November 2026 | **Enable local admin** becomes generally available in Cloud PC configurations. |
+| Mid November 2026 | The legacy tab is renamed and greyed out. You can no longer create new User settings policies, but you can still edit existing ones. |
+| Early December 2026 | Existing User settings policies become read only. They stay visible and keep applying. |
+| April to June 2027 | Microsoft plans to migrate remaining eligible policies automatically, with dates to be confirmed. Migrated policies get the lowest rank. |
 
-If you are reading this in late October, the first stage has already happened. From November you will not even be able to tweak an old policy, so the sensible window to do this work is now.
+There is no longer a date when the old policies stop applying. From early December you will not be able to change an old policy, though, so any tidy up you want to do inside the old policies has to happen before then.
 
-## What breaks if you do nothing
+## What happens if you do nothing
 
-After January 2027, any Cloud PC that relied on a User settings policy will lose what it gave them.
+Under the updated plan, nothing breaks straight away. The old policies keep applying until they are migrated. But leaving it has a cost.
 
-* Users who were local admins on their Cloud PC through User settings lose those rights.
-* Point in time restore stops behaving the way you configured it, and users lose the ability to restore their own Cloud PC.
-* Disaster recovery settings defined there no longer apply.
-
-Microsoft lists it as a breaking change. The admin impact is high, even though most users will not notice until something they rely on is missing.
+* From early December you cannot change an old policy, so a group change or a new requirement means building the new profile anyway, under time pressure.
+* When Microsoft migrates the remaining policies, they arrive with the lowest rank. If you have already created some new profiles, the migrated ones may not behave the way the old ones did for the same users.
+* You inherit whatever overlaps and conflicts exist in the old policies today, instead of cleaning them up as part of the move.
 
 ## Before you start
 
@@ -104,7 +112,7 @@ Before you build anything, map each value to its new home. We found it easiest t
 
 <span class="path">Devices > Windows 365 > Settings > Create</span>
 
-9. Choose **Cloud PC Configuration** and recreate the local admin, restore point frequency and disaster recovery values from your inventory. Both new profile types are marked preview at the time of writing, so the field names may not match the old ones word for word. Match on meaning, not on label.
+9. Choose **Cloud PC Configuration** and recreate the local admin, restore point frequency and disaster recovery values from your inventory. When I first wrote this, both new profile types were marked preview. **Enable local admin** is now generally available in Cloud PC configurations, but field names may still not match the old ones word for word. Match on meaning, not on label.
 10. Assign it to the same groups as the old policy it replaces. Check on the assignment page whether the profile targets users or devices, and pick the matching groups. Do not assume it works the same way as the old user based policy.
 11. Go back to **Create**, choose **Windows App settings**, and set **Enable Users to Reset their Cloud PC** and **Allow Users to Initiate a Restore** to match the old values.
 12. Assign it the same way.
@@ -114,7 +122,7 @@ Before you build anything, map each value to its new home. We found it easiest t
 13. Assign the new profiles to your test group first, not to production groups.
 14. Ask the test user to **sign out and sign back in** to the Cloud PC. Local admin rights in particular only change at sign in.
 15. Run the checks in the next section. Only when the pilot looks right, add the production groups to the new profiles.
-16. Leave the old User settings policies in place until you have confirmed the new ones on real users. They become read only in November, but they keep applying until January, so they are a safety net for now.
+16. Leave the old User settings policies in place until you have confirmed the new ones on real users. They become read only in early December, but they keep applying until they are migrated, so they are a safety net while you validate.
 
 ## Verify it worked
 
@@ -159,6 +167,7 @@ The part that caught us out was the conflict rule. A few users were in two old p
 **References**
 
 1. [Message Center MC1418556 on Windows 365 User settings moving to the new settings framework](https://www.itelio.com/en/microsoft-message-center/mc1418556)
+1. [Message Center MC1528019 summary on the updated Windows 365 User settings transition](https://pupuweb.com/mc1528019-update-to-windows-365-user-settings-transition/)
 2. [Summary of MC1418556 with the admin actions](https://pupuweb.com/mc1418556-windows-365-user-settings-transition-to-the-new-settings-framework/)
 3. [Microsoft Learn on making users local admins on Cloud PCs](https://learn.microsoft.com/en-us/windows-365/enterprise/assign-users-as-local-admin)
 4. [Microsoft Learn on configuring point in time restore](https://learn.microsoft.com/en-us/windows-365/enterprise/restore-configure)

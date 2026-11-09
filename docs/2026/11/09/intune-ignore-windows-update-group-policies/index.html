@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them | MaheshKumarSE</title>
+<meta name="description" content="Windows 11 now has a policy that tells Windows Update to skip the Group Policy source completely, so old WSUS and deferral GPOs stop overriding Intune. This step by step guide covers what IgnoreWindowsUpdateGroupPolicies does, how to deploy it from Intune, how to prove it is working and how to back it out.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/11/09/intune-ignore-windows-update-group-policies/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them">
+<meta property="og:description" content="Windows 11 now has a policy that tells Windows Update to skip the Group Policy source completely, so old WSUS and deferral GPOs stop overriding Intune. This step by step guide covers what IgnoreWindowsUpdateGroupPolicies does, how to deploy it from Intune, how to prove it is working and how to back it out.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/11/09/intune-ignore-windows-update-group-policies/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-11-09"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them", "description": "Windows 11 now has a policy that tells Windows Update to skip the Group Policy source completely, so old WSUS and deferral GPOs stop overriding Intune. This step by step guide covers what IgnoreWindowsUpdateGroupPolicies does, how to deploy it from Intune, how to prove it is working and how to back it out.", "datePublished": "2026-11-09", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/11/09/intune-ignore-windows-update-group-policies/", "keywords": "Intune, Windows 11"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-11-09">9 November 2026</time><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/windows-11/">Windows 11</a></div><h1>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them</h1><p class="dek">Windows 11 now has a policy that tells Windows Update to skip the Group Policy source completely, so old WSUS and deferral GPOs stop overriding Intune. This step by step guide covers what IgnoreWindowsUpdateGroupPolicies does, how to deploy it from Intune, how to prove it is working and how to back it out.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-11-09">9 November 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>If you run a hybrid estate, you have almost certainly seen this. Intune update rings are assigned, the policy shows as succeeded, and yet the device still behaves as if it is pointed at WSUS, or it keeps a deferral that nobody remembers setting. Somewhere in the domain there is an old Windows Update GPO, and Windows is still reading it.</p>
+<p>The usual answer used to be the <strong>MDM wins over GP</strong> setting. The problem is that it never worked for Windows Update. Microsoft documents that <code>ControlPolicyConflict</code>, the policy behind MDM wins over GP, does not apply to the Update Policy CSP. So for update settings there was no clean way to tell Windows to listen to Intune and ignore the GPO, short of unlinking the GPO or cleaning up the registry with scripts.</p>
+<p>That has changed. Windows 11 now has a policy called <code>IgnoreWindowsUpdateGroupPolicies</code>. Instead of picking a winner when Intune and Group Policy disagree, it tells Windows Update to skip the Group Policy source completely. This post covers how it works, how to deploy it safely and how to prove it is doing what you expect.</p>
+<h2>What the setting does</h2>
+<p>The policy lives in the Update Policy CSP.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OMA URI</td>
+<td><code>./Device/Vendor/MSFT/Policy/Config/Update/IgnoreWindowsUpdateGroupPolicies</code></td>
+</tr>
+<tr>
+<td>Data type</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>Scope</td>
+<td>Device</td>
+</tr>
+<tr>
+<td>Values</td>
+<td><code>1</code> turns the bypass on. <code>0</code>, or no value at all, leaves normal Group Policy reading in place</td>
+</tr>
+</tbody>
+</table>
+<p>When the value is <code>1</code>, Windows Update stops reading the Group Policy locations, which are <code>HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate</code> and its <code>AU</code> subkey, along with the Group Policy cache. Only the settings delivered through MDM count.</p>
+<p>There are a few things it does <strong>not</strong> do, and they matter.</p>
+<ul>
+<li>It does not unlink or delete the GPO, remove the registry keys or stop <code>gpupdate</code>. The GPO still applies to the device. Windows Update simply stops listening to it.</li>
+<li>It does not fall back to the Group Policy value when Intune does not set something. If your GPO set a value that Intune does not, that value is no longer in effect once the bypass is on.</li>
+<li>It does not move a device to any particular update source by itself. It only removes Group Policy from consideration.</li>
+<li>A script that writes to the same Windows Update policy keys is treated the same as a real GPO, so it is ignored too.</li>
+</ul>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Supported builds.</strong> Support starts with Windows 11 24H2 with KB5101684, build 26100.8973, released in July 2026. Check the Update Policy CSP page for the full list of supported versions before you target anything older.</li>
+<li><strong>Know what your GPOs set today.</strong> Run <code>gpresult /h gp.html</code> on a typical device, or open the GPOs in Group Policy Management, and write down every Windows Update setting they configure. Pay particular attention to WSUS server settings, deferral periods, active hours and restart behaviour.</li>
+<li><strong>Make sure Intune covers the same ground.</strong> Every setting from the GPO that you still need must exist in an Intune update ring or Settings catalog policy, because the GPO value stops counting once the bypass is on.</li>
+<li><strong>ConfigMgr co management.</strong> If ConfigMgr still owns the Windows Update workload on some devices, leave those devices out of scope until the workload has moved to Intune.</li>
+<li><strong>A pilot group.</strong> A handful of devices from different sites and builds, with users who will tell you quickly if updates stop arriving.</li>
+</ul>
+<h2>The steps, in order</h2>
+<ol>
+<li><strong>Record the current state on a pilot device.</strong> Before you change anything, capture the Windows Update policy keys so you have something to compare against later.</li>
+</ol>
+<pre><code class="language-powershell">Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -ErrorAction SilentlyContinue
+Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' -ErrorAction SilentlyContinue
+</code></pre>
+<p>If you see values such as <code>WUServer</code>, <code>WUStatusServer</code> or <code>UseWUServer</code>, the device is being pointed at WSUS by Group Policy.</p>
+<ol start="2">
+<li><strong>Check which update service the device uses today.</strong> Run this to see the update services registered on the device and which one is the default.</li>
+</ol>
+<pre><code class="language-powershell">(New-Object -ComObject Microsoft.Update.ServiceManager).Services |
+    Select-Object Name, IsDefaultAUService
+</code></pre>
+<p>Keep the output. You will run the same check after the change.</p>
+<ol start="3">
+<li><strong>Confirm the Intune update ring is complete.</strong> Open the update ring assigned to the pilot group and check that it covers everything you recorded in the Before you start section. Add anything missing now, not after the bypass is on.</li>
+</ol>
+<p><span class="path">Devices &gt; Windows &gt; Windows updates &gt; Update rings</span></p>
+<ol start="4">
+<li><strong>Look for the setting in the Settings catalog.</strong> Create a new Settings catalog profile for Windows and search for <strong>Ignore Windows Update Group Policies</strong>. If the catalog shows it, add it, set it to enabled and move on to step 6.</li>
+</ol>
+<p><span class="path">Devices &gt; Windows &gt; Configuration &gt; Create &gt; New policy &gt; Settings catalog</span></p>
+<ol start="5">
+<li>
+<p><strong>Use a custom profile if the setting is not in the catalog yet.</strong> Create a new Windows configuration profile using the <strong>Custom</strong> template and add one OMA URI row with the values from the table above, data type Integer and value <code>1</code>.</p>
+</li>
+<li>
+<p><strong>Name and describe the profile clearly.</strong> Something like <code>WU Ignore legacy GPO</code> with a description that says what it does and links to your change record. Six months from now someone will wonder why updates ignore the domain.</p>
+</li>
+<li>
+<p><strong>Assign it to the pilot group only.</strong> Do not assign it to all devices. Leave the GPO linked for now, because it still protects devices that are not in the pilot.</p>
+</li>
+<li>
+<p><strong>Sync the pilot devices.</strong> Trigger a sync from the Intune admin center or from <strong>Settings &gt; Accounts &gt; Access work or school</strong> on the device, then give it a few minutes.</p>
+</li>
+<li>
+<p><strong>Check the policy has been delivered.</strong> On a pilot device, read the value that Intune wrote.</p>
+</li>
+</ol>
+<pre><code class="language-powershell">$path = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Update'
+(Get-ItemProperty -Path $path -Name IgnoreWindowsUpdateGroupPolicies -ErrorAction SilentlyContinue).IgnoreWindowsUpdateGroupPolicies
+</code></pre>
+<p>A result of <code>1</code> means the policy arrived. You can also look in Event Viewer under <strong>Applications and Services Logs &gt; Microsoft &gt; Windows &gt; DeviceManagement Enterprise Diagnostics Provider &gt; Admin</strong> for the event that records the setting.</p>
+<ol start="10">
+<li>
+<p><strong>Run a controlled update scan.</strong> Delivery is not the same as behaviour. Open <strong>Settings &gt; Windows Update</strong>, select <strong>Check for updates</strong>, and confirm the device scans and offers what your Intune ring says it should. Then repeat the service check from step 2 and compare.</p>
+</li>
+<li>
+<p><strong>Watch the pilot for a full cycle.</strong> Leave the pilot running through at least one monthly security update. Check the Windows update reports in Intune and make sure the pilot devices install the update within the deadline set in the ring.</p>
+</li>
+<li>
+<p><strong>Widen the assignment.</strong> Once the pilot is clean, add the next ring of devices, then the rest of the estate in stages.</p>
+</li>
+<li>
+<p><strong>Clean up the old GPOs.</strong> This setting is meant as a migration tool, not a permanent home for a forgotten GPO. Once every device in a GPO's scope is covered by the bypass and behaving correctly, unlink the Windows Update GPO and remove it.</p>
+</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>Delivery.</strong> The PolicyManager value from step 9 is <code>1</code> on every device in scope.</li>
+<li><strong>Behaviour.</strong> A manual scan offers the updates your Intune ring allows, and devices install the monthly security update within the ring's deadline.</li>
+<li><strong>Reports.</strong> The Windows update reports in Intune show the pilot devices as current, with no growing list of devices stuck on old builds.</li>
+<li><strong>No surprises.</strong> Users are not seeing restart prompts at odd times, which would point to an active hours or restart setting that the GPO used to set and Intune does not.</li>
+</ul>
+<p>Treat delivery, stored state and real update behaviour as three separate checks. The registry value only proves the policy arrived.</p>
+<h2>Roll back</h2>
+<p>If something goes wrong, remove the device from the assignment or set the value to <code>0</code>. Windows Update starts reading the Group Policy locations again, and the legacy values count once more. Because the bypass never deletes the GPO or its registry values, nothing needs to be rebuilt. Sync the device and run a scan to confirm it is back on its old behaviour.</p>
+<p>Do not unlink the GPO until you are sure you will not need this rollback path.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The PolicyManager value is missing</td>
+<td>The profile has not synced, or the device is not in the assigned group</td>
+<td>Check the assignment and the profile status in Intune, then sync</td>
+</tr>
+<tr>
+<td>The device stops getting updates after the change</td>
+<td>The GPO pointed at WSUS or set a value that Intune does not cover</td>
+<td>Compare the GPO settings from step 1 with the Intune ring and add the missing settings</td>
+</tr>
+<tr>
+<td>Restart behaviour changes</td>
+<td>Active hours or restart settings came from the GPO</td>
+<td>Add those settings to the Intune update ring</td>
+</tr>
+<tr>
+<td>The setting has no effect</td>
+<td>The device build is older than the supported build</td>
+<td>Check the build against the Update Policy CSP and update the device first</td>
+</tr>
+<tr>
+<td>A script keeps writing WSUS values</td>
+<td>The script writes to the Group Policy keys</td>
+<td>Those values are ignored while the bypass is on, but remove the script so it does not confuse the next person</td>
+</tr>
+</tbody>
+</table>
+<p>The setting itself is a single value. The real work is making sure Intune already covers everything the old GPO was doing, so spend most of your time on the before and after checks.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-update">Microsoft Learn Update Policy CSP</a></li>
+<li><a href="https://patchmypc.com/blog/ignore-windows-update-group-policy-intune/">Patch My PC on how Intune bypasses Windows Update Group Policy</a></li>
+<li><a href="https://admin365.blog/2026/10/04/ignorewindowsupdategrouppolicies-make-intune-override-update-gpo/">Admin365 Blog on IgnoreWindowsUpdateGroupPolicies</a></li>
+<li><a href="https://call4cloud.nl/intune-can-now-bypass-windows-update-group-policy/">Call4Cloud on Intune bypassing Windows Update Group Policy</a></li>
+<li><a href="https://andrewstaylor.com/2026/11/06/intune-newsletter-6th-november-2026/">Andrew Taylor Intune newsletter, 6 November 2026</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/10/28/always-on-vpn-stuck-on-connecting-workaround/"><span>Older</span>Always On VPN stuck on Connecting after the September 2026 updates: now fixed in KB5127936, plus the workaround until you install it</a><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/" style="text-align:right"><span>Newer</span>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career in enterprise IT. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/"><time datetime="2026-11-09">9 November 2026</time>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</a></li><li><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/"><time datetime="2026-11-09">9 November 2026</time>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></li><li><a href="/2026/11/09/intune-ignore-windows-update-group-policies/"><time datetime="2026-11-09">9 November 2026</time>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them</a></li><li><a href="/2026/10/28/always-on-vpn-stuck-on-connecting-workaround/"><time datetime="2026-10-28">28 October 2026</time>Always On VPN stuck on Connecting after the September 2026 updates: now fixed in KB5127936, plus the workaround until you install it</a></li><li><a href="/2026/10/28/ac3-audio-apps-crash-after-kb5124010-fix/"><time datetime="2026-10-28">28 October 2026</time>Apps and games crash when AC3 audio plays after KB5124010: how to confirm it and fix it</a></li><li><a href="/2026/10/27/entra-agent-blueprints-users-can-create-setting/"><time datetime="2026-10-27">27 October 2026</time>Users can create agent blueprints from November: check the Entra setting now (MC1506733)</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

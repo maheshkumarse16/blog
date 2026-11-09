@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot? | MaheshKumarSE</title>
+<meta name="description" content="Microsoft&#x27;s tracker now shows every Windows 11 26H2 known issue resolved except the USB Audio Class 1.0 problem. A look at what was fixed, what is still open, and how I would plan an enterprise pilot of 26H2 from here.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?">
+<meta property="og:description" content="Microsoft&#x27;s tracker now shows every Windows 11 26H2 known issue resolved except the USB Audio Class 1.0 problem. A look at what was fixed, what is still open, and how I would plan an enterprise pilot of 26H2 from here.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-11-09"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?", "description": "Microsoft's tracker now shows every Windows 11 26H2 known issue resolved except the USB Audio Class 1.0 problem. A look at what was fixed, what is still open, and how I would plan an enterprise pilot of 26H2 from here.", "datePublished": "2026-11-09", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/", "keywords": "Windows 11, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-whatsnew">What&#x27;s new</span><time datetime="2026-11-09">9 November 2026</time><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</h1><p class="dek">Microsoft&#x27;s tracker now shows every Windows 11 26H2 known issue resolved except the USB Audio Class 1.0 problem. A look at what was fixed, what is still open, and how I would plan an enterprise pilot of 26H2 from here.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-11-09">9 November 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><p>When Windows 11 26H2 reached general availability on 29 September 2026, the list of known issues was long enough that most of us parked it. Domain joined devices losing their trust, Remote Desktop failing for standard users, black screens on AVD hosts and a handful of audio problems. Nobody wanted to be first.</p>
+<p>Six weeks later the picture is very different. According to Microsoft's update history, as reported on 4 November, every tracked 26H2 known issue is now resolved except one. That makes this a good moment to decide when your 26H2 pilot starts, rather than whether it should.</p>
+<h2>What has been fixed</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Fixed by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain joined devices losing their secure trust relationship, caused by Machine Identity Isolation</td>
+<td>KB5124010, 22 September 2026</td>
+</tr>
+<tr>
+<td>File History failures</td>
+<td>KB5124010, 22 September 2026</td>
+</tr>
+<tr>
+<td>Remote Desktop error <code>0xC000000D</code> for standard users with Administrator protection</td>
+<td>Updates from 13 October 2026, including KB5127648 and KB5127936</td>
+</tr>
+<tr>
+<td>Black screen after sign in, mostly on AVD hosts with FSLogix</td>
+<td>Updates from 13 October 2026</td>
+</tr>
+<tr>
+<td>Smart App Control toggle stuck greyed out</td>
+<td>KB5127936, late October 2026</td>
+</tr>
+<tr>
+<td>No sound over HDMI or DisplayPort on some AMD graphics configurations</td>
+<td>KB5127936, late October 2026</td>
+</tr>
+</tbody>
+</table>
+<p>A few of these hit enterprise estates hard. The trust relationship problem in particular locked users out of domain joined laptops, and I wrote up <a href="/2026/10/27/domain-trust-failed-machine-identity-isolation-26h2/">how to confirm it and repair the secure channel</a> at the time. If you held 26H2 back because of that one, it has been fixed since September.</p>
+<h2>What is still open</h2>
+<p>One issue remains open. Some <strong>USB Audio Class 1.0</strong> devices, typically older USB headsets and audio adapters, can show a Code 10 error in Device Manager or stop playing sound. Microsoft says a fix is coming in a future update. Some reports say a later update mitigates it for some users, but Microsoft's tracker had not marked it resolved at the time of writing.</p>
+<p>For most enterprise fleets this is a manageable risk. Check whether your standard headsets are USB Audio Class 1.0 devices before you pick pilot users, and leave anyone who depends on an older audio device out of the first ring.</p>
+<h2>What Microsoft is saying about 26H2</h2>
+<p>Microsoft's Windows Experience Blog on 3 November said that, in its lab testing, PCs with 8GB of memory were up to 20% more responsive on 26H2, with multitasking up to 40% faster. Coverage of the update has framed that as Microsoft recommending the move from 25H2, mainly for home and small office PCs. That is not the same as a recommendation for managed estates, and I would not treat it as one. Your own pilot is what decides it.</p>
+<h2>Why plan the pilot now</h2>
+<ul>
+<li><strong>The servicing clock is already running.</strong> 26H2 is an H2 release, so Enterprise and Education editions get 36 months of servicing from general availability. Starting the pilot sooner gives you more of that window in production.</li>
+<li><strong>Fixes are rolling in.</strong> Every issue except one is fixed, and the November security update on 10 November brings the October preview fixes to every device.</li>
+<li><strong>The tooling is ready.</strong> The Intune Settings catalog has been updated for 26H2, and the Windows 11 26H2 security baseline is available. I covered <a href="/2026/10/20/intune-windows-11-26h2-security-baseline-upgrade/">moving to the 26H2 baseline without a big bang</a> last month.</li>
+<li><strong>23H2 is ending.</strong> If you still have 23H2 devices after 10 November, it may make sense to move some of them straight to the version you will run for the next few years. Microsoft only offers versions that are still supported in the feature update policy list.</li>
+</ul>
+<h2>How I would run the pilot</h2>
+<ul>
+<li><strong>Pick a small, mixed group.</strong> Include laptops and desktops, devices from each hardware model you support, a few VPN users and anyone who uses Remote Desktop heavily.</li>
+<li><strong>Use a feature update policy.</strong> Target the pilot group with a Windows 11 26H2 feature update policy in Intune, and keep it separate from the policies that move devices off 23H2.</li>
+<li><strong>Update first, then upgrade.</strong> Make sure the pilot devices take the November security update straight after the upgrade, so they have every fix listed above.</li>
+<li><strong>Test the things that broke before.</strong> Domain sign in, Remote Desktop for standard users, VPN connections, audio on your standard headsets, and any AVD session hosts if you run them.</li>
+<li><strong>Give it a full patch cycle.</strong> Leave the pilot on 26H2 through at least one Patch Tuesday before you widen it, and watch helpdesk tickets for those users.</li>
+</ul>
+<p>If the pilot is clean through December, a wider rollout in the new year looks reasonable. If something new shows up, you will have found it on a few devices, not a few thousand.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://helpdeskgeek.com/microsoft-resolves-windows-11-26h2-bugs-recommends-upgrading-from-25h2/">Help Desk Geek on Microsoft resolving most tracked Windows 11 26H2 issues</a></li>
+<li><a href="https://www.pcworld.com/article/3247667/windows-11-26h2-update-has-known-issues-you-might-want-to-wait.html">PCWorld on the Windows 11 26H2 known issues at launch</a></li>
+<li><a href="https://techcommunity.microsoft.com/blog/intunecustomersuccess/microsoft-intune-settings-catalog-updated-to-support-windows-11-version-26h2/4560815">Microsoft Intune Settings catalog updated to support Windows 11 version 26H2</a></li>
+<li><a href="https://support.microsoft.com/en-us/servicing/os/windows-11/2026/10/kb5127936-windows-11-25h2-26h2-update">Microsoft support article for KB5127936, the October 2026 preview update</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/"><span>Older</span>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career in enterprise IT. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/"><time datetime="2026-11-09">9 November 2026</time>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</a></li><li><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/"><time datetime="2026-11-09">9 November 2026</time>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></li><li><a href="/2026/11/09/intune-ignore-windows-update-group-policies/"><time datetime="2026-11-09">9 November 2026</time>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them</a></li><li><a href="/2026/10/28/always-on-vpn-stuck-on-connecting-workaround/"><time datetime="2026-10-28">28 October 2026</time>Always On VPN stuck on Connecting after the September 2026 updates: now fixed in KB5127936, plus the workaround until you install it</a></li><li><a href="/2026/10/28/ac3-audio-apps-crash-after-kb5124010-fix/"><time datetime="2026-10-28">28 October 2026</time>Apps and games crash when AC3 audio plays after KB5124010: how to confirm it and fix it</a></li><li><a href="/2026/10/27/entra-agent-blueprints-users-can-create-setting/"><time datetime="2026-10-27">27 October 2026</time>Users can create agent blueprints from November: check the Entra setting now (MC1506733)</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>

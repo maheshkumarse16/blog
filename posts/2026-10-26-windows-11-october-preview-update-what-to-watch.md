@@ -7,6 +7,8 @@ description: "Microsoft's optional preview update for Windows 11 usually lands i
 tags: [Windows 11, Vulnerability Management]
 ---
 
+> **Update, 9 November 2026.** The preview shipped on 28 October 2026 as **KB5127936** for Windows 11 25H2 and 26H2. Microsoft confirmed it fixes the Always On VPN connection problem from the September updates. Reports also list fixes for the Smart App Control toggle and for missing HDMI and DisplayPort audio on some AMD graphics configurations. The USB Audio Class 1.0 issue was still listed as open at the time of this update. All of these fixes roll into the November security update on 10 November 2026.
+
 A quick heads up for this week. Microsoft normally releases the optional non security preview update for Windows 11 in the fourth week of the month, so the October preview should appear in the next few days. I will write it up properly once it is out and the release notes are published, but here is what I will be looking for and how I plan to handle it.
 
 ## What a preview update is, and is not
@@ -49,7 +51,7 @@ On 22 October someone posted on Microsoft Q&A that, after the October updates, B
 
 If you still have 23H2 devices, that 10 November date is the one to worry about, not the preview. I have written a separate guide on finding them and upgrading them with an Intune feature update policy.
 
-I will update this post with the actual KB number and the confirmed fixes once Microsoft publishes the preview.
+The preview has now shipped. See the update at the top of this post.
 
 <div class="refs" markdown="1">
 
