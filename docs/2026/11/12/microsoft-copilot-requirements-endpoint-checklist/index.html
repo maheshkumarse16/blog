@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences | MaheshKumarSE</title>
+<meta name="description" content="Microsoft has refreshed its Copilot requirements page, and Microsoft 365 Copilot is now simply Microsoft Copilot. A practical walk through of every requirement from the endpoint side, covering licences, mailboxes, Windows and Edge versions, the Office Feature Updates task, the cloud.microsoft domain, WebSockets, browser cookies and Safe Links, with the checks to run before users complain.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences">
+<meta property="og:description" content="Microsoft has refreshed its Copilot requirements page, and Microsoft 365 Copilot is now simply Microsoft Copilot. A practical walk through of every requirement from the endpoint side, covering licences, mailboxes, Windows and Edge versions, the Office Feature Updates task, the cloud.microsoft domain, WebSockets, browser cookies and Safe Links, with the checks to run before users complain.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-11-12"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences", "description": "Microsoft has refreshed its Copilot requirements page, and Microsoft 365 Copilot is now simply Microsoft Copilot. A practical walk through of every requirement from the endpoint side, covering licences, mailboxes, Windows and Edge versions, the Office Feature Updates task, the cloud.microsoft domain, WebSockets, browser cookies and Safe Links, with the checks to run before users complain.", "datePublished": "2026-11-12", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/", "keywords": "Copilot, Microsoft 365, Intune, Windows 11, Entra ID"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-howto">How to</span><time datetime="2026-11-12">12 November 2026</time><a class="tag" href="/topics/copilot/">Copilot</a><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a><a class="tag" href="/topics/intune/">Intune</a><a class="tag" href="/topics/windows-11/">Windows 11</a><a class="tag" href="/topics/entra-id/">Entra ID</a></div><h1>Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences</h1><p class="dek">Microsoft has refreshed its Copilot requirements page, and Microsoft 365 Copilot is now simply Microsoft Copilot. A practical walk through of every requirement from the endpoint side, covering licences, mailboxes, Windows and Edge versions, the Office Feature Updates task, the cloud.microsoft domain, WebSockets, browser cookies and Safe Links, with the checks to run before users complain.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-11-12">12 November 2026</time><span>8 min read</span></div>
+</header>
+<div class="prose"><p>Most Copilot rollouts I hear about go the same way. Licences are assigned, an announcement goes out, and then the tickets start. Copilot is missing in Word on some laptops. The chat pane spins forever behind the proxy. Links in answers say "Unable to verify link". None of these are Copilot bugs. They are requirements that nobody checked on the endpoint or the network.</p>
+<p>Microsoft refreshed its <strong>Microsoft Copilot requirements</strong> page on 5 November 2026, and it is worth reading closely, because it is the clearest list so far of what has to be in place. This post walks through it from the endpoint engineer's side, with the checks I would run before a single licence is assigned.</p>
+<h2>First, the new names</h2>
+<p>Microsoft has renamed the products. <strong>Microsoft 365 Copilot is now Microsoft Copilot</strong>, and <strong>Microsoft 365 Copilot Chat is now Microsoft Copilot Chat</strong>. The main address is moving to <code>copilot.cloud.microsoft</code>. You will still see the old names in older documentation and in some admin center screens for a while, so expect both.</p>
+<p>The difference between the two still matters.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Microsoft Copilot</th>
+<th>Microsoft Copilot Chat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Eligible Microsoft 365 subscription</td>
+<td>Required</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Microsoft Copilot licence</td>
+<td>Required for licensed features</td>
+<td>Not required for eligible users</td>
+</tr>
+<tr>
+<td>Entra ID work or school account</td>
+<td>Required</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Exchange Online mailbox</td>
+<td>Required for mailbox based features</td>
+<td>Only for features that use mailbox data</td>
+</tr>
+<tr>
+<td>Supported OS, apps, browser and network</td>
+<td>Required</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Secure and governed foundation</td>
+<td>Recommended</td>
+<td>Recommended</td>
+</tr>
+</tbody>
+</table>
+<h2>Before you start</h2>
+<ul>
+<li><strong>Roles.</strong> The <strong>AI Administrator</strong> role gives access to Copilot and AI administration without Global Administrator. Use it for the people running the rollout.</li>
+<li><strong>Intune reporting.</strong> You need to be able to report on OS versions and run scripts or remediations on Windows devices.</li>
+<li><strong>Network contacts.</strong> You will need whoever owns the proxy, firewall and TLS inspection rules. Most of the hard problems are on the network, not the device.</li>
+<li><strong>A pilot group.</strong> Pick users on different device models, sites and connection types, including some who work over VPN.</li>
+</ul>
+<h2>The checks, in order</h2>
+<ol>
+<li>
+<p><strong>Check licensing for the pilot users.</strong> Every user needs an eligible Microsoft 365 subscription, and licensed Copilot needs the Copilot licence on top. Run the <strong>Copilot License Details</strong> diagnostic at <code>aka.ms/CopilotLicenseDetails</code> against a few pilot users to confirm. One catch to note: Copilot is <strong>not available with device based licensing for Microsoft 365 Apps for enterprise</strong>, so shared device and kiosk style setups using device licences are out.</p>
+</li>
+<li>
+<p><strong>Confirm identity and mailboxes.</strong> Users must have a work or school account in Entra ID. For anything that uses mail, calendar or meetings, the <strong>primary mailbox must be in Exchange Online</strong>. Copilot can also use archive, shared and delegate mailboxes the user can access, but it <strong>is not available in group mailboxes</strong>. If you still have on premises mailboxes in a hybrid setup, those users will get a reduced experience.</p>
+</li>
+<li>
+<p><strong>Check operating system versions in Intune.</strong> The minimums are Windows 11 22H2 or later, macOS 13 Ventura or later, iOS and iPadOS 16 or later, and Android 10 or later. Filter your device list by OS version and export anything below these. Anything still on Windows 10 is out of scope for Copilot on that device.</p>
+</li>
+</ol>
+<p><span class="path">Devices &gt; All devices</span></p>
+<ol start="4">
+<li><strong>Check the Edge Update version on Windows.</strong> Microsoft states that <strong>EdgeUpdate must be version 1.3.253.25 or later</strong>. This is the updater, not the browser itself, and it is easy to miss on devices where Edge updates are controlled. Check it on a sample device.</li>
+</ol>
+<pre><code class="language-powershell">(Get-Item &quot;${env:ProgramFiles(x86)}\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe&quot;).VersionInfo.FileVersion
+</code></pre>
+<p>If you see an older version, check whether a policy or script is blocking Edge updates. The installers come for x64 and ARM64, and you can deploy them with Intune, Configuration Manager or Group Policy.</p>
+<ol start="5">
+<li><strong>Make sure the Office Feature Updates task runs.</strong> This one catches people out. Microsoft says the <strong>Office Feature Updates</strong> scheduled task must run on its normal schedule and reach the network for core Copilot features in Word, Excel, PowerPoint and OneNote. Hardening scripts and old builds sometimes disable it. Check its state and last run on a sample device.</li>
+</ol>
+<pre><code class="language-powershell">Get-ScheduledTask -TaskPath '\Microsoft\Office\' |
+    Where-Object TaskName -like 'Office Feature Updates*' |
+    ForEach-Object {
+        $info = $_ | Get-ScheduledTaskInfo
+        [pscustomobject]@{
+            Task       = $_.TaskName
+            State      = $_.State
+            LastRun    = $info.LastRunTime
+            LastResult = $info.LastTaskResult
+        }
+    }
+</code></pre>
+<p>You want the tasks to show as <strong>Ready</strong> with a recent last run. If a task is <strong>Disabled</strong>, find what disabled it before you enable it again, or it will just be disabled at the next run of that script.</p>
+<ol start="6">
+<li>
+<p><strong>Review the privacy controls for connected experiences.</strong> Copilot in the desktop apps depends on connected experiences. If your Cloud Policy or Group Policy settings turn off connected experiences that analyse content, some Copilot features will not appear. Review those policies against Microsoft's privacy controls article before the pilot, and document any settings you change.</p>
+</li>
+<li>
+<p><strong>Allow the whole cloud.microsoft domain.</strong> This is the most important network change on the page. Allow <code>*.cloud.microsoft</code> on devices and on the network, and check that URL filtering, proxies, firewalls, tenant restrictions, Conditional Access and app control policies do not block <code>copilot.cloud.microsoft</code> or the Copilot app. Microsoft is explicit that it <strong>does not support allowing only selected URLs</strong> inside <code>*.cloud.microsoft</code>. Allow the whole domain, along with the standard worldwide Microsoft 365 URLs and IP ranges and the Copilot endpoints.</p>
+</li>
+<li>
+<p><strong>Check WebSockets end to end.</strong> Copilot needs working WebSocket connections from user devices to <code>*.office.com</code>, <code>*.cloud.microsoft</code> and <code>copilot.cloud.microsoft</code>. Microsoft lists three common causes of failure, which are blocked WebSockets, TLS inspection that interferes with the connection and aggressive proxy timeouts. If your proxy inspects TLS, talk to the network team about bypassing inspection for these destinations.</p>
+</li>
+<li>
+<p><strong>Run the connectivity test from a real device.</strong> Open <code>connectivity.m365.cloud.microsoft/copilot</code> on a pilot device, on each type of connection you support, such as office network, home broadband and VPN. Fix every failure before you widen the pilot. The general Microsoft 365 connectivity test tool is useful too.</p>
+</li>
+<li>
+<p><strong>Allow the Safe Links cookies in the browser.</strong> Links in Copilot Chat answers, including answers from agents built in Copilot Studio, are checked by <strong>Safe Links</strong> in Defender for Office 365. That check needs third party cookies for <code>*.safelinks.protection.outlook.com</code>. If the cookies are blocked, users see <strong>"Unable to verify link"</strong> and the link does not open. Add <code>[*.]safelinks.protection.outlook.com</code> to the <strong>CookiesAllowedForUrls</strong> policy for Edge and for Chrome. In Intune you can set this in a Settings catalog profile.</p>
+</li>
+</ol>
+<p><span class="path">Devices &gt; Windows &gt; Configuration &gt; Create &gt; New policy &gt; Settings catalog</span></p>
+<ol start="11">
+<li>
+<p><strong>Check cookies for Office on the web.</strong> Separately, <strong>third party cookies must be enabled</strong> for Copilot in Word, Excel and PowerPoint for the web. If your browser baseline blocks third party cookies everywhere, add allowances for the Microsoft 365 web domains your users need.</p>
+</li>
+<li>
+<p><strong>Turn on transcription or recording where it is needed.</strong> For Copilot to use meeting content after a Teams meeting ends, transcription or recording must be enabled. For Teams Phone, VoIP calls need a Copilot licence, and PSTN calls also need Teams Phone and a calling plan. Participants receive the usual notification. Agree this with your compliance team first.</p>
+</li>
+<li>
+<p><strong>Block personal accounts the right way.</strong> If you want to stop users signing in to Copilot with personal Microsoft accounts, do not block parts of <code>cloud.microsoft</code>. Microsoft suggests <strong>tenant restrictions</strong> as the targeted control, which block consumer account sign in without breaking work accounts.</p>
+</li>
+<li>
+<p><strong>Decide on web search and oversharing controls.</strong> Web search lets Copilot pull results from Bing, and it can be managed by policy. Make a deliberate decision and document it. Microsoft also recommends <strong>SharePoint Advanced Management</strong> and <strong>Microsoft Purview</strong> to deal with oversharing and sensitivity labels before Copilot starts surfacing content that was never meant to be widely visible. These are not hard requirements, but skipping them is the fastest way to turn a Copilot pilot into a data exposure incident.</p>
+</li>
+</ol>
+<h2>Verify it worked</h2>
+<ul>
+<li><strong>Licensing.</strong> The licence diagnostic passes for every pilot user.</li>
+<li><strong>Devices.</strong> Every pilot device meets the OS minimum, shows EdgeUpdate 1.3.253.25 or later and has the Office Feature Updates tasks in the Ready state with a recent run.</li>
+<li><strong>Network.</strong> The Copilot connectivity test passes on the office network, at home and over VPN.</li>
+<li><strong>Apps.</strong> Copilot appears in Word, Excel, PowerPoint, Outlook and Teams for pilot users, and Copilot Chat loads at <code>copilot.cloud.microsoft</code> without spinning.</li>
+<li><strong>Links.</strong> A link in a Copilot Chat answer opens normally, with no "Unable to verify link" message.</li>
+</ul>
+<h2>Roll back</h2>
+<p>Most of these changes are allowances, so they are easy to back out. Remove the cookie allowance from the Settings catalog profile, or put back the previous proxy or firewall rule, and the device returns to its old behaviour. If you re enabled the Office Feature Updates task and it causes a problem, disable it again through the same method and note the reason. For licences, removing the Copilot licence from a user takes the licensed features away without affecting the rest of Microsoft 365.</p>
+<p>Keep a record of every allowance you add, so security reviews later can see why it is there.</p>
+<h2>Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copilot missing in Word, Excel or PowerPoint desktop</td>
+<td>No licence, device based licensing, connected experiences off, or the Office Feature Updates task not running</td>
+<td>Check steps 1, 5 and 6</td>
+</tr>
+<tr>
+<td>Copilot Chat spins or never loads</td>
+<td>WebSockets blocked, TLS inspection or proxy timeouts</td>
+<td>Run the connectivity test and review step 8 with the network team</td>
+</tr>
+<tr>
+<td>"Unable to verify link" in answers</td>
+<td>Third party cookies blocked for Safe Links</td>
+<td>Add the Safe Links domain to CookiesAllowedForUrls</td>
+</tr>
+<tr>
+<td>No mail or calendar answers</td>
+<td>Mailbox is on premises or a group mailbox</td>
+<td>Move the primary mailbox to Exchange Online</td>
+</tr>
+<tr>
+<td>Copilot works in the office but not on VPN</td>
+<td>The VPN path inspects or blocks <code>cloud.microsoft</code> traffic</td>
+<td>Test over VPN and fix the tunnel or proxy rules</td>
+</tr>
+<tr>
+<td>Meeting recap missing</td>
+<td>Transcription or recording not enabled</td>
+<td>Enable it in Teams meeting policy</td>
+</tr>
+</tbody>
+</table>
+<p>Nearly every Copilot ticket I hear about comes down to one of these. Run the checks on a pilot group first and the rollout becomes a licensing exercise rather than a troubleshooting one.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://learn.microsoft.com/en-us/copilot/plan/microsoft-copilot-requirements">Microsoft Learn on Microsoft Copilot requirements</a></li>
+<li><a href="https://connectivity.m365.cloud.microsoft/copilot">Microsoft Copilot connectivity test</a></li>
+<li><a href="https://aka.ms/CopilotLicenseDetails">Copilot License Details diagnostic</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/"><span>Older</span>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career in enterprise IT. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/"><time datetime="2026-11-12">12 November 2026</time>Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences</a></li><li><a href="/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/"><time datetime="2026-11-09">9 November 2026</time>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</a></li><li><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/"><time datetime="2026-11-09">9 November 2026</time>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></li><li><a href="/2026/11/09/intune-ignore-windows-update-group-policies/"><time datetime="2026-11-09">9 November 2026</time>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them</a></li><li><a href="/2026/10/28/always-on-vpn-stuck-on-connecting-workaround/"><time datetime="2026-10-28">28 October 2026</time>Always On VPN stuck on Connecting after the September 2026 updates: now fixed in KB5127936, plus the workaround until you install it</a></li><li><a href="/2026/10/28/ac3-audio-apps-crash-after-kb5124010-fix/"><time datetime="2026-10-28">28 October 2026</time>Apps and games crash when AC3 audio plays after KB5124010: how to confirm it and fix it</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
