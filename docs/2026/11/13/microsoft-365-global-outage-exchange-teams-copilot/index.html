@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Microsoft 365 global outage: Exchange Online, Teams, SharePoint and Copilot down (MO1550821) | MaheshKumarSE</title>
+<meta name="description" content="A major Microsoft 365 outage that started on 12 November 2026 has hit Exchange Online, Outlook, Teams, SharePoint, Copilot and Defender XDR worldwide. What happened, what Microsoft has said, what is behind it so far, and what admins should and should not do while it is being fixed.">
+<meta name="author" content="Mahesh">
+<link rel="canonical" href="https://maheshkumarse.com/2026/11/13/microsoft-365-global-outage-exchange-teams-copilot/">
+<meta property="og:site_name" content="MaheshKumarSE">
+<meta property="og:title" content="Microsoft 365 global outage: Exchange Online, Teams, SharePoint and Copilot down (MO1550821)">
+<meta property="og:description" content="A major Microsoft 365 outage that started on 12 November 2026 has hit Exchange Online, Outlook, Teams, SharePoint, Copilot and Defender XDR worldwide. What happened, what Microsoft has said, what is behind it so far, and what admins should and should not do while it is being fixed.">
+<meta property="og:url" content="https://maheshkumarse.com/2026/11/13/microsoft-365-global-outage-exchange-teams-copilot/">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="MaheshKumarSE" href="/feed.xml">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<link rel="stylesheet" href="/style.css">
+<meta property="og:type" content="article"><meta property="article:published_time" content="2026-11-13"><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Microsoft 365 global outage: Exchange Online, Teams, SharePoint and Copilot down (MO1550821)", "description": "A major Microsoft 365 outage that started on 12 November 2026 has hit Exchange Online, Outlook, Teams, SharePoint, Copilot and Defender XDR worldwide. What happened, what Microsoft has said, what is behind it so far, and what admins should and should not do while it is being fixed.", "datePublished": "2026-11-13", "author": {"@type": "Person", "name": "Mahesh", "url": "https://maheshkumarse.com/about/"}, "publisher": {"@type": "Person", "name": "Mahesh"}, "mainEntityOfPage": "https://maheshkumarse.com/2026/11/13/microsoft-365-global-outage-exchange-teams-copilot/", "keywords": "Microsoft 365, Copilot, Defender, Intune"}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="site-head">
+<a class="brand" href="/">MaheshKumar<span>SE</span></a>
+<nav class="nav" aria-label="Main"><a href="/">Home</a><a href="/topics/">Topics</a><a href="/about/">About</a></nav>
+</header>
+<div class="layout"><main><article>
+<header class="post-head"><div class="meta"><span class="kind kind-knownissue">Known issue</span><time datetime="2026-11-13">13 November 2026</time><a class="tag" href="/topics/microsoft-365/">Microsoft 365</a><a class="tag" href="/topics/copilot/">Copilot</a><a class="tag" href="/topics/defender/">Defender</a><a class="tag" href="/topics/intune/">Intune</a></div><h1>Microsoft 365 global outage: Exchange Online, Teams, SharePoint and Copilot down (MO1550821)</h1><p class="dek">A major Microsoft 365 outage that started on 12 November 2026 has hit Exchange Online, Outlook, Teams, SharePoint, Copilot and Defender XDR worldwide. What happened, what Microsoft has said, what is behind it so far, and what admins should and should not do while it is being fixed.</p>
+<div class="byline"><span>By <strong>Mahesh</strong></span><time datetime="2026-11-13">13 November 2026</time><span>5 min read</span></div>
+</header>
+<div class="prose"><blockquote>
+<p><strong>Status as of 13 November 2026, 03:00 UTC.</strong> The outage is still ongoing. Microsoft is bringing servers back in stages and reports that this is starting to work, but it has not declared full recovery and has not given a time for it. I will update this post as Microsoft posts more.</p>
+</blockquote>
+<p>If your users could not open their mail, join a Teams meeting or get a response from Copilot overnight, it is not your network and it is not your setup. Microsoft 365 has had one of its biggest outages in a long time, and at its peak Downdetector showed around 130,000 reports for Outlook alone.</p>
+<h2>Where to track it</h2>
+<p>Microsoft is tracking this under two incident IDs in the Microsoft 365 admin center.</p>
+<table>
+<thead>
+<tr>
+<th>Incident</th>
+<th>What it covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>EX1550543</strong></td>
+<td>Exchange Online mailbox connectivity</td>
+</tr>
+<tr>
+<td><strong>MO1550821</strong></td>
+<td>The wider impact across Microsoft 365 services and features</td>
+</tr>
+</tbody>
+</table>
+<p>Check both. Microsoft has updated the list of affected services more than once, and the current list is in MO1550821. If the admin center itself is slow or will not load, use the public status page at <code>status.cloud.microsoft</code>.</p>
+<h2>What is affected</h2>
+<p>Microsoft has confirmed impact on <strong>Exchange Online, Microsoft Teams, SharePoint Online, Microsoft Copilot and Microsoft Defender XDR</strong>. Some reports also list Outlook on the web, OneDrive, Office Online, Planner, To Do, Intune, Defender for Office 365, Purview, Power BI and Universal Print, though not every organisation sees every one. It started with mailbox access in the Americas, and Microsoft then said connectivity problems could affect users in <strong>any region</strong>.</p>
+<h2>Timeline so far</h2>
+<p>All times are UTC.</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>What happened</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>12 November, around 17.54</td>
+<td>Microsoft starts investigating reports of users unable to reach Exchange Online mailboxes through multiple connection methods in the Americas</td>
+</tr>
+<tr>
+<td>12 November, 18.53</td>
+<td>Microsoft says the issue may affect Microsoft 365 connectivity in any region</td>
+</tr>
+<tr>
+<td>12 November, 19.00</td>
+<td>Microsoft starts redistributing connection traffic across its worldwide infrastructure to balance the load</td>
+</tr>
+<tr>
+<td>12 November, 19.35</td>
+<td>Microsoft pauses deployments and configuration changes</td>
+</tr>
+<tr>
+<td>12 November, 21.30</td>
+<td>An alternative health check method lets a subset of affected servers return to service</td>
+</tr>
+<tr>
+<td>13 November, early hours</td>
+<td>Microsoft warns that restored servers can become unresponsive again once they receive traffic, and limits traffic to affected infrastructure in some locations</td>
+</tr>
+<tr>
+<td>13 November, around 02.00</td>
+<td>Bringing servers back a few at a time is reported to be working. No full fix yet</td>
+</tr>
+</tbody>
+</table>
+<h2>What is behind it</h2>
+<p>Microsoft has not published a root cause yet, so treat everything here as what is known so far, not the final answer.</p>
+<ul>
+<li><strong>It was not a traffic surge.</strong> Microsoft said the load was not caused by more users. Servers had unexpectedly become unavailable.</li>
+<li><strong>Health checks played a part.</strong> Servers were failing the automated health checks that decide whether they can take requests. As servers dropped out, the remaining ones took more load.</li>
+<li><strong>A core process was overwhelmed.</strong> Microsoft found that a core process on the affected servers was being overloaded, which caused them to freeze. Restored servers sometimes froze again as soon as traffic returned.</li>
+<li><strong>No matching change found at first.</strong> Microsoft said it had not identified a recent change that lined up with the start, but it is assessing a rollback of several recent configuration updates as a recovery option.</li>
+<li><strong>Not a cyberattack.</strong> Microsoft has said there is no indication of a cyberattack.</li>
+</ul>
+<p>Microsoft usually publishes a preliminary post incident review in the admin center within a few days of a major incident, and a final one later. That is where the real root cause will appear.</p>
+<h2>What admins should do now</h2>
+<ul>
+<li><strong>Tell your users early.</strong> A short message on a channel that does not depend on Microsoft 365, such as SMS, an intranet page hosted elsewhere or your phone tree, saves your service desk hundreds of calls. Say it is a Microsoft wide issue and that nothing on their device needs fixing.</li>
+<li><strong>Do not troubleshoot devices.</strong> Resetting Outlook profiles, reinstalling Teams, clearing credentials or enrolling devices again will not help and creates clean up work for later. The problem is in Microsoft's service.</li>
+<li><strong>Avoid tenant changes.</strong> Do not change Conditional Access, mail flow rules or DNS to work around this. When the service recovers, you want your configuration exactly as it was.</li>
+<li><strong>Use cached data where you can.</strong> Outlook in cached mode still shows mail and calendar already synced, so users can read and draft offline. Files synced by OneDrive are still available locally.</li>
+<li><strong>Watch for phishing.</strong> Outages are a gift to attackers. Warn users that Microsoft will not email them asking them to sign in again, reset passwords or "restore" their mailbox, and treat any such message as suspicious.</li>
+<li><strong>Do not assume endpoint protection has stopped.</strong> Defender XDR portal access being disrupted does not mean protection on devices has stopped. Agents keep running locally.</li>
+</ul>
+<h2>What to check once service returns</h2>
+<ul>
+<li><strong>Mail flow.</strong> Expect queued mail to arrive in bursts and some delays. Check message trace for anything that bounced and needs to be resent.</li>
+<li><strong>Teams meetings and recordings.</strong> Meetings during the outage may be missing recordings or transcripts, which also means no Copilot meeting recap for them.</li>
+<li><strong>Intune and Defender.</strong> If either was affected for you, check that device check ins, policy assignments and alerts have caught up before you act on any report from the outage window.</li>
+<li><strong>Service health history.</strong> Read the post incident review when it is published, and save it for your own incident records.</li>
+</ul>
+<p>I will keep this post updated as Microsoft confirms recovery and the cause.</p>
+<div class="refs">
+<p><strong>References</strong></p>
+<ol>
+<li><a href="https://status.cloud.microsoft">Microsoft 365 service status page</a></li>
+<li><a href="https://cybersecuritynews.com/massive-microsoft-365-outage/">Cyber Security News on the Microsoft 365 outage, incidents EX1550543 and MO1550821</a></li>
+<li><a href="https://www.tomsguide.com/news/live/microsoft-outlook-down-live-updates-outage-11-12-26">Tom's Guide live updates on the Microsoft 365 outage</a></li>
+<li><a href="https://www.forbes.com.au/news/world-news/microsoft-servers-crash-in-global-outage/">Forbes Australia on the global Microsoft outage</a></li>
+<li><a href="https://www.bleepingcomputer.com/news/microsoft/massive-microsoft-365-outage-disrupts-outlook-teams-copilot-worldwide/">BleepingComputer on the Microsoft 365 outage disrupting Outlook, Teams and Copilot</a></li>
+</ol>
+</div></div>
+<nav class="post-nav" aria-label="More posts"><a href="/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/"><span>Older</span>Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences</a></nav>
+<section class="comments" aria-label="Comments">
+<h2>Comments</h2>
+<p class="comments-note">Questions, corrections or your own experience with this? Sign in with GitHub to comment.</p>
+<script src="https://giscus.app/client.js"
+        data-repo="maheshkumarse16/blog"
+        data-repo-id="R_kgDOVQLa_A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOVQLa_M4DJdAM"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async></script>
+</section>
+</article></main><aside><section><h2>About</h2><p>I'm Mahesh, a Senior End User Computing Architect with a long career in enterprise IT. I write here every day about what is new, what is broken and how to fix it across the Microsoft endpoint stack. <a href="/about/">More about me</a></p></section>
+<section><h2>Topics</h2><ul class="tags"><li><a href="/topics/intune/">Intune</a></li><li><a href="/topics/configmgr/">ConfigMgr</a></li><li><a href="/topics/windows-11/">Windows 11</a></li><li><a href="/topics/macos/">macOS</a></li><li><a href="/topics/ios/">iOS</a></li><li><a href="/topics/android/">Android</a></li><li><a href="/topics/cloud-pc/">Cloud PC</a></li><li><a href="/topics/avd/">AVD</a></li><li><a href="/topics/defender/">Defender</a></li><li><a href="/topics/purview/">Purview</a></li><li><a href="/topics/vulnerability-management/">Vulnerability Management</a></li><li><a href="/topics/entra-id/">Entra ID</a></li><li><a href="/topics/microsoft-365/">Microsoft 365</a></li><li><a href="/topics/copilot/">Copilot</a></li></ul></section>
+<section><h2>Recent posts</h2><ul class="recent"><li><a href="/2026/11/13/microsoft-365-global-outage-exchange-teams-copilot/"><time datetime="2026-11-13">13 November 2026</time>Microsoft 365 global outage: Exchange Online, Teams, SharePoint and Copilot down (MO1550821)</a></li><li><a href="/2026/11/12/microsoft-copilot-requirements-endpoint-checklist/"><time datetime="2026-11-12">12 November 2026</time>Microsoft Copilot requirements explained: an endpoint and network checklist before you assign licences</a></li><li><a href="/2026/11/09/windows-11-26h2-known-issues-resolved-time-to-pilot/"><time datetime="2026-11-09">9 November 2026</time>Windows 11 26H2: all but one known issue is now resolved. Is it time to start your pilot?</a></li><li><a href="/2026/11/09/november-2026-patch-tuesday-what-to-expect/"><time datetime="2026-11-09">9 November 2026</time>November 2026 Patch Tuesday is tomorrow: what to expect and what to check first</a></li><li><a href="/2026/11/09/intune-ignore-windows-update-group-policies/"><time datetime="2026-11-09">9 November 2026</time>Old Windows Update group policies still fighting your Intune update rings? How to make Windows ignore them</a></li><li><a href="/2026/10/28/always-on-vpn-stuck-on-connecting-workaround/"><time datetime="2026-10-28">28 October 2026</time>Always On VPN stuck on Connecting after the September 2026 updates: now fixed in KB5127936, plus the workaround until you install it</a></li></ul></section></aside></div>
+<footer class="site-foot">
+<span>Copyright 2026 MaheshKumarSE. Views here are my own.</span>
+<span><a href="/feed.xml">RSS</a> &nbsp; <a href="/privacy/">Privacy</a></span>
+</footer>
+</div>
+</body>
+</html>
