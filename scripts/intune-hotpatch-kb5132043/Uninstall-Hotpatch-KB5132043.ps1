@@ -1,48 +1,55 @@
 <#
     Author      : Mahesh Kumar S.E
-    Version     : 1.0
-    Description : Single-file version. Checks whether hotpatch KB5132043 is present and
-                  uninstalls it. Works as an Intune Platform script (run as SYSTEM, 64-bit)
-                  or a manual run in an elevated PowerShell.
+    Version     : 1.2
+    Description : Single-file version. Checks whether the hotpatch package
+                  Package_for_HotpatchFix_9911 (KB5132043) is present and removes it with DISM
+                  (Remove-WindowsPackage). Works as an Intune Platform script (run as SYSTEM,
+                  64-bit) or a manual run in an elevated PowerShell.
+                  Only removes when exactly ONE matching package is found; otherwise it lists
+                  the candidates and exits 1 without changing anything.
                   No restart is forced. No LCU install or scan is triggered.
-                  Exit 0 = nothing to do, or removed (restart pending). Exit 1 = uninstall failed.
+                  Exit 0 = nothing to do, or removed (restart pending). Exit 1 = failed / unsure.
     Website     : https://maheshkumarse.com
 #>
 
 $ErrorActionPreference = 'Continue'
-$kb = 'KB5132043'
 
 $cv    = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
 $build = $cv.CurrentBuildNumber
 $ubr   = [int]$cv.UBR
 $pendingReboot = Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired'
 
-# 1. Is the hotpatch present?
-$hotfix  = Get-HotFix -Id $kb -ErrorAction SilentlyContinue
-$present = ($ubr -eq 9911) -or [bool]$hotfix
+# 1. Is the hotpatch package present?
+$candidates = @(Get-WindowsPackage -Online -ErrorAction Stop | Where-Object {
+    $_.PackageState -eq 'Installed' -and $_.PackageName -match 'HotpatchFix_9911|KB5132043'
+})
 
-if (-not $present) {
-    Write-Output "$env:COMPUTERNAME : $kb not present (build $build.$ubr). Nothing to do."
+if ($candidates.Count -eq 0) {
+    Write-Output "$env:COMPUTERNAME : hotpatch package not present (build $build.$ubr). Nothing to do."
     exit 0
 }
 
 if ($pendingReboot) {
-    Write-Output "$env:COMPUTERNAME : $kb present but a restart is already pending (build $build.$ubr). Skipping."
+    Write-Output "$env:COMPUTERNAME : hotpatch present but a restart is already pending (build $build.$ubr). Skipping."
     exit 0
 }
 
-# 2. Uninstall (no restart)
-Write-Output "$env:COMPUTERNAME : $kb present (build $build.$ubr). Uninstalling..."
-$p = Start-Process -FilePath wusa.exe `
-        -ArgumentList '/uninstall', "/kb:$($kb.Substring(2))", '/quiet', '/norestart' `
-        -Wait -PassThru
-
-Write-Output "wusa exit code: $($p.ExitCode)"   # 0 = removed, 3010 = removed, restart needed
-
-if ($p.ExitCode -in 0, 3010) {
-    Write-Output "$env:COMPUTERNAME : $kb uninstalled. Restart required to complete."
-    exit 0
+if ($candidates.Count -ne 1) {
+    Write-Output "Expected 1 matching package but found $($candidates.Count). Not removing anything."
+    $candidates | ForEach-Object { Write-Output ("  {0} | {1} | {2}" -f $_.PackageName, $_.PackageState, $_.ReleaseType) }
+    exit 1
 }
 
-Write-Output "$env:COMPUTERNAME : uninstall failed. Fallback: dism /online /get-packages, then dism /online /remove-package /packagename:<name>"
-exit 1
+# 2. Remove it (no restart)
+$name = $candidates[0].PackageName
+Write-Output "$env:COMPUTERNAME : build $build.$ubr. Removing package: $name"
+
+try {
+    $r = Remove-WindowsPackage -Online -PackageName $name -NoRestart -ErrorAction Stop
+    Write-Output "$env:COMPUTERNAME : removed. RestartNeeded = $($r.RestartNeeded). Restart required to complete."
+    exit 0
+}
+catch {
+    Write-Output "$env:COMPUTERNAME : Remove-WindowsPackage failed: $($_.Exception.Message)"
+    exit 1
+}
